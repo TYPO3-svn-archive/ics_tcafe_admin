@@ -1,0 +1,94 @@
+plugin.tx_icstcafeadmin_pi1 {
+	# Template file
+	template = {$config.tx_icstcafeadmin_pi1.template}
+	
+	view {
+		# Mode to display : list, single, search
+		modes = {$config.tx_icstcafeadmin_pi1.modes}
+		# Size
+		size = {$config.tx_icstcafeadmin_pi1.size}
+		# PID to display item
+		PIDitemDisplay = {$config.tx_icstcafeadmin_pi1.single}
+		edit = {$config.tx_icstcafeadmin_pi1.edit}
+		new = {$config.tx_icstcafeadmin_pi1.new}
+	}
+	
+	# Table configuration
+	table {
+		# Table's name
+		tablename =
+		# Fields list separated by coma
+		fields =
+		# Fields labels list separated by coma. Labels match fields above.
+		fieldLabels =
+	}
+	
+	#Select
+	select {
+		filter {
+		}
+		sorting {
+			name =
+			order =
+		}
+	}
+	
+	# Default rendering
+	defaultConf {
+		date = TEXT
+		date {
+			setContentToCurrent = 1
+			if.isTrue.current = 1
+			stdWrap.strftime = %d-%m-%Y
+		}
+		datetime = TEXT
+		datetime {
+			setContentToCurrent = 1
+			if.isTrue.current = 1
+			stdWrap.strftime = %d-%m-%Y %H:%M
+		}
+		time = TEXT
+		time {
+			setContentToCurrent = 1
+			if.isTrue.current = 1
+			stdWrap.strftime = %H:%M
+		}
+		timesec = TEXT
+		timesec {
+			setContentToCurrent = 1
+			if.isTrue.current = 1
+			stdWrap.strftime = %H:%M:%S
+		}
+		#year = TEXT
+		#year {
+		#	setContentToCurrent = 1
+		#	if.isTrue.current = 1
+		#	stdWrap.strftime = %Y
+		#}
+		password.cObject = COA
+		password.cObject {
+			10 = TEXT
+			10.value = **********
+		}
+		text {
+			viewList.cropHTML = 100 |...| 1
+		}
+		check {
+			viewList = TEXT
+			viewList {
+				setContentToCurrent = 1
+				if.isTrue.current = 1
+				override = X
+			}
+		}
+		checkList =
+	}
+		
+	# Render
+	renderConf {
+		# Put here render of a field like
+		# fieldname.theView.theConf
+	}
+	
+}
+
