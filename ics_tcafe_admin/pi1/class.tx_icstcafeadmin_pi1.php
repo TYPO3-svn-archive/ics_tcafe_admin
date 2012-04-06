@@ -92,6 +92,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			tx_icstcafeadmin_debug::error('Table must not be empty.');
 			return $this->pi_wrapInBaseClass($this->pi_getLL('data_not_available', 'Invalid table.', true));
 		}
+		$GLOBALS['TSFE']->includeTCA();
 		t3lib_div::loadTCA($this->table);
 		if (!$GLOBALS['TCA'][$this->table]) {
 			tx_icstcafeadmin_debug::error('Table can not be loaded from TCA.');
@@ -204,6 +205,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	private function setFields() {
 		$fields = t3lib_div::trimExplode(',', $this->piVars['fields'], true);
 		$fields = !empty($fields)? $fields: t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'fields', 'table'), true);
+		
 		$fields = !empty($fields)? $fields: t3lib_div::trimExplode(',', $this->conf['table.']['fields'], true);
 
 		$fields_confTS = t3lib_div::trimExplode(',', $this->conf['table.']['fields'], true);

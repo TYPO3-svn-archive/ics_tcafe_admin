@@ -88,6 +88,7 @@ class tx_icstcafeadmin_CommonRenderer {
 	 * @return	void
 	 */
 	public function init() {
+		$GLOBALS['TSFE']->includeTCA();
 		t3lib_div::loadTCA($this->table);
 	}
 
@@ -95,11 +96,12 @@ class tx_icstcafeadmin_CommonRenderer {
 	 * Render value
 	 *
 	 * @param	string		$field: Field's name
+	 * @param	int			$recId: Record's id
 	 * @param	mixed		$value: Field's value
 	 * @param	string		$view: The display view
 	 * @return	string		The value
 	 */
-	protected function renderValue($field, $value=null, $view='') {
+	protected function renderValue($field, $recId, $value=null, $view='') {
 		if (!$field)
 			throw new Exception('Field is not set on RenderValue.');
 
@@ -109,10 +111,10 @@ class tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderValue'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderValue'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$value = $procObj->renderValue($this, $this->table, $field, $this->handleFieldValue($value, $config), $config, $view);
+				$value = $procObj->renderValue($this, $this->table,$recId, $field, $value, $config, $view);
 			}
 		} else {
-			$value = $this->default_renderValue($field, $this->handleFieldValue($value, $config), $view);
+			$value = $this->default_renderValue($field, $this->handleFieldValue($recId ,$value, $config), $view);
 		}
 		return $value;
 	}
@@ -180,11 +182,12 @@ class tx_icstcafeadmin_CommonRenderer {
 	/**
 	 * Handles field's value
 	 *
+	 * @param	int			$recId: Record's id
 	 * @param	mixed		$value: Field's value
 	 * @param	array		$config: Field's TCA configuration
 	 * @return	string		the	value
 	 */
-	private function handleFieldValue($value=null, array $config) {
+	public function handleFieldValue($recId, $value=null, array $config) {
 		switch ($config['type']) {
 			// case 'input': Nothing to do
 			// case 'text': Nothing to do
@@ -192,7 +195,7 @@ class tx_icstcafeadmin_CommonRenderer {
 				$value = $this->handleFieldValue_typeCheck ($value, $config);
 				break;
 			case 'select':
-				$value = $this->handleFieldValue_typeSelect ($value, $config);
+				$value = $this->handleFieldValue_typeSelect ($recId, $value, $config);
 				break;
 
 			default:
@@ -217,20 +220,71 @@ class tx_icstcafeadmin_CommonRenderer {
 	/**
 	 * Handles select field's value
 	 *
+	 * @param	int			$recId: Record's id
 	 * @param	mixed		$value: Field's value
 	 * @param	array		$config: Field's TCA configuration
 	 * @return	string		The processed value
 	 */
-	private function handleFieldValue_typeSelect($value=null, array $config) {
-		// foreign_table
-		// MM*
-		
-		if (false) {
-		} 
-		elseif ($config['MM']) {
+	private function handleFieldValue_typeSelect($recId, $value=null, array $config) {
+		if ($config['MM']) {
+			if (!$value) {
+				$value = '';
+			}
+			else {
+				t3lib_div::loadTCA($config['foreign_table']);
+				
+				// Get select fields
+				$label = $GLOBALS['TCA'][$config['foreign_table']]['ctrl']['label'];
+				$fields = array('`'.$config['foreign_table'].'`.`uid` as ft_uid');
+				if ($label != 'uid')
+					$fields[] = '`'.$config['foreign_table'].'`.`'.$label.'` as ft_label';
+				
+				// Get records
+				$addWhere_tablenames = ' AND (`'. $config['MM'].'`.`tablenames` = \''.$this->table.'\' OR `'. $config['MM'].'`.`tablenames` = \'\')';
+				$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
+					implode(',', $fields),
+					$config['foreign_table'],
+					$config['MM'],
+					$this->table,
+					' AND `'.$config['MM'].'`.`uid_foreign` = ' . $recId . $addWhere_tablenames,
+					'',
+					'`'.$config['MM'].'`.`sorting_foreign`'
+				);
+				// Fetch labels
+				$labels = array();
+				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
+					$labels[] = $row['ft_label'];
+				}
+				if (!empty($labels))
+					$value = implode(',', $labels);
+			}
 		}
+		// foreign_table
 		elseif ($config['foreign_table']) {
-			
+			t3lib_div::loadTCA($config['foreign_table']);
+			if ($label = $GLOBALS['TCA'][$config['foreign_table']]['ctrl']['label']) {
+				// Get select fields
+				$fields = array('uid', $label);
+				// Get records
+				$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+					implode(',', $fields),
+					$config['foreign_table'],
+					'uid IN( ' . $value . ')',
+					'',
+					'',
+					'',
+					'uid'
+				);
+				// Fetch labels
+				if (is_array($rows) && !empty($rows)) {
+					$keys = t3lib_div::trimExplode(',', $value, true);
+					$labels = array();
+					foreach ($keys as $key) {
+						$labels[] = $rows[$key][$label];
+					}
+					$value = implode(',', $labels);
+				}
+			}
 		}
 		// itemsProcFunc
 		elseif ($config['itemsProcFunc']) {
@@ -248,8 +302,14 @@ class tx_icstcafeadmin_CommonRenderer {
 		return $value;
 	}
 	
+	/**
+	 * Fetches language label for key
+	 *
+	 * @param	string	$str: Language label reference, eg. 'LLL:EXT:lang/locallang_core.php:labels.blablabla'
+	 * @return string 	The value of the label, fetched for the current backend language
+	 */
 	private function sL($str) {
-		return $GLOBALS['LANG']->sL($str);
+		return $GLOBALS['TSFE']->sL($str);
 	}
 	
 
