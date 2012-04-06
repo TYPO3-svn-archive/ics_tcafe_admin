@@ -117,15 +117,12 @@ class tx_icstcafeadmin_dynflex {
 		foreach($fields as $fieldname=>$fieldrow){
 			if (in_array($GLOBALS['TCA'][$table]['columns'][$fieldname]['config']['type'], $this->fieldTypes))
 				$config['items'][] = array(
-					'0' => $fieldname,
+					'0' => $GLOBALS['TCA'][$table]['columns'][$fieldname]['label'],
 					'1' => $fieldname
 				);
 		}
-		$config['maxitems'] = min(100, count($fields));
-		$config['size'] = count($fields)-1;
-		$config['autoSizeMax'] = 10;
-		$config['multiple'] = 0;
-		$config['default'] = 0;
+		$config['maxitems'] = count($fields);
+		$config['size'] = count($fields);
 
 		$flexArray = array(
 			'TCEforms' => array(
@@ -162,7 +159,7 @@ class tx_icstcafeadmin_dynflex {
 			if (in_array($GLOBALS['TCA'][$table]['columns'][$fieldname]['config']['type'], $this->fieldTypes)) {
 				$flexArray = array(
 					'TCEforms' => array(
-						'label' => $GLOBALS['LANG']->sL('LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:fieldlabel') . '"' . $fieldname . '"',
+						'label' => sprintf($GLOBALS['LANG']->sL('LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:fieldlabel'), $GLOBALS['LANG']->sL($GLOBALS['TCA'][$table]['columns'][$fieldname]['label'])),
 						'config' => array(
 							'type' => 'input',
 							'size' => '20',

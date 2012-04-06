@@ -13,12 +13,13 @@
 			<label index="table">Table setup</label>
 			<label index="tablename">Enter tablename</label>
 			<label index="tablefields">Table fields</label>
+			<label index="withUid">With uid field</label>
 			<label index="miscellaneous">Miscellaneous</label>
 			<label index="singleID">ID of single view page</label>
 			<label index="editID">ID of record edit page</label>
 			<label index="newID">ID of new record page</label>
 			<label index="returnUrl">Return url</label>
-			<label index="fieldlabel">Label for </label>
+			<label index="fieldlabel">Label for &quot;%s&quot;</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="general">Général</label>
@@ -27,12 +28,13 @@
 			<label index="table">Configuration de la table</label>
 			<label index="tablename">Entrer le nom de la table</label>
 			<label index="tablefields">Champs de la table</label>
+			<label index="withUid">Avec l'uid </label>
 			<label index="miscellaneous">Autres configurations</label>
 			<label index="singleID">Lien vers la page détail d'un enregistrement</label>
 			<label index="editID">Lien vers la page d'édition d'un enregistrement</label>
 			<label index="newID">Lien vers la page de création d'un enregistrement</label>
 			<label index="returnUrl">Lien vers la page retour</label>
-			<label index="fieldlabel">Libellé de </label>
+			<label index="fieldlabel">Libellé de « %s »</label>
 		</languageKey>
 	</data>
 </T3locallang>

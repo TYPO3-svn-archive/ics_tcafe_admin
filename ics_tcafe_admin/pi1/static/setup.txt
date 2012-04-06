@@ -82,6 +82,16 @@ plugin.tx_icstcafeadmin_pi1 {
 			}
 		}
 		select =
+		file =
+		illustration {
+			setContentToCurrent = 1
+			if.isTrue.current = 1
+			cObject = IMAGE
+			cObject {
+				file.import.current = 1
+				file.height = 68
+			}
+		}
 	}
 		
 	# Render

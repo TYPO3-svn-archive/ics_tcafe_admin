@@ -220,18 +220,22 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		if (empty($fields)) {
 			$fields = array_keys($columns);
 		}
+		if ($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'withUid', 'table') && !in_array('uid', $fields))
+			$fields = array_merge(array('uid'), $fields);
+		
 		$this->fields = array();
 		$this->fieldLabels = array();
 		foreach ($fields as $field) {
-			if ($columns[$field]) {
+			// if ($columns[$field]) {
 				$this->fields[] = $field;
 
 				$label = $this->piVars[$fieldname . 'Label'];
 				$label = $label? $label: $this->pi_getFFvalue($this->cObj->data['pi_flexform'], $fieldname . 'Label', 'table');
 				$label = $label? $label: $fieldLabels[$field];
 				$label = $label? $label: $GLOBALS['TSFE']->sL($GLOBALS['TCA'][$this->table]['columns'][$field]['label']);
+				$label = $label? $label: $field;
 				$this->fieldLabels[$field] = $label;
-			}
+			// }
 		}
 	}
 
@@ -304,11 +308,18 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 * @return	array	The table rows
 	 */
 	private function getRows() {
-		$requestFields = array_merge(array('uid'), $this->fields);
+		$requestFields = $this->fields;
+		if (!in_array('uid', $requestFields))
+			$requestFields = array_merge(array('uid'), $requestFields);
+			
+		$addWhere_storage = '';
+		if (!empty($this->storage) && ((count($this->storage)>1) || count($this->storage)==1 && $this->storage[0]>0))
+			$addWhere_storage = ' AND pid IN(' . implode(',', $this->storage) . ')';
+			
 		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			implode(',', $requestFields),
 			$this->table,
-			'deleted = 0 AND pid IN(' . implode(',', $this->storage) . ')',
+			'deleted = 0' . $addWhere_storage,
 			$this->groupBy,
 			$this->orderBy,
 			$this->limit,
