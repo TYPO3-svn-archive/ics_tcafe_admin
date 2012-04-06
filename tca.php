@@ -206,30 +206,31 @@ $TCA['tx_icstcafeadmin_testFields'] = array (
 			'config' => array (
 				'type' => 'select',
 				'items' => array (
-					array('LLL:EXT:ics_tcafe_admin/locallang_db.xml:tx_icstcafeadmin_testFields.selectfield.I.0', '0'),
-					array('LLL:EXT:ics_tcafe_admin/locallang_db.xml:tx_icstcafeadmin_testFields.selectfield.I.1', '1'),
-					array('LLL:EXT:ics_tcafe_admin/locallang_db.xml:tx_icstcafeadmin_testFields.selectfield.I.2', '2'),
-					array('LLL:EXT:ics_tcafe_admin/locallang_db.xml:tx_icstcafeadmin_testFields.selectfield.I.3', '3'),
+					array('',0),
+					array('LLL:EXT:ics_tcafe_admin/locallang_db.xml:tx_icstcafeadmin_testFields.selectfield.I.0', 1),
+					array('LLL:EXT:ics_tcafe_admin/locallang_db.xml:tx_icstcafeadmin_testFields.selectfield.I.1', 2),
+					array('LLL:EXT:ics_tcafe_admin/locallang_db.xml:tx_icstcafeadmin_testFields.selectfield.I.2', 3),
+					array('LLL:EXT:ics_tcafe_admin/locallang_db.xml:tx_icstcafeadmin_testFields.selectfield.I.3', 4),
 				),
-				'size' => 1,	
-				'maxitems' => 1,
+				'size' => 10,	
+				'maxitems' => 100,
 			)
 		),
-		'test' => array (		
+		'selectfield_ft' => array (		
 			'exclude' => 0,		
-			'label' => 'LLL:EXT:ics_tcafe_admin/locallang_db.xml:tx_icstcafeadmin_testFields.test',		
+			'label' => 'LLL:EXT:ics_tcafe_admin/locallang_db.xml:tx_icstcafeadmin_testFields.selectfield_ft',		
 			'config' => array (
 				'type' => 'select',	
 				'foreign_table' => 'fe_users',	
 				'foreign_table_where' => 'ORDER BY fe_users.uid',	
 				'size' => 5,	
 				'minitems' => 0,
-				'maxitems' => 2,
+				'maxitems' => 100,
 			)
 		),
 	),
 	'types' => array (
-		'0' => array('showitem' => 'hidden;;1;;1-1-1, required_input, date_input, datetime_input, time_input, timesec_input, year_input, int_input, double_input, alphanum_input, upper_input, lower_input, nospace_input, password_input, md5_input, textfield, checkboxes, checkfield, radiofield, selectfield, test')
+		'0' => array('showitem' => 'hidden;;1;;1-1-1, required_input, date_input, datetime_input, time_input, timesec_input, year_input, int_input, double_input, alphanum_input, upper_input, lower_input, nospace_input, password_input, md5_input, textfield, checkboxes, checkfield, radiofield, selectfield, selectfield_ft')
 	),
 	'palettes' => array (
 		'1' => array('showitem' => '')

@@ -34,14 +34,12 @@
 			<label index="tx_icstcafeadmin_testFields.radiofield.I.2">Radio_3</label>
 			<label index="tx_icstcafeadmin_testFields.radiofield.I.3">Radio_4</label>
 			<label index="tx_icstcafeadmin_testFields.radiofield">Radio</label>
+			<label index="tx_icstcafeadmin_testFields.selectfield">Select field</label>
 			<label index="tx_icstcafeadmin_testFields.selectfield.I.0">Select_0</label>
 			<label index="tx_icstcafeadmin_testFields.selectfield.I.1">Select_1</label>
 			<label index="tx_icstcafeadmin_testFields.selectfield.I.2">Select_2</label>
 			<label index="tx_icstcafeadmin_testFields.selectfield.I.3">Select_3</label>
-			<label index="tx_icstcafeadmin_testFields.selectfield">Select field</label>
-			<label index="tx_icstcafeadmin_feature">Feature</label>
-			<label index="tx_icstcafeadmin_feature.color">Color</label>
-			<label index="tx_icstcafeadmin_feature.shape">Shape</label>
+			<label index="tx_icstcafeadmin_testFields.selectfield_ft">Select foreign table</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="tt_content.list_type_pi1">Administration FE</label>
@@ -72,14 +70,12 @@
 			<label index="tx_icstcafeadmin_testFields.radiofield.I.2">Radio_3</label>
 			<label index="tx_icstcafeadmin_testFields.radiofield.I.3">Radio_4</label>
 			<label index="tx_icstcafeadmin_testFields.radiofield">Radio</label>
+			<label index="tx_icstcafeadmin_testFields.selectfield">Select</label>
 			<label index="tx_icstcafeadmin_testFields.selectfield.I.0">Select_0</label>
 			<label index="tx_icstcafeadmin_testFields.selectfield.I.1">Select_1</label>
 			<label index="tx_icstcafeadmin_testFields.selectfield.I.2">Select_2</label>
 			<label index="tx_icstcafeadmin_testFields.selectfield.I.3">Select_3</label>
-			<label index="tx_icstcafeadmin_testFields.selectfield">Select</label>
-			<label index="tx_icstcafeadmin_feature">Caractéristique</label>
-			<label index="tx_icstcafeadmin_feature.color">Couleur</label>
-			<label index="tx_icstcafeadmin_feature.shape">Forme</label>
+			<label index="tx_icstcafeadmin_testFields.selectfield_ft">Select avec table étrangère</label>
 		</languageKey>
 	</data>
 </T3locallang>

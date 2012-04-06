@@ -178,7 +178,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 			$locMarkers = array(
 				'HEADERID' => $this->headersId[$field],
 				'FIELDLABEL' => $this->fieldLabels[$field],
-				'FIELD' => $this->renderValue($field, $row[$field], self::$view),
+				'FIELD' => $this->renderValue($field, $row['uid'], $row[$field], self::$view),
 			);
 			$rowFieldsContent .= $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');
 		}

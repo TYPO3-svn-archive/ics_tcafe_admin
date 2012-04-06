@@ -81,7 +81,7 @@ plugin.tx_icstcafeadmin_pi1 {
 				override = X
 			}
 		}
-		checkList =
+		select =
 	}
 		
 	# Render
