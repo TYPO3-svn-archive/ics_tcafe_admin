@@ -87,6 +87,14 @@
 						</TCEforms>
 					</tablename>
 					<!-- ###ADDITIONAL FLEX TABLEFIELDS### -->
+					<withUid>
+						<TCEforms>
+							<label>LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:withUid</label>
+							<config>
+								<type>check</type>
+							</config>
+						</TCEforms>
+					</withUid>
 				</el>
 			</ROOT>
 		</table>

@@ -57,6 +57,13 @@ class tx_icstcafeadmin_CommonRenderer {
 	protected $cObj;
 
 	protected $table;
+	
+	public static $allowedImgFileExtArray = array(
+		'gif',
+		'png',
+		'jpeg',
+		'jpg',
+	);
 
 	/**
 	 * Constructor
@@ -106,14 +113,13 @@ class tx_icstcafeadmin_CommonRenderer {
 			throw new Exception('Field is not set on RenderValue.');
 
 		$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
-
 		// Hook to render value
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderValue'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderValue'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
 				$value = $procObj->renderValue($this, $this->table,$recId, $field, $value, $config, $view);
 			}
-		} else {
+		} elseif($config) {
 			$value = $this->default_renderValue($field, $this->handleFieldValue($recId ,$value, $config), $view);
 		}
 		return $value;
@@ -148,6 +154,14 @@ class tx_icstcafeadmin_CommonRenderer {
 					break;
 				case 'check':
 					$value = $this->cObj->stdWrap($value, $this->conf['defaultConf.']['check.'][$view . '.']);
+					break;
+				case 'select':
+					$value = $this->cObj->stdWrap($value, $this->conf['defaultConf.']['select.'][$view . '.']);
+					break;
+				case 'group':
+					if ($config['internal_type']==='file' && array_intersect(t3lib_div::trimExplode(',', $config['allowed'], true), self::$allowedImgFileExtArray)) {
+						$value = $this->cObj->stdWrap($value, $this->conf['defaultConf.']['illustration.']);
+					}
 					break;
 				default:
 			}
@@ -197,7 +211,9 @@ class tx_icstcafeadmin_CommonRenderer {
 			case 'select':
 				$value = $this->handleFieldValue_typeSelect ($recId, $value, $config);
 				break;
-
+			case 'group':
+				$value = $this->handleFieldValue_typeGroup ($recId, $value, $config);
+				break;
 			default:
 		}
 		return htmlspecialchars($value);
@@ -239,17 +255,43 @@ class tx_icstcafeadmin_CommonRenderer {
 				if ($label != 'uid')
 					$fields[] = '`'.$config['foreign_table'].'`.`'.$label.'` as ft_label';
 				
+				// Get query where on "tablenames" field
+				// $addWhere_tablenames = '';
+				// $columns =  $GLOBALS['TCA'][$config['foreign_table']] ['columns'];
+				// foreach ($columns as $column) {
+					// $fieldConf = $column['config'];
+					// $allowed_tables = t3lib_div::trimExplode(',', $fieldConf['allowed'], true);
+					// if (in_array($this->table, $allowed_tables)) {
+						// $addWhere_tablenames = ' AND ' . $config['MM'] . '.tablenames = \'' . $this->table . '\'';
+						// break;
+					// }
+				// }
+				
+				$addWhere_tablenames = ' AND (`'.$config['MM'].'`.`tablenames` = \'' . $this->table . '\' || `'.$config['MM'].'`.`tablenames` = \'\')';
+				
 				// Get records
-				$addWhere_tablenames = ' AND (`'. $config['MM'].'`.`tablenames` = \''.$this->table.'\' OR `'. $config['MM'].'`.`tablenames` = \'\')';
-				$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
-					implode(',', $fields),
-					$config['foreign_table'],
-					$config['MM'],
-					$this->table,
-					' AND `'.$config['MM'].'`.`uid_foreign` = ' . $recId . $addWhere_tablenames,
-					'',
-					'`'.$config['MM'].'`.`sorting_foreign`'
-				);
+				if ($config['MM_opposite_field']) {
+					$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
+						implode(',', $fields),
+						$config['foreign_table'],
+						$config['MM'],
+						$this->table,
+						' AND `'.$config['MM'].'`.`uid_foreign` = ' . $recId . $addWhere_tablenames,
+						'',
+						'`'.$config['MM'].'`.`sorting_foreign`'
+					);
+				} else {
+					$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
+						implode(',', $fields),
+						$this->table,
+						$config['MM'],
+						$config['foreign_table'],
+						' AND `'.$config['MM'].'`.`uid_local` = ' . $recId . $addWhere_tablenames,
+						'',
+						'`'.$config['MM'].'`.`sorting`'
+					);
+				}
+				
 				// Fetch labels
 				$labels = array();
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
@@ -301,7 +343,56 @@ class tx_icstcafeadmin_CommonRenderer {
 		
 		return $value;
 	}
-	
+
+	/**
+	 * Handles group field's value
+	 *
+	 * @param	int			$recId: Record's id
+	 * @param	mixed		$value: Field's value
+	 * @param	array		$config: Field's TCA configuration
+	 * @return	string		The processed value
+	 */
+	private function handleFieldValue_typeGroup($recId, $value=null, array $config) {
+		switch ($config['internal_type']) {
+			// case 'file': Nothing do
+			case 'db':
+				if ($config['MM']) {
+					$allowedRelationTables = t3lib_div::trimExplode(',', $config['allowed']);
+					$labels = array();
+					foreach ($allowedRelationTables as $table) {
+						t3lib_div::loadTCA($table);
+						// Get select fields
+						$label = $GLOBALS['TCA'][$table]['ctrl']['label'];
+						$fields = array('`'.$table.'`.`uid` as ft_uid');
+						if ($label != 'uid')
+							$fields[] = '`'.$table.'`.`'.$label.'` as ft_label';
+						
+						$addWhere_tablenames = ' AND ' . $config['MM'] . '.tablenames = \'' . $table . '\'';
+						// Get records
+						$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
+							implode(',', $fields),
+							$this->table,
+							$config['MM'],
+							$table,
+							' AND `'.$table.'`.`deleted` =0 AND `'.$config['MM'].'`.`uid_local` = ' . $recId . $addWhere_tablenames,
+							'',
+							'`'.$config['MM'].'`.`sorting`'
+						);
+						// Fetch labels
+						
+						while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
+							$labels[] = $row['ft_label'];
+						}
+					}
+					if (!empty($labels))
+						$value = implode(',', $labels);
+				}
+				break;
+			default:	
+		}
+		return $value;
+	}
+
 	/**
 	 * Fetches language label for key
 	 *

@@ -1,3 +1,23 @@
+2012-04-06 In Cite Solution  <technique@in-cite.net>
+	* Fix: Taken off flexform field select line blank.
+	* Refactor: Replaced flexform field select name with label.
+	* Feature: Implemented render list for field type group on option
+		- file and wtih illustration
+		- MM
+	* Fix: Filter on pid
+	* Feature: Added possibility to view field uid
+	* Feature: Implemented render list for field type select with options: 
+		- Only items
+		- Foreign table
+		- MM relations
+	* Refactor: Reworked function renderValue. Added record's id.
+	* Retrieves last version on table testField
+
+2012-04-05 In Cite Solution  <technique@in-cite.net>
+	
+	* Initial code to refactor
+	* Initial code with litle refactor
+
 2011-07-12 In Cite Solution  <technique@in-cite.net>
 
 	* initial code generated with kickstarter
