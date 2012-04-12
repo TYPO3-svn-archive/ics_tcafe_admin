@@ -119,7 +119,8 @@ class tx_icstcafeadmin_CommonRenderer {
 				$procObj = & t3lib_div::getUserObj($class);
 				$value = $procObj->renderValue($this, $this->table,$recId, $field, $value, $config, $view);
 			}
-		} elseif($config) {
+		} 
+		else {
 			$value = $this->default_renderValue($field, $this->handleFieldValue($recId ,$value, $config), $view);
 		}
 		return $value;
@@ -201,7 +202,10 @@ class tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: Field's TCA configuration
 	 * @return	string		the	value
 	 */
-	public function handleFieldValue($recId, $value=null, array $config) {
+	public function handleFieldValue($recId, $value=null, $config=null) {
+		if (!$config)
+			return htmlspecialchars($value);
+	
 		switch ($config['type']) {
 			// case 'input': Nothing to do
 			// case 'text': Nothing to do

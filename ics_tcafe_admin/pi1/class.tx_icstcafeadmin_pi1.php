@@ -144,7 +144,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 */
 	protected function init() {
 		// Get template code
-		$templateFile = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'template', 'main');
+		$templateFile = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'templateFile', 'general');
 		$templateFile = $templateFile ? $templateFile : $this->conf['template'];
 		$templateFile = $templateFile ? $templateFile : $this->templateFile;
 		$this->templateCode = $this->cObj->fileResource($templateFile);
@@ -154,12 +154,12 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		if (isset($this->piVars['showUid'])) {
 			$this->showUid = $this->piVars['showUid'];
 		}
-		$codes = t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'main'), true);
+		$codes = t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'general'), true);
 		if (empty($codes))
 			$codes = t3lib_div::trimExplode(',', $this->conf['view.']['modes'], true);
 		$this->codes = array_unique($codes);
 
-		$PIDitemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 'main');
+		$PIDitemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 'general');
 		if ($PIDitemDisplay)
 			$this->conf['view.']['PIDitemDisplay'] = $PIDitemDisplay;
 		if (!$this->conf['view.']['PIDitemDisplay'])
@@ -173,7 +173,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$this->storage = $pids? $pids: array(0);
 
 			// Get page size
-		// $size = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'size', 'main');
+		// $size = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'size', 'general');
 		// $this->conf['view.']['size'] = $size ? $size : $this->conf['view.']['size'];
 		// $this->conf['view.']['size'] = $this->conf['view.']['size'] ? $this->conf['view.']['size'] : $this->defaultSize;
 		// $this->limit = $this->conf['view.']['size']? $this->conf['view.']['size']: '';

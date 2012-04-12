@@ -1,3 +1,7 @@
+2012-04-12 In Cite Solution  <technique@in-cite.net>
+	* Fix: Mistakes when retrieving template flexform configuration.
+	* Feature: Added possibility to render field swith field name.
+
 2012-04-06 In Cite Solution  <technique@in-cite.net>
 	* Fix: Taken off flexform field select line blank.
 	* Refactor: Replaced flexform field select name with label.

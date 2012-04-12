@@ -61,7 +61,9 @@
 
 
 <!-- ###TEMPLATE_RESULTS_ROW_FIELDS### start-->
-	<td headers="###HEADERID###">###FIELD###</td>
+	<!-- ###SUBPART_GENERIC### start-->
+	<td headers="###HEADERID###">###FIELDVALUE###</td>
+	<!-- ###SUBPART_GENERIC### end-->
 <!-- ###TEMPLATE_RESULTS_ROW_FIELDS### end-->
 
 
@@ -75,3 +77,19 @@
 		<!-- ###ACTION_HIDE### -->###HIDE###<!-- ###ACTION_HIDE### -->
 	</td>
 <!-- ###TEMPLATE_RESULTS_ROW_ACTIONS### end-->
+
+
+
+<!-- ###TEMPLATE_SINGLE### start-->
+<div class="tx-icstcafeadmin-single">
+	<!-- ###SUBPART_FIELD### start-->
+	<div class="tx-icstcafeadmin-field">
+		<p class="tx-icstcafeadmin-label ###FIELDNAME###">###FIELD_LABEL###</p>
+		<p class="tx-icstcafeadmin-value ###FIELDNAME###">###FIELD_VALUE###</p>
+	</div>
+	<!-- ###SUBPART_FIELD### end-->
+	<div class="tx-icstcafeadmin-backlink">
+		###BACKLINK###
+	</div>
+</div>
+<!-- ###TEMPLATE_SINGLE### end-->
