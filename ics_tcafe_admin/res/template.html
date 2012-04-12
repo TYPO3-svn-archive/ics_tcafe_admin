@@ -8,6 +8,29 @@
 
 <h1>Templates</h1>
 
+<h2>Results list templates</h2>
+<!--
+	PREFIXID : Plugin prefixId
+	RESULT_LIST : Subpart result list
+	TEXT_LISTEMPTY : The text for empty list
+	SORTING : The sorting choice
+	TABLENAME : Table tag tablename
+	UNIQID : Table tag id
+	CAPTION : Table tag caption
+	HEADER : Table tag subpart header
+	HEADERTITLES : Table tag subpart headers title
+	ROWS : Subpart rows
+	ROW : Subpart row
+	FIELDS : Subpart fields
+	ACTIONS : Subpart action
+	PAGEBROWSE : Page browse
+	HEADERID : Table headers/id tag id
+	FIELDLABEL : The field's label
+	FIELDVALUE : The field's value
+	SUBPART_GENERIC : Generic field subpart
+	ALT_SUBPART_XXXXXX : Specific field subpart where XXXXXX is the field name. It replaces SUBPART_GENERIC
+-->
+
 <!-- ###TEMPLATE_RESULTS_NOSEARCH### start-->
 	<div class="###PREFIXID###_results">
 		###RESULT_LIST###
@@ -69,7 +92,7 @@
 
 
 <!-- ###TEMPLATE_RESULTS_ROW_ACTIONS### start-->
-	<td class="tx-icstcafeadmin-actions">
+	<td class="###PREFIXID###_actions">
 		<!-- ###ACTION_EDIT### -->###EDIT###<!-- ###ACTION_EDIT### -->
 		<!-- ###ACTION_SINGLE### -->###SINGLE###<!-- ###ACTION_SINGLE### -->					
 		<!-- ###ACTION_NEW### -->###NEW###<!-- ###ACTION_NEW### -->
@@ -79,17 +102,30 @@
 <!-- ###TEMPLATE_RESULTS_ROW_ACTIONS### end-->
 
 
+<h2>Single template</h2>
+<!--
+	FIELDS : Subpart fields
+	BACKLINK : Link to previous
+	SUBPART_GENERIC : Generic field subpart
+	FIELDNAME : The field name
+	FIELDLABEL : The field's label
+	FIELDVALUE : The field's value
+	ALT_SUBPART_XXXXXX : Specific field subpart where XXXXXX is the field name. It replaces SUBPART_GENERIC
+-->
 
 <!-- ###TEMPLATE_SINGLE### start-->
-<div class="tx-icstcafeadmin-single">
-	<!-- ###SUBPART_FIELD### start-->
-	<div class="tx-icstcafeadmin-field">
-		<p class="tx-icstcafeadmin-label ###FIELDNAME###">###FIELD_LABEL###</p>
-		<p class="tx-icstcafeadmin-value ###FIELDNAME###">###FIELD_VALUE###</p>
-	</div>
-	<!-- ###SUBPART_FIELD### end-->
-	<div class="tx-icstcafeadmin-backlink">
+<div class="###PREFIXID###_single">
+	###FIELDS###
+	<div class="###PREFIXID###_backlink">
 		###BACKLINK###
 	</div>
 </div>
 <!-- ###TEMPLATE_SINGLE### end-->
+
+
+
+<!-- ###TEMPLATE_SINGLE_FIELDS### start-->
+	<!-- ###SUBPART_GENERIC### start-->
+	<p class="###PREFIXID###_###FIELDNAME###">###FIELDLABEL### : ###FIELDVALUE###</p>
+	<!-- ###SUBPART_GENERIC### end-->
+<!-- ###TEMPLATE_SINGLE_FIELDS### end-->

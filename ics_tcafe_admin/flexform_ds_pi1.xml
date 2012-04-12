@@ -34,8 +34,8 @@
 								</numIndex>
 								</items>
 								<itemsProcFunc>tx_icstcafeadmin_dynflex->user_insertExtraCodes</itemsProcFunc>
-								<maxitems>1</maxitems>
-								<size>1</size>
+								<maxitems>4</maxitems>
+								<size>4</size>
 								<multiple>0</multiple>
 							</config>
 						</TCEforms>
