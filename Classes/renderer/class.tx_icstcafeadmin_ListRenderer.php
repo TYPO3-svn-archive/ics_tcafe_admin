@@ -173,16 +173,33 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 */
 	private function renderRowFields(array $row, &$markers) {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_RESULTS_ROW_FIELDS###');
-		$rowFieldsContent = '';
-		foreach ($this->fields as $field) {
-			$locMarkers = array(
-				'HEADERID' => $this->headersId[$field],
-				'FIELDLABEL' => $this->fieldLabels[$field],
-				'FIELD' => $this->renderValue($field, $row['uid'], $row[$field], self::$view),
-			);
-			$rowFieldsContent .= $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');
+		$content = '';
+		// Hook for render row fields
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderRowFields'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderRowFields'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				$content = $procObj->renderRowFields($template, $markers, $this->conf, $this);
+			}
 		}
-		return $rowFieldsContent;
+		else {
+			$genericFieldTemplate = $this->cObj->getSubpart($template, '###SUBPART_GENERIC###');
+			foreach ($this->fields as $field) {
+				$value = $this->renderValue($field, $row['uid'], $row[$field], self::$view);
+				$locMarkers = array(
+					'HEADERID' => $this->headersId[$field],
+					'FIELDLABEL' => $this->fieldLabels[$field],
+				);
+				if ($specificFieldTemplate = $this->cObj->getSubpart($template, '###ALT_SUBPART_' . strtoupper($field) . '###')) {
+					$locMarkers[strtoupper($field) . '_VALUE'] = $value;
+					$content .= $this->cObj->substituteMarkerArray($specificFieldTemplate, $locMarkers, '###|###');
+				} 
+				else {
+					$locMarkers['FIELDVALUE'] = $value;
+					$content .= $this->cObj->substituteMarkerArray($genericFieldTemplate, $locMarkers, '###|###');
+				}
+			}
+		}
+		return $content;
 	}
 
 	/**
