@@ -264,7 +264,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 				$this->conf
 			);
 			$renderList->init();
-			$locMarkers['RESULT_LIST'] = $renderList->render($this->getRows());
+			$locMarkers['RESULT_LIST'] = $renderList->render($this->getRecords());
 		}
 		else {
 			$locMarkers['RESULT_LIST'] = '';
@@ -284,6 +284,17 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 * @return	string		HTML content for single view
 	 */
 	public function displaySingle() {
+		$renderSingle = t3lib_div::makeInstance(
+			'tx_icstcafeadmin_SingleRenderer',
+			$this,
+				$this->cObj,
+				$this->table,
+				$this->fields,
+				$this->fieldLabels,
+				$this->conf
+		);
+		$renderSingle->init();
+		return $renderSingle->render($this->getSingleRecord());
 	}
 
 	/**
@@ -305,9 +316,9 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	/**
 	 * Retrieves rows
 	 *
-	 * @return	array	The table rows
+	 * @return	mixed	The table rows
 	 */
-	private function getRows() {
+	private function getRecords() {
 		$requestFields = $this->fields;
 		if (!in_array('uid', $requestFields))
 			$requestFields = array_merge(array('uid'), $requestFields);
@@ -315,7 +326,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$addWhere_storage = '';
 		if (!empty($this->storage) && ((count($this->storage)>1) || count($this->storage)==1 && $this->storage[0]>0))
 			$addWhere_storage = ' AND pid IN(' . implode(',', $this->storage) . ')';
-			
+		
 		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			implode(',', $requestFields),
 			$this->table,
@@ -329,6 +340,26 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		// TODO : insert here the hook to get rows with complex resquest
 		
 		return $rows;
+	}
+	
+	/**
+	 * Retrieves single row
+	 *
+	 * @return mixed	The record
+	 */
+	private function getSingleRecord() {
+		$requestFields = $this->fields;
+		if (!in_array('uid', $requestFields))
+			$requestFields = array_merge(array('uid'), $requestFields);
+		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+			implode(',', $requestFields),
+			$this->table,
+			'deleted = 0 AND uid=' . $this->showUid,
+			'',
+			'',
+			'1'
+		);
+		return $rows[0];
 	}
 }
 
