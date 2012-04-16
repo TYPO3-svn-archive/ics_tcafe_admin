@@ -13,7 +13,6 @@
 	PREFIXID : Plugin prefixId
 	RESULT_LIST : Subpart result list
 	TEXT_LISTEMPTY : The text for empty list
-	SORTING : The sorting choice
 	TABLENAME : Table tag tablename
 	UNIQID : Table tag id
 	CAPTION : Table tag caption
@@ -48,7 +47,6 @@
 
 
 <!-- ###TEMPLATE_RESULTS_LIST### start-->
-	###SORTING###
 	<div class="###PREFIXID###_list">
 		<table class="###PREFIXID###_table ###TABLENAME###" id="###UNIQID###">
 				<caption>###CAPTION###</caption>
@@ -85,7 +83,7 @@
 
 <!-- ###TEMPLATE_RESULTS_ROW_FIELDS### start-->
 	<!-- ###SUBPART_GENERIC### start-->
-	<td headers="###HEADERID###">###FIELDVALUE###</td>
+	<td headers="###HEADERID###" class="###PREFIXID###_value">###FIELDVALUE###</td>
 	<!-- ###SUBPART_GENERIC### end-->
 <!-- ###TEMPLATE_RESULTS_ROW_FIELDS### end-->
 
@@ -114,18 +112,81 @@
 -->
 
 <!-- ###TEMPLATE_SINGLE### start-->
-<div class="###PREFIXID###_single">
-	###FIELDS###
-	<div class="###PREFIXID###_backlink">
-		###BACKLINK###
+	<div class="###PREFIXID###_single">
+		###FIELDS###
+		<div class="###PREFIXID###_backlink">
+			###BACKLINK###
+		</div>
 	</div>
-</div>
 <!-- ###TEMPLATE_SINGLE### end-->
 
 
 
 <!-- ###TEMPLATE_SINGLE_FIELDS### start-->
 	<!-- ###SUBPART_GENERIC### start-->
-	<p class="###PREFIXID###_###FIELDNAME###">###FIELDLABEL### : ###FIELDVALUE###</p>
+	<p class="###PREFIXID###_data">
+		<span class="###PREFIXID###_label">###FIELDLABEL### :</span> 
+		<span class="###PREFIXID###_value">###FIELDVALUE###</span>
+	</p>
 	<!-- ###SUBPART_GENERIC### end-->
 <!-- ###TEMPLATE_SINGLE_FIELDS### end-->
+
+
+<h2>Edit / New form template</h2>
+<!--
+-->
+
+<!-- ###TEMPLATE_VALIDATED_FORM### start-->
+	<p>Submitted form is not implemented yet.</p>
+<!-- ###TEMPLATE_VALIDATED_FORM### end-->
+
+<!-- ###TEMPLATE_FORM### start-->
+	<form class="###PREFIXID###_form" name="###FORMNAME###" method="post" action="###URL###"  enctype="multipart/form-data" >
+		###PIDSTORAGE###
+		###FIELDS###
+		<div class="###PREFIXID###_button">
+			<input type="submit" name="###BTNVALID_NAME###" value="###BTNVALID_VALUE###" ###ONCLICK_BTNVALID###/>
+			<input type="submit" name="###BTNCANCEL_NAME###" value="###BTNCANCEL_VALUE###" ###ONCLICK_BTNCANCEL###/>
+		</div>
+	</form>
+	<div class="###PREFIXID###_backlink">
+		###BACKLINK###
+	</div>
+<!-- ###TEMPLATE_FORM### end-->
+
+
+
+<!-- ###TEMPLATE_FORM_PIDSTORAGE### start-->
+	<fieldset class="###PREFIXID###_pidstorage" title="###FIELDSET_PIDSTORAGE###">
+		<h3>###PIDSTORAGE_TITLE###</h3>
+		<p>Not implemented yet.</p>
+	</fieldset>
+<!-- ###TEMPLATE_FORM_PIDSTORAGE### end-->
+
+
+
+<!-- ###TEMPLATE_FORM_FIELDS### start-->
+	<fieldset class="###PREFIXID###_pidstorage" title="###FIELDSET_FIELDS###">
+		<h3>###FIELDS_TITLE###</h3>
+		###ENTRIES###
+	</fieldset>
+<!-- ###TEMPLATE_FORM_FIELDS### end-->
+
+
+
+<!-- ###TEMPLATE_FORM_TEXT### start-->
+	<p class="###PREFIXID###_text">
+		<label for="###ITEM_ID###">###FIELDLABEL###</label>
+		<input type="text" id="###ITEM_ID###" class="###PREFIXID###_###FIELDNAME###" name="###ITEM_NAME###" value="###ITEM_VALUE###" ###SIZE### ###ONCHANGE###/>
+		###CTRL_MESSAGE###
+	</p>
+<!-- ###TEMPLATE_FORM_TEXT### end-->
+
+
+<!-- ###TEMPLATE_FORM_TEXTAREA### start-->
+	<p class="###PREFIXID###_textarea">
+		<label for="###ITEM_ID###">###FIELDLABEL###</label>
+		<textarea id="###ITEM_ID###" class="###PREFIXID###_###FIELDNAME###" name="###ITEM_NAME###" ###COLS### ###ROWS### ###WRAP### ###ONCHANGE###/>###ITEM_VALUE###</textarea>
+		###CTRL_MESSAGE###
+	</p>
+<!-- ###TEMPLATE_FORM_TEXTAREA### end-->

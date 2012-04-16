@@ -103,28 +103,40 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 
 		if ($this->showUid && in_array('SINGLE', $this->codes)) {
 			try {
-				$content .= $this->displaySingle();
+				$content = $this->displaySingle();
 			} catch (Exception $e) {
 				tx_icstcafeadmin_debug::error('Retrieves data set failed: ' . $e);
 			}
 		}
 		elseif ($this->showUid && in_array('EDIT', $this->codes)) {
 			try {
-				$content .= $this->displayEdit();
+				if ($this->piVars['valid']) {
+					if ($this->saveDB()) {
+						$content = $this->displayValidatedForm();
+						if ($this->conf['displayFormAfterSaveDB'])
+							$content .= $this->displayEdit();
+					}
+					else {
+						$content = $this->displayEdit();
+					}
+				}
+				else {
+					$content = $this->displayEdit();
+				}
 			} catch (Exception $e) {
 				tx_icstcafeadmin_debug::error('Edit data set failed: ' . $e);
 			}
 		}
 		elseif ($this->newUid && in_array('NEW', $this->codes)) {
 			try {
-				$content .= $this->displayNew();
+				$content = $this->displayNew();
 			} catch (Exception $e) {
 				tx_icstcafeadmin_debug::error('New data set failed: ' . $e);
 			}
 		}
 		elseif (count(array_intersect(array('SEARCH', 'LIST'), $this->codes)) > 0) {
 			try {
-				$content .= $this->displayList();
+				$content = $this->displayList();
 			} catch (Exception $e) {
 				tx_icstcafeadmin_debug::error('Retrieves data list failed: ' . $e);
 			}
@@ -154,7 +166,9 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		if (isset($this->piVars['showUid'])) {
 			$this->showUid = $this->piVars['showUid'];
 		}
-		$codes = t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'general'), true);
+		if ($this->piVars['mode'])
+			$codes = array($this->piVars['mode']);
+		$codes = $codes? $codes: t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'general'), true);
 		if (empty($codes))
 			$codes = t3lib_div::trimExplode(',', $this->conf['view.']['modes'], true);
 		$this->codes = array_unique($codes);
@@ -226,7 +240,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$this->fields = array();
 		$this->fieldLabels = array();
 		foreach ($fields as $field) {
-			// if ($columns[$field]) {
+			if ($columns[$field] || $field=='uid') {
 				$this->fields[] = $field;
 
 				$label = $this->piVars[$fieldname . 'Label'];
@@ -235,7 +249,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 				$label = $label? $label: $GLOBALS['TSFE']->sL($GLOBALS['TCA'][$this->table]['columns'][$field]['label']);
 				$label = $label? $label: $field;
 				$this->fieldLabels[$field] = $label;
-			// }
+			}
 		}
 	}
 
@@ -289,12 +303,13 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$this,
 				$this->cObj,
 				$this->table,
+				$this->getSingleRecord(),
 				$this->fields,
 				$this->fieldLabels,
 				$this->conf
 		);
 		$renderSingle->init();
-		return $renderSingle->render($this->getSingleRecord());
+		return $renderSingle->render();
 	}
 
 	/**
@@ -303,6 +318,18 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 * @return	string		HTML content for edit form
 	 */
 	public function displayEdit() {
+		$renderEdit = t3lib_div::makeInstance(
+			'tx_icstcafeadmin_FormRenderer',
+			$this,
+				$this->cObj,
+				$this->table,
+				$this->getSingleRecord(),
+				$this->fields,
+				$this->fieldLabels,
+				$this->conf
+		);
+		$renderEdit->init();
+		return $renderEdit->render();
 	}
 
 	/**
@@ -311,6 +338,16 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 * @return	string		HTML content for new form
 	 */
 	public function displayNew() {
+		return 'displayNew is not yet implemented.';
+	}
+
+	/**
+	 * Display submitted form
+	 *
+	 * @return	string		HTML content for new form
+	 */
+	public function displayValidatedForm() { 
+		return 'displayValidatedForm is not yet implemented.';
 	}
 
 	/**
@@ -360,6 +397,19 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			'1'
 		);
 		return $rows[0];
+	}
+	
+	/**
+	 * Save in DB
+	 *
+	 * @return	boolean		The result process
+	 */
+	function saveDB() {
+		// $this->ctrl_messages = array();
+		// if (!tx_icstcafeadmin_utils::controlFields($this, $this->table, $this->fields))
+			// return false;
+	
+		return false;
 	}
 }
 

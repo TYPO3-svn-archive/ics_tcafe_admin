@@ -98,7 +98,7 @@
 				</el>
 			</ROOT>
 		</table>
-		<miscellaneous>
+		<!--<miscellaneous>
 			<ROOT>
 				<TCEforms>
 					<sheetTitle>LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:miscellaneous</sheetTitle>
@@ -166,6 +166,6 @@
 					</return>
 				</el>
 			</ROOT>
-		</miscellaneous>
+		</miscellaneous>-->
 	</sheets>
 </T3DataStructure>

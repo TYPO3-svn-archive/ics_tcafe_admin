@@ -97,7 +97,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 	private function renderListEmpty() {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_RESULTS_LIST_EMPTY###');
 		$markers = array(
-			'TEXT_LISTEMPTY' => $this->pi->pi_getLL('empty_list', 'Empty list', true),
+			'TEXT_LISTEMPTY' => $this->getLL('empty_list', 'Empty list', true),
 		);
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###', false, true);
 	}
@@ -118,7 +118,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		$markers = array();
 
 		$locMarkers = array(
-			'HEADERTITLES' => $this->renderHeaderTitles($markers)
+			'HEADERTITLES' => $this->renderHeaderTitles($markers),
 		);
 		$headerTemplate = $this->cObj->getSubpart($template, '###HEADER###');
 		$headerContent = $this->cObj->substituteMarkerArray($headerTemplate, $locMarkers, '###|###');
@@ -136,9 +136,9 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
-			'SORTING' => '',
+			'TABLENAME' => $this->table,
 			'PAGEBROWSE' => $this->getListGetPageBrowser(),
-			'CAPTION' => $this->pi->pi_getLL('caption_list', 'List rows', true),
+			'CAPTION' => $this->getLL('caption_list', 'List rows', true),
 		);
 
 		$template = $this->cObj->substituteSubpartArray($template, $subparts);
