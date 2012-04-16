@@ -26,22 +26,29 @@
  *
  *
  *
- *   54: class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer
- *   79:     function __construct($pi, tslib_cObj $cObj, $table, $row, array $fields, array $fieldLabels, array $lConf)
- *   93:     public function render()
- *  114:     private function renderPIDStorage()
- *  129:     private function renderFormFields()
- *  160:     function renderEntries()
- *  174:     public function handleFormField($field)
- *  193:     private function handleFormField_typeInput($field, $config)
- *  236:     private function getInputTagSize($size)
- *  248:     private static function includeLibDatepicker()
+ *   61: class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer
+ *   88:     function __construct($pi, tslib_cObj $cObj, $table, $row, array $fields, array $fieldLabels, array $lConf)
+ *  102:     public function render()
+ *  125:     private function renderPIDStorage()
+ *  140:     private function renderFormFields()
+ *  171:     function renderEntries()
+ *  185:     public function handleFormField($field)
+ *  213:     private function handleFormField_typeInput($field, $config)
+ *  248:     private function handleFormField_typeText($field, $config)
+ *  274:     private function handleFormField_typeCheck($field, $config)
+ *  293:     private function handleFormField_typeCheck_item($field, $config, $col=null)
+ *  321:     function getEntryValue($field)
+ *  337:     private function getInputTagSize($size)
+ *  350:     private function getTextareaTagCols($size)
+ *  362:     private function getTextareaTagRows($size)
+ *  376:     private function getInputTagChecked($value, $col=null)
+ *  392:     private static function includeLibDatepicker()
  *
- * TOTAL FUNCTIONS: 9
+ * TOTAL FUNCTIONS: 16
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
- 
+
 
 /**
  * Class 'tx_icstcafeadmin_FormRenderer' for the 'ics_tcafe_admin' extension.
@@ -184,8 +191,9 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			case 'text':
 				$content =  $this->handleFormField_typeText($field, $config);
 				break;
-			// case 'check':
-				// break;
+			case 'check':
+				$content = $this->handleFormField_typeCheck($field, $config);
+				break;
 			// case 'selct':
 				// break;
 			// case 'group':
@@ -230,7 +238,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
-	
+
 	/**
 	 * Handles form field type text
 	 *
@@ -247,8 +255,8 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'FIELDNAME' => $field,
 			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
 			'ITEM_VALUE' => $this->getEntryValue($field),
-			'COLS' => $this->getTextTagCols($config['cols']),
-			'ROWS' =>  $this->getTextTagCols($config['rows']),
+			'COLS' => $this->getTextareaTagCols($config['cols']),
+			'ROWS' =>  $this->getTextareaTagCols($config['rows']),
 			'WRAP' => '',
 			'ONCHANGE' => '',
 			'CTRL_MESSAGE' => '',
@@ -257,8 +265,54 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
 
+	/**
+	 * Handles form field type check
+	 *
+	 * @param	string		$field: The field name
+	 * @param	array		$config: The field conf
+	 * @return	string		HTML form field content
+	 */
+	private function handleFormField_typeCheck($field, $config) {
+		if ($config['cols'] && $config['cols']>1) {
+			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK###');
+			/* TODO : implements form field with tca field on type check and sevrals cols
+				Makes loop to fill ###CHECK_ITEMS### markers like
+					for ($col=0; $cols<$config['cols']; $cols++) {
+						$locMarkers['CHECK_ITEMS'] .= handleFormField_typeCheck_item($field, $config, $cols);
+						.....
+					}
+			*/
+		}
+		else {
+			$content = $this->handleFormField_typeCheck_item($field, $config);
+		}
+		return $content;
+	}
 
-	// private function FormField_typeCheck();
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$field: ...
+	 * @param	[type]		$config: ...
+	 * @param	[type]		$col: ...
+	 * @return	[type]		...
+	 */
+	private function handleFormField_typeCheck_item($field, $config, $col=null) {
+		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK_ITEM###');
+		$markers = array(
+			'PREFIXID' => $this->prefixId,
+			'ITEM_ID' => $field,
+			'FIELDLABEL' => $this->fieldLabels[$field],
+			'FIELDNAME' => $field,
+			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
+			'CHECKED' => $this->getInputTagChecked($this->getEntryValue($field)),
+			'ONCHANGE' => '',
+			'DISABLED' => '',
+		);
+
+		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
+	}
+
 	// private function FormField_typeRadio();
 	// private function FormField_typeSelect();
 	// private function FormField_typeGroup();
@@ -267,8 +321,8 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	/**
 	 * Retrieves entry value
 	 *
-	 * @param	string	$field: The field name
-	 * @return	string	The entry value
+	 * @param	string		$field: The field name
+	 * @return	string		The entry value
 	 */
 	function getEntryValue($field) {
 		if ($this->pi->piVars['valid']) {
@@ -294,28 +348,46 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	}
 
 	/**
-	 * Retrieves input tag size
+	 * Retrieves text tag cols
 	 *
 	 * @param	int		$size: The size
 	 * @return	string		The text tag cols
 	 */
-	private function getTextTagCols($size) {
+	private function getTextareaTagCols($size) {
 		if ($size)
 			$size = t3lib_div::intInRange($size, 5, $this->maxTextareaCols, 30);
 
 		return ($size? 'size="' . $size . '"': '');
 	}
 	/**
-	 * Retrieves input tag size
+	 * Retrieves text tag rows
 	 *
 	 * @param	int		$size: The size
 	 * @return	string		The text tag rows
 	 */
-	private function getTextTagRows($size) {
+	private function getTextareaTagRows($size) {
 		if ($size)
 			$size = t3lib_div::intInRange($size, 1, $this->maxTextareaRows, 5);
 
 		return ($size? 'size="' . $size . '"': '');
+	}
+
+	/**
+	 * Retrieves imput tag checked
+	 *
+	 * @param	int		$value: Checkboxes value
+	 * @param	int		$cols: The col number
+	 * @return	string		The input tag checked
+	 */
+	private function getInputTagChecked($value, $col=null) {
+		$checked = '';
+		if (is_null($col)) {
+			$checked = $value? 'checked="checked"' : '';
+		}
+		else {
+			$checked = ($value & pow(2, $col)) ? ' checked="checked"' : '';
+		}
+		return $checked;
 	}
 
 	/**

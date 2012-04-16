@@ -158,7 +158,7 @@
 
 <!-- ###TEMPLATE_FORM_PIDSTORAGE### start-->
 	<fieldset class="###PREFIXID###_pidstorage" title="###FIELDSET_PIDSTORAGE###">
-		<h3>###PIDSTORAGE_TITLE###</h3>
+		<legend>###PIDSTORAGE_TITLE###</legend>
 		<p>Not implemented yet.</p>
 	</fieldset>
 <!-- ###TEMPLATE_FORM_PIDSTORAGE### end-->
@@ -167,7 +167,7 @@
 
 <!-- ###TEMPLATE_FORM_FIELDS### start-->
 	<fieldset class="###PREFIXID###_pidstorage" title="###FIELDSET_FIELDS###">
-		<h3>###FIELDS_TITLE###</h3>
+		<legend>###FIELDS_TITLE###</legend>
 		###ENTRIES###
 	</fieldset>
 <!-- ###TEMPLATE_FORM_FIELDS### end-->
@@ -176,8 +176,8 @@
 
 <!-- ###TEMPLATE_FORM_TEXT### start-->
 	<p class="###PREFIXID###_text">
-		<label for="###ITEM_ID###">###FIELDLABEL###</label>
-		<input type="text" id="###ITEM_ID###" class="###PREFIXID###_###FIELDNAME###" name="###ITEM_NAME###" value="###ITEM_VALUE###" ###SIZE### ###ONCHANGE###/>
+		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL###</label>
+		<input type="text" id="###ITEM_ID###" class="###PREFIXID###_value" name="###ITEM_NAME###" value="###ITEM_VALUE###" ###SIZE### ###ONCHANGE###/>
 		###CTRL_MESSAGE###
 	</p>
 <!-- ###TEMPLATE_FORM_TEXT### end-->
@@ -185,8 +185,24 @@
 
 <!-- ###TEMPLATE_FORM_TEXTAREA### start-->
 	<p class="###PREFIXID###_textarea">
-		<label for="###ITEM_ID###">###FIELDLABEL###</label>
-		<textarea id="###ITEM_ID###" class="###PREFIXID###_###FIELDNAME###" name="###ITEM_NAME###" ###COLS### ###ROWS### ###WRAP### ###ONCHANGE###/>###ITEM_VALUE###</textarea>
+		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL###</label>
+		<textarea id="###ITEM_ID###" class="###PREFIXID###_value" name="###ITEM_NAME###" ###COLS### ###ROWS### ###WRAP### ###ONCHANGE###/>###ITEM_VALUE###</textarea>
 		###CTRL_MESSAGE###
 	</p>
 <!-- ###TEMPLATE_FORM_TEXTAREA### end-->
+
+
+<!-- ###TEMPLATE_FORM_CHECK### start-->
+	<fieldset class="###PREFIXID###_checkboxes">
+		<legend class="###PREFIXID###_checkboxes-label">###ITEMFORMEL_CHECK_LABEL###</legend>
+		###CHECK_ITEMS###
+	</fieldset>
+<!-- ###TEMPLATE_FORM_CHECK### end-->
+
+
+<!-- ###TEMPLATE_FORM_CHECK_ITEM### start-->
+	<p class="###PREFIXID###_checkbox">
+		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL###</label>
+		<input type="checkbox" id="###ITEM_ID###" class="###PREFIXID###_value" name="###ITEM_NAME###" ###CHECKED### ###ONCHANGE### ###DISABLED### />
+	</p>
+<!-- ###TEMPLATE_FORM_CHECK_ITEM### end-->
