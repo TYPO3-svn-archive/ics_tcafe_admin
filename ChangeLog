@@ -1,3 +1,6 @@
+2012-04-16 In Cite Solution  <technique@in-cite.net>
+	* Feature: Added partial form fields. TCA fields type input and type text.
+
 2012-04-12 In Cite Solution  <technique@in-cite.net>
 	* Feature: Added field name to template list.
 	* Feature: Implemented render single view.

@@ -9,8 +9,8 @@ plugin.tx_icstcafeadmin_pi1 {
 		size = {$config.tx_icstcafeadmin_pi1.size}
 		# PID to display item
 		PIDitemDisplay = {$config.tx_icstcafeadmin_pi1.single}
-		edit = {$config.tx_icstcafeadmin_pi1.edit}
-		new = {$config.tx_icstcafeadmin_pi1.new}
+		PIDeditItem = {$config.tx_icstcafeadmin_pi1.edit}
+		PIDnewItem = {$config.tx_icstcafeadmin_pi1.new}
 	}
 	
 	# Table configuration
@@ -33,7 +33,8 @@ plugin.tx_icstcafeadmin_pi1 {
 		}
 	}
 	
-	# Default rendering
+	# Default rendering : render values
+	# Views : viewList, viewSingle, viewEdit
 	defaultConf {
 		date = TEXT
 		date {

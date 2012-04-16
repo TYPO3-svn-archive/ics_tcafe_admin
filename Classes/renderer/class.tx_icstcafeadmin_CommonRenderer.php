@@ -26,16 +26,19 @@
  *
  *
  *
- *   52: class tx_icstcafeadmin_CommonRenderer
- *   73:     function __construct($pi, tslib_cObj $cObj, $table, array $lConf)
- *   90:     public function init()
- *  102:     protected function renderValue($field, $value=null, $view='')
- *  128:     public function default_renderValue($field, $value=null, $view='')
- *  163:     private function fetchInputFieldFormat($config)
- *  187:     private function handleFieldValue($value=null, array $config)
- *  210:     private function  handleFieldValue_typeCheck($value=null, array $config)
+ *   55: class tx_icstcafeadmin_CommonRenderer
+ *   83:     function __construct($pi, tslib_cObj $cObj, $table, array $lConf)
+ *  100:     public function init()
+ *  114:     protected function renderValue($field, $recId, $value=null, $view='')
+ *  140:     public function default_renderValue($field, $value=null, $view='')
+ *  183:     private function fetchInputFieldFormat($config)
+ *  208:     public function handleFieldValue($recId, $value=null, $config=null)
+ *  236:     protected function  handleFieldValue_typeCheck($value=null, array $config)
+ *  251:     protected function handleFieldValue_typeSelect($recId, $value=null, array $config)
+ *  362:     protected function handleFieldValue_typeGroup($recId, $value=null, array $config)
+ *  409:     protected function sL($str)
  *
- * TOTAL FUNCTIONS: 7
+ * TOTAL FUNCTIONS: 10
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -57,7 +60,7 @@ class tx_icstcafeadmin_CommonRenderer {
 	protected $cObj;
 
 	protected $table;
-	
+
 	public static $allowedImgFileExtArray = array(
 		'gif',
 		'png',
@@ -103,7 +106,7 @@ class tx_icstcafeadmin_CommonRenderer {
 	 * Render value
 	 *
 	 * @param	string		$field: Field's name
-	 * @param	int			$recId: Record's id
+	 * @param	int		$recId: Record's id
 	 * @param	mixed		$value: Field's value
 	 * @param	string		$view: The display view
 	 * @return	string		The value
@@ -119,7 +122,7 @@ class tx_icstcafeadmin_CommonRenderer {
 				$procObj = & t3lib_div::getUserObj($class);
 				$value = $procObj->renderValue($this, $this->table,$recId, $field, $value, $config, $view);
 			}
-		} 
+		}
 		else {
 			$value = $this->default_renderValue($field, $this->handleFieldValue($recId ,$value, $config), $view);
 		}
@@ -177,7 +180,7 @@ class tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: Field's TCA configuration
 	 * @return	string		The field format
 	 */
-	private function fetchInputFieldFormat($config) {
+	protected function fetchInputFieldFormat($config) {
 		$evalList = t3lib_div::trimExplode(',', $config['eval'], true);
 		if (in_array('date', $evalList))
 			return 'date';
@@ -192,12 +195,14 @@ class tx_icstcafeadmin_CommonRenderer {
 
 		if (in_array('password', $evalList))
 			return 'password';
+			
+		return null;
 	}
 
 	/**
 	 * Handles field's value
 	 *
-	 * @param	int			$recId: Record's id
+	 * @param	int		$recId: Record's id
 	 * @param	mixed		$value: Field's value
 	 * @param	array		$config: Field's TCA configuration
 	 * @return	string		the	value
@@ -205,7 +210,7 @@ class tx_icstcafeadmin_CommonRenderer {
 	public function handleFieldValue($recId, $value=null, $config=null) {
 		if (!$config)
 			return htmlspecialchars($value);
-	
+
 		switch ($config['type']) {
 			// case 'input': Nothing to do
 			// case 'text': Nothing to do
@@ -230,35 +235,35 @@ class tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: Field's TCA configuration
 	 * @return	string		The processed value
 	 */
-	private function  handleFieldValue_typeCheck($value=null, array $config) {
+	protected function  handleFieldValue_typeCheck($value=null, array $config) {
 		if (is_array($config['items'])) {
 			// TODO : insert here code to process type check with several values
 		}
 		return $value;
 	}
-	
+
 	/**
 	 * Handles select field's value
 	 *
-	 * @param	int			$recId: Record's id
+	 * @param	int		$recId: Record's id
 	 * @param	mixed		$value: Field's value
 	 * @param	array		$config: Field's TCA configuration
 	 * @return	string		The processed value
 	 */
-	private function handleFieldValue_typeSelect($recId, $value=null, array $config) {
+	protected function handleFieldValue_typeSelect($recId, $value=null, array $config) {
 		if ($config['MM']) {
 			if (!$value) {
 				$value = '';
 			}
 			else {
 				t3lib_div::loadTCA($config['foreign_table']);
-				
+
 				// Get select fields
 				$label = $GLOBALS['TCA'][$config['foreign_table']]['ctrl']['label'];
 				$fields = array('`'.$config['foreign_table'].'`.`uid` as ft_uid');
 				if ($label != 'uid')
 					$fields[] = '`'.$config['foreign_table'].'`.`'.$label.'` as ft_label';
-				
+
 				// Get query where on "tablenames" field
 				// $addWhere_tablenames = '';
 				// $columns =  $GLOBALS['TCA'][$config['foreign_table']] ['columns'];
@@ -270,9 +275,9 @@ class tx_icstcafeadmin_CommonRenderer {
 						// break;
 					// }
 				// }
-				
+
 				$addWhere_tablenames = ' AND (`'.$config['MM'].'`.`tablenames` = \'' . $this->table . '\' || `'.$config['MM'].'`.`tablenames` = \'\')';
-				
+
 				// Get records
 				if ($config['MM_opposite_field']) {
 					$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
@@ -295,7 +300,7 @@ class tx_icstcafeadmin_CommonRenderer {
 						'`'.$config['MM'].'`.`sorting`'
 					);
 				}
-				
+
 				// Fetch labels
 				$labels = array();
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
@@ -344,19 +349,19 @@ class tx_icstcafeadmin_CommonRenderer {
 			}
 			$value = implode(',', $labels);
 		}
-		
+
 		return $value;
 	}
 
 	/**
 	 * Handles group field's value
 	 *
-	 * @param	int			$recId: Record's id
+	 * @param	int		$recId: Record's id
 	 * @param	mixed		$value: Field's value
 	 * @param	array		$config: Field's TCA configuration
 	 * @return	string		The processed value
 	 */
-	private function handleFieldValue_typeGroup($recId, $value=null, array $config) {
+	protected function handleFieldValue_typeGroup($recId, $value=null, array $config) {
 		switch ($config['internal_type']) {
 			// case 'file': Nothing do
 			case 'db':
@@ -370,7 +375,7 @@ class tx_icstcafeadmin_CommonRenderer {
 						$fields = array('`'.$table.'`.`uid` as ft_uid');
 						if ($label != 'uid')
 							$fields[] = '`'.$table.'`.`'.$label.'` as ft_label';
-						
+
 						$addWhere_tablenames = ' AND ' . $config['MM'] . '.tablenames = \'' . $table . '\'';
 						// Get records
 						$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
@@ -383,7 +388,7 @@ class tx_icstcafeadmin_CommonRenderer {
 							'`'.$config['MM'].'`.`sorting`'
 						);
 						// Fetch labels
-						
+
 						while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
 							$labels[] = $row['ft_label'];
 						}
@@ -392,7 +397,7 @@ class tx_icstcafeadmin_CommonRenderer {
 						$value = implode(',', $labels);
 				}
 				break;
-			default:	
+			default:
 		}
 		return $value;
 	}
@@ -400,13 +405,25 @@ class tx_icstcafeadmin_CommonRenderer {
 	/**
 	 * Fetches language label for key
 	 *
-	 * @param	string	$str: Language label reference, eg. 'LLL:EXT:lang/locallang_core.php:labels.blablabla'
-	 * @return string 	The value of the label, fetched for the current backend language
+	 * @param	string		$str: Language label reference, eg. 'LLL:EXT:lang/locallang_core.php:labels.blablabla'
+	 * @return	string		The value of the label, fetched for the current backend language
 	 */
-	private function sL($str) {
+	protected function sL($str) {
 		return $GLOBALS['TSFE']->sL($str);
 	}
-	
+
+	/**
+	 * Returns the localized label of the LOCAL_LANG key, $key Notice that for debugging purposes prefixes for the output values can be set with the internal vars ->LLtestPrefixAlt and ->LLtestPrefix
+	 *
+	 * @param	string	The key from the LOCAL_LANG array for which to return the value.
+	 * @param	string	Alternative string to return IF no value is found set for the key, neither for the local language nor the default.
+	 * @param	boolean	If TRUE, the output label is passed through htmlspecialchars()
+	 *
+	 * @return	string	The value from LOCAL_LANG.
+	 */
+	protected function getLL($key, $alternativeLabel= '', $hsc=false) {
+		return $this->pi->pi_getLL($key, $alternativeLabel, $hsc);
+	}
 
 
 }

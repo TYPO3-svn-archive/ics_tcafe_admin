@@ -26,7 +26,12 @@
  *
  *
  *
- * TOTAL FUNCTIONS: 8
+ *   48: class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer
+ *   67:     function __construct($pi, tslib_cObj $cObj, $table, array $fields, array $fieldLabels, array $lConf)
+ *   81:     public function render(array $row)
+ *   97:     private function renderFields(array $row)
+ *
+ * TOTAL FUNCTIONS: 3
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -45,6 +50,7 @@ class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
 
 	private $fields;
 	private $labelFields;
+	private $row;
 
 	private static $view = 'viewSingle';
 
@@ -54,13 +60,15 @@ class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	tx_icstcafeadmin_pi1		$pi: Instance of tx_icstcafeadmin_pi1
 	 * @param	tslib_cObj		$cObj: tx_icstcafeadmin_pi1 cObj
 	 * @param	string		$table: The tablename
+	 * @param	array		$row: The row
 	 * @param	array		$fields: Array of fields
 	 * @param	array		$fieldLabels: Associative array of fields labels like field=>labelfield
 	 * @param	array		$lConf: Typoscript configuration
 	 * @return	void
 	 */
-	function __construct($pi, tslib_cObj $cObj, $table, array $fields, array $fieldLabels, array $lConf) {
+	function __construct($pi, tslib_cObj $cObj, $table, $row, array $fields, array $fieldLabels, array $lConf) {
 		$this->table = $table;
+		$this->row = $row;
 		$this->fields = $fields;
 		$this->fieldLabels = $fieldLabels;
 
@@ -70,26 +78,24 @@ class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
 	/**
 	 * Render the view
 	 *
-	 * @param	array		$row: The row
 	 * @return	string		HTML list content
 	 */
-	public function render(array $row) {
+	public function render() {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_SINGLE###');
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
-			'FIELDS' => $this->renderFields($row),
+			'FIELDS' => $this->renderFields(),
 			'BACKLINK' => '',
 		);
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
-	
+
 	/**
 	 * Render fields
 	 *
-	 * @param	array	$row: The row
-	 * @return string	HTML fields content
+	 * @return	string		HTML fields content
 	 */
-	private function renderFields(array $row) {
+	private function renderFields() {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_SINGLE_FIELDS###');
 		$content = '';
 		// Hook for render row fields
@@ -103,7 +109,7 @@ class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
 		else {
 			$genericFieldTemplate = $this->cObj->getSubpart($template, '###SUBPART_GENERIC###');
 			foreach ($this->fields as $field) {
-				$value = $this->renderValue($field, $row['uid'], $row[$field], self::$view);
+				$value = $this->renderValue($field, $this->row['uid'], $this->row[$field], self::$view);
 				$locMarkers = array(
 					'FIELDNAME' => $field,
 				);
@@ -111,7 +117,7 @@ class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
 					$locMarkers[strtoupper($field) . '_LABEL'] = $this->fieldLabels[$field];
 					$locMarkers[strtoupper($field) . '_VALUE'] = $value;
 					$content .= $this->cObj->substituteMarkerArray($specificFieldTemplate, $locMarkers, '###|###');
-				} 
+				}
 				else {
 					$locMarkers['FIELDLABEL'] = $this->fieldLabels[$field];
 					$locMarkers['FIELDVALUE'] = $value;
