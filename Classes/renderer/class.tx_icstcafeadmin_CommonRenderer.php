@@ -26,19 +26,21 @@
  *
  *
  *
- *   55: class tx_icstcafeadmin_CommonRenderer
- *   83:     function __construct($pi, tslib_cObj $cObj, $table, array $lConf)
- *  100:     public function init()
- *  114:     protected function renderValue($field, $recId, $value=null, $view='')
- *  140:     public function default_renderValue($field, $value=null, $view='')
- *  183:     private function fetchInputFieldFormat($config)
- *  208:     public function handleFieldValue($recId, $value=null, $config=null)
- *  236:     protected function  handleFieldValue_typeCheck($value=null, array $config)
- *  251:     protected function handleFieldValue_typeSelect($recId, $value=null, array $config)
- *  362:     protected function handleFieldValue_typeGroup($recId, $value=null, array $config)
- *  409:     protected function sL($str)
+ *   57: class tx_icstcafeadmin_CommonRenderer
+ *   85:     function __construct($pi, tslib_cObj $cObj, $table, array $lConf)
+ *  102:     public function init()
+ *  116:     protected function renderValue($field, $recId, $value=null, $view='')
+ *  142:     public function default_renderValue($field, $value=null, $view='')
+ *  185:     protected function fetchInputFieldFormat($config)
+ *  212:     public function handleFieldValue($recId, $value=null, $config=null)
+ *  240:     protected function  handleFieldValue_typeCheck($value=null, array $config)
+ *  255:     protected function handleFieldValue_typeSelect($recId, $value=null, array $config)
+ *  321:     protected function getMMRecords($recId, array $config)
+ *  365:     protected function handleFieldValue_typeGroup($recId, $value=null, array $config)
+ *  412:     protected function sL($str)
+ *  424:     protected function getLL($key, $alternativeLabel= '', $hsc=false)
  *
- * TOTAL FUNCTIONS: 10
+ * TOTAL FUNCTIONS: 12
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -195,7 +197,7 @@ class tx_icstcafeadmin_CommonRenderer {
 
 		if (in_array('password', $evalList))
 			return 'password';
-			
+
 		return null;
 	}
 
@@ -256,51 +258,7 @@ class tx_icstcafeadmin_CommonRenderer {
 				$value = '';
 			}
 			else {
-				t3lib_div::loadTCA($config['foreign_table']);
-
-				// Get select fields
-				$label = $GLOBALS['TCA'][$config['foreign_table']]['ctrl']['label'];
-				$fields = array('`'.$config['foreign_table'].'`.`uid` as ft_uid');
-				if ($label != 'uid')
-					$fields[] = '`'.$config['foreign_table'].'`.`'.$label.'` as ft_label';
-
-				// Get query where on "tablenames" field
-				// $addWhere_tablenames = '';
-				// $columns =  $GLOBALS['TCA'][$config['foreign_table']] ['columns'];
-				// foreach ($columns as $column) {
-					// $fieldConf = $column['config'];
-					// $allowed_tables = t3lib_div::trimExplode(',', $fieldConf['allowed'], true);
-					// if (in_array($this->table, $allowed_tables)) {
-						// $addWhere_tablenames = ' AND ' . $config['MM'] . '.tablenames = \'' . $this->table . '\'';
-						// break;
-					// }
-				// }
-
-				$addWhere_tablenames = ' AND (`'.$config['MM'].'`.`tablenames` = \'' . $this->table . '\' || `'.$config['MM'].'`.`tablenames` = \'\')';
-
-				// Get records
-				if ($config['MM_opposite_field']) {
-					$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
-						implode(',', $fields),
-						$config['foreign_table'],
-						$config['MM'],
-						$this->table,
-						' AND `'.$config['MM'].'`.`uid_foreign` = ' . $recId . $addWhere_tablenames,
-						'',
-						'`'.$config['MM'].'`.`sorting_foreign`'
-					);
-				} else {
-					$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
-						implode(',', $fields),
-						$this->table,
-						$config['MM'],
-						$config['foreign_table'],
-						' AND `'.$config['MM'].'`.`uid_local` = ' . $recId . $addWhere_tablenames,
-						'',
-						'`'.$config['MM'].'`.`sorting`'
-					);
-				}
-
+				$result = $this->getMMRecords($recId, $config);
 				// Fetch labels
 				$labels = array();
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
@@ -351,6 +309,49 @@ class tx_icstcafeadmin_CommonRenderer {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Retrieves MM result
+	 *
+	 * @param	int		$recId: Record's id
+	 * @param	array		$config: Field's TCA configuration
+	 * @return	resource		pointer MySQL result pointer / DBAL object
+	 */
+	protected function getMMRecords($recId, array $config) {
+		t3lib_div::loadTCA($config['foreign_table']);
+
+		// Get select fields
+		$label = $GLOBALS['TCA'][$config['foreign_table']]['ctrl']['label'];
+		$fields = array('`'.$config['foreign_table'].'`.`uid` as ft_uid');
+		if ($label != 'uid')
+			$fields[] = '`'.$config['foreign_table'].'`.`'.$label.'` as ft_label';
+
+		$addWhere_tablenames = ' AND (`'.$config['MM'].'`.`tablenames` = \'' . $this->table . '\' || `'.$config['MM'].'`.`tablenames` = \'\')';
+
+		// Get records
+		if ($config['MM_opposite_field']) {
+			$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
+				implode(',', $fields),
+				$config['foreign_table'],
+				$config['MM'],
+				$this->table,
+				' AND `'.$config['MM'].'`.`uid_foreign` = ' . $recId . $addWhere_tablenames,
+				'',
+				'`'.$config['MM'].'`.`sorting_foreign`'
+			);
+		} else {
+			$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
+				implode(',', $fields),
+				$this->table,
+				$config['MM'],
+				$config['foreign_table'],
+				' AND `'.$config['MM'].'`.`uid_local` = ' . $recId . $addWhere_tablenames,
+				'',
+				'`'.$config['MM'].'`.`sorting`'
+			);
+		}
+		return $result;
 	}
 
 	/**
@@ -415,11 +416,10 @@ class tx_icstcafeadmin_CommonRenderer {
 	/**
 	 * Returns the localized label of the LOCAL_LANG key, $key Notice that for debugging purposes prefixes for the output values can be set with the internal vars ->LLtestPrefixAlt and ->LLtestPrefix
 	 *
-	 * @param	string	The key from the LOCAL_LANG array for which to return the value.
-	 * @param	string	Alternative string to return IF no value is found set for the key, neither for the local language nor the default.
-	 * @param	boolean	If TRUE, the output label is passed through htmlspecialchars()
-	 *
-	 * @return	string	The value from LOCAL_LANG.
+	 * @param	string		The key from the LOCAL_LANG array for which to return the value.
+	 * @param	string		Alternative string to return IF no value is found set for the key, neither for the local language nor the default.
+	 * @param	boolean		If TRUE, the output label is passed through htmlspecialchars()
+	 * @return	string		The value from LOCAL_LANG.
 	 */
 	protected function getLL($key, $alternativeLabel= '', $hsc=false) {
 		return $this->pi->pi_getLL($key, $alternativeLabel, $hsc);

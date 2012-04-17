@@ -26,25 +26,27 @@
  *
  *
  *
- *   61: class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer
- *   88:     function __construct($pi, tslib_cObj $cObj, $table, $row, array $fields, array $fieldLabels, array $lConf)
- *  102:     public function render()
- *  125:     private function renderPIDStorage()
- *  140:     private function renderFormFields()
- *  171:     function renderEntries()
- *  185:     public function handleFormField($field)
- *  213:     private function handleFormField_typeInput($field, $config)
- *  248:     private function handleFormField_typeText($field, $config)
- *  274:     private function handleFormField_typeCheck($field, $config)
- *  293:     private function handleFormField_typeCheck_item($field, $config, $col=null)
- *  321:     function getEntryValue($field)
- *  337:     private function getInputTagSize($size)
- *  350:     private function getTextareaTagCols($size)
- *  362:     private function getTextareaTagRows($size)
- *  376:     private function getInputTagChecked($value, $col=null)
- *  392:     private static function includeLibDatepicker()
+ *   63: class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer
+ *   90:     function __construct($pi, tslib_cObj $cObj, $table, $row, array $fields, array $fieldLabels, array $lConf)
+ *  104:     public function render()
+ *  127:     private function renderPIDStorage()
+ *  142:     private function renderFormFields()
+ *  173:     private function renderEntries()
+ *  192:     public function handleFormField($field)
+ *  222:     private function handleFormField_typeInput($field, array $config)
+ *  260:     private function handleFormField_typeText($field, array $config)
+ *  293:     private function handleFormField_typeCheck($field, array $config)
+ *  319:     private function handleFormField_typeCheck_item($field, array $config, $col=null)
+ *  352:     private function handleFormField_typeSelect($field, array $config)
+ *  383:     private function handleFormField_typeSelect_single(array $items, $field, array $config)
+ *  419:     private function handleFormField_typeSelect_multiple(array $items, $field, array $config)
+ *  458:     private function getEntryValue($field, array $config)
+ *  474:     public  function getDefaultEntryValue($field)
+ *  521:     private function getSelectItemArray($field, array $config)
+ *  556:     protected function initItemArray(array $config)
+ *  575:     private static function includeLibDatepicker()
  *
- * TOTAL FUNCTIONS: 16
+ * TOTAL FUNCTIONS: 18
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -95,7 +97,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	}
 
 	/**
-	 * Render the view
+	 * Render the form view
 	 *
 	 * @return	string		HTML list content
 	 */
@@ -118,7 +120,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	}
 
 	/**
-	 * Render pid storage
+	 * Render pid storage select
 	 *
 	 * @return	int		The pid storage
 	 */
@@ -133,7 +135,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	}
 
 	/**
-	 * Render form fields
+	 * Render form entries
 	 *
 	 * @return	string		HTML fields content
 	 */
@@ -168,16 +170,21 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 *
 	 * @return	string		HTML fields content
 	 */
-	function renderEntries() {
+	private function renderEntries() {
 		$content = '';
 		foreach ($this->fields as $field) {
+			// TODO : hook
+			// if hook
+			//		Insert code here
+			// else {
 			$content .= $this->handleFormField($field);
+			// }
 		}
 		return $content;
 	}
 
 	/**
-	 * Handles form field
+	 * Generates form field
 	 *
 	 * @param	string		$field: The field name
 	 * @return	string		HTML form field content
@@ -194,8 +201,9 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			case 'check':
 				$content = $this->handleFormField_typeCheck($field, $config);
 				break;
-			// case 'selct':
-				// break;
+			case 'select':
+				$content = $this->handleFormField_typeSelect($field, $config);
+				break;
 			// case 'group':
 				// break;
 			default:
@@ -205,13 +213,16 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	}
 
 	/**
-	 * Handles form field type input
+	 * Generates form element of the TCA type "input". This will render an input form field of type text.
 	 *
 	 * @param	string		$field: The field name
-	 * @param	array		$config: the field conf
+	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeInput($field, $config) {
+	private function handleFormField_typeInput($field, array $config) {
+		$size = t3lib_div::intInRange($config['size'], 5, $this->maxInputWidth, 30);
+		$size = $size? 'size="' . $size . '"': '';
+
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_TEXT###');
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
@@ -219,8 +230,8 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'FIELDLABEL' => $this->fieldLabels[$field],
 			'FIELDNAME' => $field,
 			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
-			'ITEM_VALUE' => $this->getEntryValue($field),
-			'SIZE' => $this->getInputTagSize($config['size']),
+			'ITEM_VALUE' => $this->getEntryValue($field, $config),
+			'SIZE' => $size,
 			'ONCHANGE' => '',
 			'CTRL_MESSAGE' => '',
 		);
@@ -240,23 +251,29 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	}
 
 	/**
-	 * Handles form field type text
+	 * Generates form element of the TCA type "text". This will render an textarea form field.
 	 *
 	 * @param	string		$field: The field name
-	 * @param	array		$config: The field conf
+	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeText($field, $config) {
+	private function handleFormField_typeText($field, array $config) {
+		$cols = t3lib_div::intInRange($config['cols'], 5, $this->maxTextareaCols, 30);
+		$cols =  $cols? 'cols="' . $cols . '"': '';
+		$rows = t3lib_div::intInRange($config['rows'], 1, $this->maxTextareaRows, 5);
+		$rows =  $rows? 'rows="' . $rows . '"': '';
+
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_TEXTAREA###');
+
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
 			'ITEM_ID' => $field,
 			'FIELDLABEL' => $this->fieldLabels[$field],
 			'FIELDNAME' => $field,
 			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
-			'ITEM_VALUE' => $this->getEntryValue($field),
-			'COLS' => $this->getTextareaTagCols($config['cols']),
-			'ROWS' =>  $this->getTextareaTagCols($config['rows']),
+			'ITEM_VALUE' => $this->getEntryValue($field, $config),
+			'COLS' => $cols,
+			'ROWS' =>  $rows,
 			'WRAP' => '',
 			'ONCHANGE' => '',
 			'CTRL_MESSAGE' => '',
@@ -266,13 +283,14 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	}
 
 	/**
-	 * Handles form field type check
+	 * Generates form element of the TCA type "check".
+	 * This will render an input form field or a group of input form field of type checkbox.
 	 *
 	 * @param	string		$field: The field name
-	 * @param	array		$config: The field conf
+	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeCheck($field, $config) {
+	private function handleFormField_typeCheck($field, array $config) {
 		if ($config['cols'] && $config['cols']>1) {
 			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK###');
 			/* TODO : implements form field with tca field on type check and sevrals cols
@@ -290,22 +308,33 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	}
 
 	/**
-	 * [Describe function...]
+	 * Generates form element of the TCA type "check".
+	 * This will render an input form field of type checkbox.
 	 *
-	 * @param	[type]		$field: ...
-	 * @param	[type]		$config: ...
-	 * @param	[type]		$col: ...
-	 * @return	[type]		...
+	 * @param	string		$field: The field name
+	 * @param	array		$config: TCA field conf
+	 * @param	int		$col: The col number
+	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeCheck_item($field, $config, $col=null) {
+	private function handleFormField_typeCheck_item($field, array $config, $col=null) {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK_ITEM###');
+		$value = $this->getEntryValue($field, $config);
+		if (is_null($col) && $value) {
+			$checked = 'checked="checked"';
+		}
+		elseif ($value & pow(2, $col)) {
+			$checked = ' checked="checked"';
+		}
+		else {
+			$checked = '';
+		}
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
 			'ITEM_ID' => $field,
 			'FIELDLABEL' => $this->fieldLabels[$field],
 			'FIELDNAME' => $field,
 			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
-			'CHECKED' => $this->getInputTagChecked($this->getEntryValue($field)),
+			'CHECKED' => $checked,
 			'ONCHANGE' => '',
 			'DISABLED' => '',
 		);
@@ -313,8 +342,109 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
 
-	// private function FormField_typeRadio();
-	// private function FormField_typeSelect();
+	/**
+	 * Generates form element of the TCA type "select".
+	 *
+	 * @param	string		$field: The field name
+	 * @param	array		$config: TCA field conf
+	 * @return	string		HTML form field content
+	 */
+	private function handleFormField_typeSelect($field, array $config) {
+		$items = $this->getSelectItemArray($field, $config);
+		// TODO : hook
+		// if hook
+		// else {
+			if ($config['maxitems'] <= 1 && $config['renderMode'] !== 'tree') {	// Single selector box
+				$content = $this->handleFormField_typeSelect_single($items, $field, $config);
+			// } elseif (!strcmp($config['renderMode'], 'checkbox')) {
+				// TODO : Implements Checkbox renderMode
+			// } elseif (!strcmp($config['renderMode'], 'singlebox')) {
+				// TODO : Implements Single selector box renderMode
+			// } elseif (!strcmp($config['renderMode'], 'tree')) { //
+				// TODO : Implements Tree renderMode
+			}
+			else { // Traditional multiple selector box:
+				$content = $this->handleFormField_typeSelect_multiple($items, $field, $config);
+			}
+		// }
+
+		return $content;
+	}
+
+	/**
+	 * Generates form element of the TCA type "select".
+	 * This will render a selector box form field.
+	 *
+	 * @param	array		$items: The items array
+	 * @param	string		$field: The field name
+	 * @param	array		$config: TCA field conf
+	 * @return	string		HTML form field content
+	 */
+	private function handleFormField_typeSelect_single(array $items, $field, array $config) {
+		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_SELECT_SINGLE###');
+		$subparts = array();
+
+		$itemTemplate =  $this->cObj->getSubpart($template, '###GROUP_OPTIONS###');
+		$subparts['###GROUP_OPTIONS###']  = '';
+		foreach ($items as $item) {
+			$locMarkers = array(
+				'OPTION_ITEM_VALUE' => $item['value'],
+				'OPTION_SELECTED' => ($item['value'] == $this->getEntryValue($field, $config))? ' selected="selected"': '',
+				'OPTION_ITEM_LABEL' => $item['label'],
+			);
+			$subparts['###GROUP_OPTIONS###'] .= $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
+		}
+
+		$markers = array(
+			'PREFIXID' => $this->prefixId,
+			'ITEM_ID' => $field,
+			'FIELDLABEL' => $this->fieldLabels[$field],
+			'FIELDNAME' => $field,
+			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
+		);
+
+		$template = $this->cObj->substituteSubpartArray($template, $subparts);
+		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
+	}
+
+	/**
+	 * Generates form element of the TCA type "select".
+	 * This will render a group of input form field of type checkbox.
+	 *
+	 * @param	array		$items: The items array
+	 * @param	string		$field: The field name
+	 * @param	array		$config: TCA field conf
+	 * @return	string		HTML form field content
+	 */
+	private function handleFormField_typeSelect_multiple(array $items, $field, array $config) {
+		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_SELECT_MULTIPLE###');
+		$subparts = array();
+
+		$itemTemplate =  $this->cObj->getSubpart($template, '###GROUP_OPTIONS###');
+		$subparts['###GROUP_OPTIONS###']  = '';
+		foreach ($items as $item) {
+			if (($item['value']==0 && $item['label']!=='') || $item['value']>0) {
+				$locMarkers = array(
+					'OPTION_ITEM_NAME' => $this->prefixId . '[' . $field . '][' . $item['value'] . ']',
+					'OPTION_ITEM_ID' => $field . '_' . $item['value'],
+					'OPTION_CHECKED' => in_array($item['value'], $this->getEntryValue($field, $config))? ' checked="checked"': '',
+					'OPTION_ITEM_LABEL' => $item['label'],
+				);
+				$subparts['###GROUP_OPTIONS###'] .= $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
+			}
+		}
+
+		$markers = array(
+			'PREFIXID' => $this->prefixId,
+			'FIELDLABEL' => $this->fieldLabels[$field],
+			'FIELDNAME' => $field,
+		);
+
+		$template = $this->cObj->substituteSubpartArray($template, $subparts);
+		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
+	}
+
+
 	// private function FormField_typeGroup();
 
 
@@ -322,76 +452,123 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * Retrieves entry value
 	 *
 	 * @param	string		$field: The field name
-	 * @return	string		The entry value
+	 * @param	array		$config: TCA field conf
+	 * @return	mixed		The entry value
 	 */
-	function getEntryValue($field) {
-		if ($this->pi->piVars['valid']) {
-			$value = $this->pi->piVars[$field];
+	private function getEntryValue($field, array $config) {
+		if ($config['type']=='select') {
+			$value = $this->getEntryValue_select($field, $config);
 		}
-		else {	// $this->pi->piVars['cancel'] or any submit
-			$value = $this->renderValue($field, $this->row['uid'], $this->row[$field], self::$view);
+		else {
+			$value = $this->getDefaultEntryValue($field, $config);
 		}
 		return $value;
 	}
 
 	/**
-	 * Retrieves input tag size
+	 * Retrieves entry value
 	 *
-	 * @param	int		$size: The size
-	 * @return	string		The input tag size
+	 * @param	string		$field: The field name
+	 * @return	mixed		The entry value
 	 */
-	private function getInputTagSize($size) {
-		if ($size)
-			$size = t3lib_div::intInRange($size, 5, $this->maxInputWidth, 30);
-
-		return ($size? 'size="' . $size . '"': '');
-	}
-
-	/**
-	 * Retrieves text tag cols
-	 *
-	 * @param	int		$size: The size
-	 * @return	string		The text tag cols
-	 */
-	private function getTextareaTagCols($size) {
-		if ($size)
-			$size = t3lib_div::intInRange($size, 5, $this->maxTextareaCols, 30);
-
-		return ($size? 'size="' . $size . '"': '');
-	}
-	/**
-	 * Retrieves text tag rows
-	 *
-	 * @param	int		$size: The size
-	 * @return	string		The text tag rows
-	 */
-	private function getTextareaTagRows($size) {
-		if ($size)
-			$size = t3lib_div::intInRange($size, 1, $this->maxTextareaRows, 5);
-
-		return ($size? 'size="' . $size . '"': '');
-	}
-
-	/**
-	 * Retrieves imput tag checked
-	 *
-	 * @param	int		$value: Checkboxes value
-	 * @param	int		$cols: The col number
-	 * @return	string		The input tag checked
-	 */
-	private function getInputTagChecked($value, $col=null) {
-		$checked = '';
-		if (is_null($col)) {
-			$checked = $value? 'checked="checked"' : '';
+	public  function getDefaultEntryValue($field) {
+		if ($this->pi->piVars['valid']) {
+			return $this->pi->piVars[$field];
 		}
+		// $this->pi->piVars['cancel'] or any submit
+		return $this->renderValue($field, $this->row['uid'], $this->row[$field], self::$view);
+	}
+
+	/**
+	 * Retrieves TCA type "select" entry value
+	 *
+	 * @param	string		$field: The field name
+	 * @param	array		$config: TCA field conf
+	 * @return	mixed		The entry value
+	 */
+	private getEntryValue_select($field, $config=null) {
+		if ($this->pi->piVars['valid']) {
+			if ($config['maxitems'] >1)
+				$value = array_keys($this->pi->piVars[$field]);
+			else
+				$value = $this->pi->piVars[$field];
+		}
+		else {	// $this->pi->piVars['cancel'] or any submit
+			$value = $this->row[$field];
+			if ($config['maxitems'] >1) {
+				if ($config['MM']) {
+					$value = array();
+					$result = $this->getMMRecords($this->row['uid'], $config);
+					while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
+						$value[] = $row['ft_uid'];
+					}
+				}
+				else {
+					$value = t3lib_div::trimExplode(',', $value);
+				}
+			}
+		}
+		return $value;
+	}
+
+	/**
+	 * Retrieves selector box items (pair of key/label)
+	 *
+	 * @param	string		$field: The field name
+	 * @param	array		$config: TCA field conf
+	 * @return	mixed		Array of items
+	 */
+	private function getSelectItemArray($field, array $config) {
+		$items = array();
+		if ($config['foreign_table']) {
+			t3lib_div::loadTCA($config['foreign_table']);
+			if ($label = $GLOBALS['TCA'][$config['foreign_table']]['ctrl']['label']) {
+				$fields = array('`uid` AS value', '`'.$label.'` AS label');
+				// Get records
+				$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+					implode(',', $fields),
+					$config['foreign_table'],
+					'',
+					$label
+				);
+				// Init items
+				$items[] = array('value'=>0, 'label'=>'');
+				if (is_array($rows) && !empty($rows)) {
+					$items = array_merge($items, $rows);
+				}
+			}
+		}
+		// TODO : Implements itemsProcFunc case;
+		// elseif ($config['itemsProcFunc']) {
+		// }
 		else {
-			$checked = ($value & pow(2, $col)) ? ' checked="checked"' : '';
+			$items = $this->initItemArray($config);
 		}
-		return $checked;
+		return $items;
 	}
 
 	/**
-	 * Includes datepicker
+	 * Initialize item array (for checkbox, selectorbox, radio buttons) Will resolve the label value
+	 *
+	 * @param	array		$config: TCA field conf
+	 * @return	mixed		$items
+	 */
+	protected function initItemArray(array $config)     {
+		$items = array();
+		if (is_array($config['items']))   {
+			foreach ($config['items'] as $key=>$item) {
+				$items[] = array(
+					'value' => $key,
+					'label' => $GLOBALS['TSFE']->sL($item[0])
+				);
+			}
+		}
+		return $items;
+	}
+
+
+	/**
+	 * Includes datepicker js lib
 	 *
 	 * @return	void
 	 */

@@ -1,3 +1,6 @@
+2012-04-17 In Cite Solution  <technique@in-cite.net>
+	* Feature: Added partial form fields. TCA fields type select. With simple items and foreign table items.
+
 2012-04-16 In Cite Solution  <technique@in-cite.net>
 	* Feature: Added partial form fields. TCA fields type input and type text.
 	* Feature: Added partial form fields. TCA fields type check with only one column.
