@@ -203,6 +203,31 @@
 <!-- ###TEMPLATE_FORM_CHECK_ITEM### start-->
 	<p class="###PREFIXID###_checkbox">
 		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL###</label>
-		<input type="checkbox" id="###ITEM_ID###" class="###PREFIXID###_value" name="###ITEM_NAME###" ###CHECKED### ###ONCHANGE### ###DISABLED### />
+		<input type="checkbox" id="###ITEM_ID###" class="###PREFIXID###_value" name="###ITEM_NAME###" value="###ITEM_VALUE###" ###CHECKED### ###ONCHANGE### ###DISABLED### />
 	</p>
 <!-- ###TEMPLATE_FORM_CHECK_ITEM### end-->
+
+
+<!-- ###TEMPLATE_FORM_SELECT_SINGLE### start-->
+	<p class="###PREFIXID###_select-single">
+		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL###</label>
+		<select id ="###ITEM_ID###" name="###ITEM_NAME###">
+			<!-- ###GROUP_OPTIONS### start-->
+			<option value="###OPTION_ITEM_VALUE###" ###OPTION_SELECTED###>###OPTION_ITEM_LABEL###</option>
+			<!-- ###GROUP_OPTIONS### end-->
+		</select>
+	</p>
+<!-- ###TEMPLATE_FORM_SELECT_SINGLE### end-->
+
+
+<!-- ###TEMPLATE_FORM_SELECT_MULTIPLE### start-->
+	<fieldset class="###PREFIXID###_select-multiple">
+		<legend class="###PREFIXID###_select-multiple-label">###FIELDLABEL###</legend>
+		<!-- ###GROUP_OPTIONS### start-->
+		<p class="###PREFIXID###_checkbox">
+			<input type="checkbox" name="###OPTION_ITEM_NAME###" id="###OPTION_ITEM_ID###" ###OPTION_CHECKED### />
+			<label for="###OPTION_ITEM_ID###">###OPTION_ITEM_LABEL###</label>
+		</p>
+		<!-- ###GROUP_OPTIONS### end-->
+	</fieldset>
+<!-- ###TEMPLATE_FORM_SELECT_MULTIPLE### end-->
