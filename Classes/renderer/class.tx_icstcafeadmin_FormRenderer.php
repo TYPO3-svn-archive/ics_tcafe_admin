@@ -486,7 +486,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	mixed		The entry value
 	 */
-	private getEntryValue_select($field, $config=null) {
+	private function getEntryValue_select($field, $config=null) {
 		if ($this->pi->piVars['valid']) {
 			if ($config['maxitems'] >1)
 				$value = array_keys($this->pi->piVars[$field]);
