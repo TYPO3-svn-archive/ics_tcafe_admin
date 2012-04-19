@@ -204,8 +204,9 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			case 'select':
 				$content = $this->handleFormField_typeSelect($field, $config);
 				break;
-			// case 'group':
-				// break;
+			case 'group':
+				$content = $this->handleFormField_typeGroup($field, $config);
+				break;
 			default:
 				$content = '';
 		}
@@ -445,8 +446,90 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	}
 
 
-	// private function FormField_typeGroup();
+	/**
+	 * Generates form element of the TCA type "group".
+	 *
+	 * @param	string		$field: The field name
+	 * @param	array		$config: TCA field conf
+	 * @return	string		HTML form field content
+	 */
+	private function handleFormField_typeGroup($field, array $config) {
+		if ($config['internal_type']=='file') {
+			$content = $this->handleFormField_typeGroup_file($field, $config);
+		}
+		return $content;
+	}
 
+	/**
+	 * Generates form element of the TCA type "group".
+	 * This will render an input file form field.
+	 *
+	 * @param	string		$field: The field name
+	 * @param	array		$config: TCA field conf
+	 * @return	string		HTML form field content
+	 */
+	private function handleFormField_typeGroup_file($field, array $config) {
+		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_FILE###');
+		$subparts = array();
+
+		$isIllustration = array_intersect(t3lib_div::trimExplode(',', $config['allowed'], true), tx_icstcafeadmin_CommonRenderer::$allowedImgFileExtArray);
+		
+		$cObj = t3lib_div::makeInstance('tslib_cObj');
+		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
+		$lConf = $this->conf['defaultConf.']['file.']['viewForm.']['delete.'];
+		
+		$files = t3lib_div::trimExplode(',', $this->row[$field], true);
+		
+		$itemTemplate = $this->cObj->getSubpart($template, '###SUBPART_FILE_DELETE###');
+		$subparts['###SUBPART_FILE_DELETE###'] = '';
+		foreach ($files as $file) {
+			$uniqid = uniqid();
+			$data = array(
+				'illustration' => $isIllustration? $file : '',
+				'filename' => $file,
+			);
+			
+			$cObj->start($data, 'File_delete');
+			$locMarkers = array(
+				'FILE_DEL_ILLUSTRATION' => $cObj->stdWrap('', $lConf['illustration.']), 
+				'FILE_DEL_ID' => $field . '_' . $uniqid,
+				'FILE_DEL_NAME' => $this->prefixId . '[' . $field . '][' . $uniqid . ']',
+				'FILE_DEL_VALUE' => htmlspecialchars($file),
+				'FILE_DEL_LABEL' => $cObj->stdWrap('', $lConf['label.']) ,
+			);
+			$subparts['###SUBPART_FILE_DELETE###'] .= $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
+		}
+		
+		$lConf = $this->conf['defaultConf.']['file.']['viewForm.'];
+		$data = array(
+			'maxsize' => $config['max_size'],
+			'allowed' => $config['allowed'],
+			'disallowed' => $config['disallowed'],
+		);
+		$cObj->start($data, 'Files');
+		
+		$itemTemplate = $this->cObj->getSubpart($template, '###SUPBART_ADDFILE###');
+		$subparts['###SUPBART_ADDFILE###'] = '';
+		if (count($files)< $config['maxitems']) {
+			$locMarkers = array(
+				'ADDFILE_NAME' => $this->prefixId.'['.$field.'][file]',
+				'GROUPFILE_INFORMATIONS' => $cObj->stdWrap('', $lConf['informations.']),
+			);
+			$subparts['###SUPBART_ADDFILE###'] = $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
+		}
+		
+		$markers = array(
+			'PREFIXID' => $this->prefixId,
+			'ITEM_ID' => $field,
+			'FIELDLABEL' => $this->fieldLabels[$field],
+			'FIELDNAME' => $field,
+			'ITEM_NAME' => $this->prefixId . '[' . $field . '][files]',
+			'ITEM_VALUE' => htmlspecialchars($this->row[$field]),
+		);
+
+		$template = $this->cObj->substituteSubpartArray($template, $subparts);
+		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
+	}
 
 	/**
 	 * Retrieves entry value

@@ -12,6 +12,8 @@
 			<label index="page_single">Detail</label>
 			<label index="page_new">New</label>
 			<label index="uid">[UID]</label>
+			<label index="delete_file">Delete file</label>
+			<label index="maxsize_file">Max size</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="error_table">La table n'est pas configurée.</label>
@@ -21,6 +23,8 @@
 			<label index="page_single">Voir</label>
 			<label index="page_new">Créer</label>
 			<label index="uid">[UID]</label>
+			<label index="delete_file">Supprimer</label>
+			<label index="maxsize_file">Taille max</label>
 		</languageKey>
 	</data>
 </T3locallang>
