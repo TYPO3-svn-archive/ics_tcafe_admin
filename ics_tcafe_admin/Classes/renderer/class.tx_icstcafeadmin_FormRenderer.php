@@ -73,6 +73,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	private static $view = 'viewForm';
 
 	private static $datepickerIncluded = false;
+	private static $conformInputIncluded = false;
 
 	var $maxInputWidth = 48; // The maximum abstract value for input fields
 	var $maxTextareaCols	= 48;			// The maximum abstract value for textareas
@@ -240,7 +241,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
 			'ITEM_VALUE' => $this->getEntryValue($field, $config),
 			'SIZE' => $size,
-			'ONCHANGE' => '',
+			'CONFORM' => $this->getConformInput($field, $config),
 			'CTRL_MESSAGE' => '',
 		);
 
@@ -257,7 +258,47 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
-
+	
+	/**
+	 * Conform input entry
+	 *
+	 * @param	array	$config: TCA field conf
+	 *
+	 * @return	string	The	suitability control on entry
+	 */
+	private function getConformInput($field, array $config) {
+		self::includeJSConformInput(t3lib_div::trimExplode(',', $this->conf['conformInput.']['files']));
+		
+		if ($this->conf['conformInput.']['field.'][$field . '.'])
+			return $this->conf['conformInput.']['field.'][$field . '.'];
+		
+		$evalList = t3lib_div::trimExplode(',', $config['eval']);
+		if (in_array('date', $evalList))
+			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['date.']);
+		if (in_array('datetime', $evalList))
+			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['datetime.']);
+		if (in_array('time', $evalList))
+			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['time.']);
+		if (in_array('timesec', $evalList))
+			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['timesec.']);
+		if (in_array('year', $evalList))
+			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['year.']);
+		if (in_array('int', $evalList))
+			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['int.']);
+		if (in_array('float', $evalList))
+			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['float.']);
+		if (in_array('alphanum', $evalList))
+			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['alphanum.']);
+		if (in_array('upper', $evalList))
+			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['upper.']);
+		if (in_array('lower', $evalList))
+			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['lower.']);
+		if (in_array('nospace', $evalList))
+			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['nospace.']);
+		
+		return '';
+	}
+	
 	/**
 	 * Generates form element of the TCA type "text". This will render an textarea form field.
 	 *
@@ -586,7 +627,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	string		$field: The field name
 	 * @return	mixed		The entry value
 	 */
-	public  function getDefaultEntryValue($field) {
+	public function getDefaultEntryValue($field) {
 		if ($this->pi->piVars['valid']) {
 			return $this->pi->piVars[$field];
 		}
@@ -682,6 +723,25 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	}
 
 
+	/**
+	 * Includes JS conform input
+	 *
+	 * @return	void
+	 */
+	private static function includeJSConformInput(array $files) {
+		if (empty($files) || self::$conformInputIncluded)
+			return;
+		
+		$tags = array();
+		foreach ($files as $filename) {
+			$file = t3lib_div::resolveBackPath($GLOBALS['TSFE']->tmpl->getFileName($filename));
+			$tags[] = '<script src="' . htmlspecialchars($file) . '" type="text/javascript"></script>' . PHP_EOL;
+		}
+		$GLOBALS['TSFE']->additionalHeaderData['conformInput'] = implode('', $tags);
+		
+		self::$conformInputIncluded = true;
+	}
+	
 	/**
 	 * Includes datepicker js lib
 	 *

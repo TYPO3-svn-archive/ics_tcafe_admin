@@ -34,7 +34,7 @@ plugin.tx_icstcafeadmin_pi1 {
 	}
 	
 	# Default rendering : render values
-	# Views : viewList, viewSingle, viewEdit
+	# Views : viewList, viewSingle, viewForm
 	defaultConf {
 		date = TEXT
 		date {
@@ -153,5 +153,60 @@ plugin.tx_icstcafeadmin_pi1 {
 		# fieldname.theView.theConf
 	}
 	
+	# Javascript conform input
+	conformInput {
+		# Javascript files separated by coma ","
+		files = EXT:ics_tcafe_admin/res/conformInput.js
+		
+		# Conform on TCA type "input" eval
+		date.cObject = TEXT
+		date.cObject {
+			value = onKeyUp="conformDate(this);"
+		}
+		datetime.cObject = TEXT
+		datetime.cObject {
+			value = onKeyUp="conformDatetime(this);"'
+		}
+		time.cObject = TEXT
+		time.cObject {
+			value = onKeyUp="conformTime(this);"
+		}
+		timesec.cObject = TEXT
+		timesec.cObject {
+			value = onKeyUp="conformTimesec(this);"
+		}
+		year.cObject = TEXT
+		year.cObject {
+			value = onBlur="conformInt(this);"
+		}
+		int.cObject = TEXT
+		int.cObject {
+			value = onBlur="conformInt(this);"
+		}
+		float.cObject = TEXT
+		float.cObject {
+			value = onBlur="conformFloat(this);"
+		}
+		alphanum.cObject = TEXT
+		alphanum.cObject {
+			value = onBlur="conformAlphanum(this);"
+		}
+		upper.cObject = TEXT
+		upper.cObject {
+			value = onBlur="conformUpper(this);"
+		}
+		lower.cObject = TEXT
+		lower.cObject {
+			value = onBlur="conformLower(this);"
+		}
+		nospace.cObject = TEXT
+		nospace.cObject {
+			value = onBlur="conformNospace(this);"
+		}
+		
+		# Conform on field
+		# Priority on above conform
+		field =
+	}
 }
 
