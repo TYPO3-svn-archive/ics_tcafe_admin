@@ -175,20 +175,20 @@
 
 
 <!-- ###TEMPLATE_FORM_TEXT### start-->
-	<p class="###PREFIXID###_text">
+	<div class="###PREFIXID###_text">
 		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL###</label>
 		<input type="text" id="###ITEM_ID###" class="###PREFIXID###_value" name="###ITEM_NAME###" value="###ITEM_VALUE###" ###SIZE### ###ONCHANGE###/>
 		###CTRL_MESSAGE###
-	</p>
+	</div>
 <!-- ###TEMPLATE_FORM_TEXT### end-->
 
 
 <!-- ###TEMPLATE_FORM_TEXTAREA### start-->
-	<p class="###PREFIXID###_textarea">
+	<div class="###PREFIXID###_textarea">
 		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL###</label>
 		<textarea id="###ITEM_ID###" class="###PREFIXID###_value" name="###ITEM_NAME###" ###COLS### ###ROWS### ###WRAP### ###ONCHANGE###/>###ITEM_VALUE###</textarea>
 		###CTRL_MESSAGE###
-	</p>
+	</div>
 <!-- ###TEMPLATE_FORM_TEXTAREA### end-->
 
 
@@ -201,22 +201,22 @@
 
 
 <!-- ###TEMPLATE_FORM_CHECK_ITEM### start-->
-	<p class="###PREFIXID###_checkbox">
+	<div class="###PREFIXID###_checkbox">
 		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL###</label>
-		<input type="checkbox" id="###ITEM_ID###" class="###PREFIXID###_value" name="###ITEM_NAME###" value="###ITEM_VALUE###" ###CHECKED### ###ONCHANGE### ###DISABLED### />
-	</p>
+		<input type="checkbox" id="###ITEM_ID###" class="###PREFIXID###_checkvalue" name="###ITEM_NAME###" value="###ITEM_VALUE###" ###CHECKED### ###ONCHANGE### ###DISABLED### />
+	</div>
 <!-- ###TEMPLATE_FORM_CHECK_ITEM### end-->
 
 
 <!-- ###TEMPLATE_FORM_SELECT_SINGLE### start-->
-	<p class="###PREFIXID###_select-single">
+	<div class="###PREFIXID###_select-single">
 		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL###</label>
 		<select id ="###ITEM_ID###" name="###ITEM_NAME###">
 			<!-- ###GROUP_OPTIONS### start-->
 			<option value="###OPTION_ITEM_VALUE###" ###OPTION_SELECTED###>###OPTION_ITEM_LABEL###</option>
 			<!-- ###GROUP_OPTIONS### end-->
 		</select>
-	</p>
+	</div>
 <!-- ###TEMPLATE_FORM_SELECT_SINGLE### end-->
 
 
@@ -225,9 +225,31 @@
 		<legend class="###PREFIXID###_select-multiple-label">###FIELDLABEL###</legend>
 		<!-- ###GROUP_OPTIONS### start-->
 		<p class="###PREFIXID###_checkbox">
-			<input type="checkbox" name="###OPTION_ITEM_NAME###" id="###OPTION_ITEM_ID###" ###OPTION_CHECKED### />
+			<input type="checkbox" id="###OPTION_ITEM_ID###" class="###PREFIXID###_checkvalue" name="###OPTION_ITEM_NAME###" ###OPTION_CHECKED### />
 			<label for="###OPTION_ITEM_ID###">###OPTION_ITEM_LABEL###</label>
 		</p>
 		<!-- ###GROUP_OPTIONS### end-->
 	</fieldset>
 <!-- ###TEMPLATE_FORM_SELECT_MULTIPLE### end-->
+
+
+<!-- ###TEMPLATE_FORM_FILE### start-->
+	<div class="###PREFIXID###_group-file">
+		<label for="###ITEM_ID###" class="###PREFIXID###_group-file-label">###FIELDLABEL###</label>
+		<input type="hidden" name="###ITEM_NAME###" value="###ITEM_VALUE###" />
+		
+		<!-- ###SUPBART_ADDFILE### start-->
+		<input type="file" name="###ADDFILE_NAME###" />###GROUPFILE_INFORMATIONS###
+		<!-- ###SUPBART_ADDFILE### end-->
+		
+		<div class="###PREFIXID###_files">
+			<!-- ###SUBPART_FILE_DELETE### start-->
+			<div class="###PREFIXID###_filedelete">
+				###FILE_DEL_ILLUSTRATION###
+				<input id="###FILE_DEL_ID###" type="checkbox" class="###PREFIXID###_checkvalue" name="###FILE_DEL_NAME###" value="###FILE_DEL_VALUE###" />
+				<label for="###FILE_DEL_ID###">###FILE_DEL_LABEL###</label>
+			</div>
+			<!-- ###SUBPART_FILE_DELETE### end-->
+		</div>
+	</div>
+<!-- ###TEMPLATE_FORM_FILE### end-->

@@ -1,3 +1,6 @@
+2012-04-19 In Cite Solution  <technique@in-cite.net>
+	* Feature: Added files render to form view.
+	
 2012-04-17 In Cite Solution  <technique@in-cite.net>
 	* Fix: Mistakes on function declaration.
 	* Feature: Added partial form fields. TCA fields type select. With simple items and foreign table items.

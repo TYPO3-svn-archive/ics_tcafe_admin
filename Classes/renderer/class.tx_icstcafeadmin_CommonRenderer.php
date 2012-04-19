@@ -165,6 +165,7 @@ class tx_icstcafeadmin_CommonRenderer {
 					$value = $this->cObj->stdWrap($value, $this->conf['defaultConf.']['select.'][$view . '.']);
 					break;
 				case 'group':
+					// TODO : prendre en compte le maxitems
 					if ($config['internal_type']==='file' && array_intersect(t3lib_div::trimExplode(',', $config['allowed'], true), self::$allowedImgFileExtArray)) {
 						$value = $this->cObj->stdWrap($value, $this->conf['defaultConf.']['illustration.']);
 					}

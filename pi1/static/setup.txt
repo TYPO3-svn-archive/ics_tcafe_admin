@@ -83,7 +83,59 @@ plugin.tx_icstcafeadmin_pi1 {
 			}
 		}
 		select =
-		file =
+		file {
+			viewForm {
+				delete {
+					illustration {
+						cObject = IMAGE
+						cObject {
+							if.isTrue.field = illustration
+							file.import.field = illustration
+							file.height = 68
+						}
+					}
+					label {
+						cObject = TEXT
+						cObject {
+							value = Supprimer
+							append = TEXT
+							append {
+								if.isFalse.field = illustration
+								field = filename
+								noTrimWrap = | ||
+							}
+						}
+					}
+				}
+				informations {
+					cObject = COA
+					cObject {
+						10 = TEXT
+						10 {
+							field = maxsize
+							noTrimWrap = |Taille max: ||
+						}
+						15 = HTML
+						15 {
+							value = <br/>
+						}
+						20 = TEXT
+						20 {
+							if.isTrue.field = allowed
+							field = allowed
+							noTrimWrap = |Autorisé (|)|
+						}
+						30 = TEXT
+						30 {
+							if.isTrue.field = disallowed
+							field = allowed
+							noTrimWrap = |Interdit (|)|
+						}
+						wrap = <span>|</span>
+					}
+				}
+			}
+		}
 		illustration {
 			setContentToCurrent = 1
 			if.isTrue.current = 1
