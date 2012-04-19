@@ -26,27 +26,30 @@
  *
  *
  *
- *   63: class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer
- *   90:     function __construct($pi, tslib_cObj $cObj, $table, $row, array $fields, array $fieldLabels, array $lConf)
- *  104:     public function render()
- *  127:     private function renderPIDStorage()
- *  142:     private function renderFormFields()
- *  173:     private function renderEntries()
- *  192:     public function handleFormField($field)
- *  222:     private function handleFormField_typeInput($field, array $config)
- *  260:     private function handleFormField_typeText($field, array $config)
- *  293:     private function handleFormField_typeCheck($field, array $config)
- *  319:     private function handleFormField_typeCheck_item($field, array $config, $col=null)
- *  352:     private function handleFormField_typeSelect($field, array $config)
- *  383:     private function handleFormField_typeSelect_single(array $items, $field, array $config)
- *  419:     private function handleFormField_typeSelect_multiple(array $items, $field, array $config)
- *  458:     private function getEntryValue($field, array $config)
- *  474:     public  function getDefaultEntryValue($field)
- *  521:     private function getSelectItemArray($field, array $config)
- *  556:     protected function initItemArray(array $config)
- *  575:     private static function includeLibDatepicker()
+ *   66: class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer
+ *   93:     function __construct($pi, tslib_cObj $cObj, $table, $row, array $fields, array $fieldLabels, array $lConf)
+ *  107:     public function render()
+ *  130:     private function renderPIDStorage()
+ *  145:     private function renderFormFields()
+ *  176:     private function renderEntries()
+ *  199:     public function handleFormField($field)
+ *  230:     public function handleFormField_typeInput($field, array $config)
+ *  268:     public function handleFormField_typeText($field, array $config)
+ *  301:     public function handleFormField_typeCheck($field, array $config)
+ *  336:     public function handleFormField_typeCheck_item($field, array $config, $col=null)
+ *  369:     public function handleFormField_typeSelect($field, array $config)
+ *  404:     public function handleFormField_typeSelect_single(array $items, $field, array $config)
+ *  440:     public function handleFormField_typeSelect_multiple(array $items, $field, array $config)
+ *  476:     public function handleFormField_typeGroup($field, array $config)
+ *  500:     public function handleFormField_typeGroup_file($field, array $config)
+ *  570:     public function getEntryValue($field, array $config)
+ *  586:     public  function getDefaultEntryValue($field)
+ *  601:     private function getEntryValue_select($field, $config=null)
+ *  633:     public function getSelectItemArray($field, array $config)
+ *  668:     private function initItemArray(array $config)
+ *  687:     private static function includeLibDatepicker()
  *
- * TOTAL FUNCTIONS: 18
+ * TOTAL FUNCTIONS: 21
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -172,13 +175,17 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 */
 	private function renderEntries() {
 		$content = '';
-		foreach ($this->fields as $field) {
-			// TODO : hook
-			// if hook
-			//		Insert code here
-			// else {
-			$content .= $this->handleFormField($field);
-			// }
+		// Hook on render form entries
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderFormFields'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				$content = $procObj->renderEntries($this->table, $this->row, $this->fields, $this->conf, $this);
+			}
+		}
+		else {
+			foreach ($this->fields as $field) {
+					$content .= $this->handleFormField($field);
+			}
 		}
 		return $content;
 	}
@@ -220,7 +227,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeInput($field, array $config) {
+	public function handleFormField_typeInput($field, array $config) {
 		$size = t3lib_div::intInRange($config['size'], 5, $this->maxInputWidth, 30);
 		$size = $size? 'size="' . $size . '"': '';
 
@@ -258,7 +265,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeText($field, array $config) {
+	public function handleFormField_typeText($field, array $config) {
 		$cols = t3lib_div::intInRange($config['cols'], 5, $this->maxTextareaCols, 30);
 		$cols =  $cols? 'cols="' . $cols . '"': '';
 		$rows = t3lib_div::intInRange($config['rows'], 1, $this->maxTextareaRows, 5);
@@ -291,19 +298,28 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeCheck($field, array $config) {
-		if ($config['cols'] && $config['cols']>1) {
-			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK###');
-			/* TODO : implements form field with tca field on type check and sevrals cols
-				Makes loop to fill ###CHECK_ITEMS### markers like
-					for ($col=0; $cols<$config['cols']; $cols++) {
-						$locMarkers['CHECK_ITEMS'] .= handleFormField_typeCheck_item($field, $config, $cols);
-						.....
-					}
-			*/
+	public function handleFormField_typeCheck($field, array $config) {
+		// Hook to handle form field
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeCheck'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeCheck'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				$content = $procObj->handleFormField_typeCheck($this->table, $this->row, $field, $this->conf, $this);
+			}
 		}
 		else {
-			$content = $this->handleFormField_typeCheck_item($field, $config);
+			if ($config['cols'] && $config['cols']>1) {
+				$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK###');
+				/* TODO : implements form field with tca field on type check and sevrals cols
+					Makes loop to fill ###CHECK_ITEMS### markers like
+						for ($col=0; $cols<$config['cols']; $cols++) {
+							$locMarkers['CHECK_ITEMS'] .= handleFormField_typeCheck_item($field, $config, $cols);
+							.....
+						}
+				*/
+			}
+			else {
+				$content = $this->handleFormField_typeCheck_item($field, $config);
+			}
 		}
 		return $content;
 	}
@@ -317,7 +333,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	int		$col: The col number
 	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeCheck_item($field, array $config, $col=null) {
+	public function handleFormField_typeCheck_item($field, array $config, $col=null) {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK_ITEM###');
 		$value = $this->getEntryValue($field, $config);
 		if (is_null($col) && $value) {
@@ -350,11 +366,16 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeSelect($field, array $config) {
+	public function handleFormField_typeSelect($field, array $config) {
 		$items = $this->getSelectItemArray($field, $config);
-		// TODO : hook
-		// if hook
-		// else {
+		// Hook to handle form field
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeSelect'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeSelect'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				$content = $procObj->handleFormField_typeSelect($this->table, $this->row, $field, $this->conf, $this);
+			}
+		}
+		else {
 			if ($config['maxitems'] <= 1 && $config['renderMode'] !== 'tree') {	// Single selector box
 				$content = $this->handleFormField_typeSelect_single($items, $field, $config);
 			// } elseif (!strcmp($config['renderMode'], 'checkbox')) {
@@ -367,9 +388,8 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			else { // Traditional multiple selector box:
 				$content = $this->handleFormField_typeSelect_multiple($items, $field, $config);
 			}
-		// }
-
-		return $content;
+		}
+	return $content;
 	}
 
 	/**
@@ -381,7 +401,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeSelect_single(array $items, $field, array $config) {
+	public function handleFormField_typeSelect_single(array $items, $field, array $config) {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_SELECT_SINGLE###');
 		$subparts = array();
 
@@ -417,7 +437,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeSelect_multiple(array $items, $field, array $config) {
+	public function handleFormField_typeSelect_multiple(array $items, $field, array $config) {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_SELECT_MULTIPLE###');
 		$subparts = array();
 
@@ -453,9 +473,21 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeGroup($field, array $config) {
-		if ($config['internal_type']=='file') {
-			$content = $this->handleFormField_typeGroup_file($field, $config);
+	public function handleFormField_typeGroup($field, array $config) {
+		// Hook to handle form field
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeGroup'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeGroup'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				$content = $procObj->handleFormField_typeGroup($this->table, $this->row, $field, $this->conf, $this);
+			}
+		}
+		else {
+			if ($config['internal_type']=='file') {
+				$content = $this->handleFormField_typeGroup_file($field, $config);
+			}
+			else {
+				tx_icstcafeadmin_debug::notice('handleFormField_typeGroup of internal_type "' . $config['internal_type'] . '" is not implemented.');
+			}
 		}
 		return $content;
 	}
@@ -468,18 +500,18 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	private function handleFormField_typeGroup_file($field, array $config) {
+	public function handleFormField_typeGroup_file($field, array $config) {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_FILE###');
 		$subparts = array();
 
 		$isIllustration = array_intersect(t3lib_div::trimExplode(',', $config['allowed'], true), tx_icstcafeadmin_CommonRenderer::$allowedImgFileExtArray);
-		
+
 		$cObj = t3lib_div::makeInstance('tslib_cObj');
 		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 		$lConf = $this->conf['defaultConf.']['file.']['viewForm.']['delete.'];
-		
+
 		$files = t3lib_div::trimExplode(',', $this->row[$field], true);
-		
+
 		$itemTemplate = $this->cObj->getSubpart($template, '###SUBPART_FILE_DELETE###');
 		$subparts['###SUBPART_FILE_DELETE###'] = '';
 		foreach ($files as $file) {
@@ -488,10 +520,10 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 				'illustration' => $isIllustration? $file : '',
 				'filename' => $file,
 			);
-			
+
 			$cObj->start($data, 'File_delete');
 			$locMarkers = array(
-				'FILE_DEL_ILLUSTRATION' => $cObj->stdWrap('', $lConf['illustration.']), 
+				'FILE_DEL_ILLUSTRATION' => $cObj->stdWrap('', $lConf['illustration.']),
 				'FILE_DEL_ID' => $field . '_' . $uniqid,
 				'FILE_DEL_NAME' => $this->prefixId . '[' . $field . '][' . $uniqid . ']',
 				'FILE_DEL_VALUE' => htmlspecialchars($file),
@@ -499,7 +531,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			);
 			$subparts['###SUBPART_FILE_DELETE###'] .= $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
 		}
-		
+
 		$lConf = $this->conf['defaultConf.']['file.']['viewForm.'];
 		$data = array(
 			'maxsize' => $config['max_size'],
@@ -507,7 +539,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'disallowed' => $config['disallowed'],
 		);
 		$cObj->start($data, 'Files');
-		
+
 		$itemTemplate = $this->cObj->getSubpart($template, '###SUPBART_ADDFILE###');
 		$subparts['###SUPBART_ADDFILE###'] = '';
 		if (count($files)< $config['maxitems']) {
@@ -517,7 +549,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			);
 			$subparts['###SUPBART_ADDFILE###'] = $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
 		}
-		
+
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
 			'ITEM_ID' => $field,
@@ -538,7 +570,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	mixed		The entry value
 	 */
-	private function getEntryValue($field, array $config) {
+	public function getEntryValue($field, array $config) {
 		if ($config['type']=='select') {
 			$value = $this->getEntryValue_select($field, $config);
 		}
@@ -601,7 +633,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	mixed		Array of items
 	 */
-	private function getSelectItemArray($field, array $config) {
+	public function getSelectItemArray($field, array $config) {
 		$items = array();
 		if ($config['foreign_table']) {
 			t3lib_div::loadTCA($config['foreign_table']);
@@ -636,7 +668,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	mixed		$items
 	 */
-	protected function initItemArray(array $config)     {
+	private function initItemArray(array $config)     {
 		$items = array();
 		if (is_array($config['items']))   {
 			foreach ($config['items'] as $key=>$item) {

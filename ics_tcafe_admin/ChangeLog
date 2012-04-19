@@ -1,4 +1,6 @@
 2012-04-19 In Cite Solution  <technique@in-cite.net>
+	* Refactor: Visibility on function
+	* Feature: Added hook.
 	* Feature: Added files render to form view.
 	
 2012-04-17 In Cite Solution  <technique@in-cite.net>
