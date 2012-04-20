@@ -285,7 +285,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['year.']);
 		if (in_array('int', $evalList))
 			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['int.']);
-		if (in_array('float', $evalList))
+		if (in_array('double2', $evalList))
 			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['float.']);
 		if (in_array('alphanum', $evalList))
 			return $this->cObj->stdWrap($field, $this->conf['conformInput.']['alphanum.']);

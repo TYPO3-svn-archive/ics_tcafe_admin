@@ -405,10 +405,21 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 * @return	boolean		The result process
 	 */
 	function saveDB() {
-		// $this->ctrl_messages = array();
-		// if (!tx_icstcafeadmin_utils::controlFields($this, $this->table, $this->fields))
-			// return false;
-	
+		$this->ctrlEntries = t3lib_div::makeInstance(
+			'tx_icstcafeadmin_controlForm', 
+			$this, 
+			$this->table, 
+			$this->getSingleRecord(), 
+			$this->fields, 
+			$this->piVars, 
+			$this->conf
+		);
+		
+		if ($this->ctrlEntries->controlEntries()) {
+			// $db = t3lib_div::makeInstance('tx_icstcafeadmin_DB');
+			// $dataArray = $db->process_valuesToDB($fields, $this->pivars);
+		}
+		
 		return false;
 	}
 }
