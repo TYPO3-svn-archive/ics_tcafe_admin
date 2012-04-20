@@ -208,5 +208,13 @@ plugin.tx_icstcafeadmin_pi1 {
 		# Priority on above conform
 		field =
 	}
+	
+	# Control entries configuration
+	controlEntries {
+		# Break control entries whether entry is not checked
+		breakControl =
+		# Add evals on field. These evals taking precedence on TCA field evals
+		evals =
+	}
 }
 
