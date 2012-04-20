@@ -26,8 +26,14 @@
  *
  *
  *
-  *
- * TOTAL FUNCTIONS: 3
+ *   49: class tx_icstcafeadmin_controlForm
+ *   64:     function __construct($pi, $table, $row, array $fields, array $piVars, array $lConf)
+ *   78:     public function controlEntries()
+ *   93:     public function controlEntry($field)
+ *  187:     public function getNoCheckFields()
+ *  196:     public function resetNoCheckFields()
+ *
+ * TOTAL FUNCTIONS: 5
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -35,7 +41,6 @@
 
 /**
  * Class 'tx_icstcafeadmin_controlForm' for the 'ics_tcafe_admin' extension.
- * 
  *
  * @author	Tsi YANG <tsi@in-cite.net>
  * @package	TYPO3
@@ -44,32 +49,31 @@
 class tx_icstcafeadmin_controlForm{
 
 	private $noCheckFields = array();	// Array of no checked field
-	
+
 	/**
 	 * Constructor
 	 *
-	 * @param	tx_icstcafeadmin_pi1	$pi: Instance of tx_icstcafeadmin_pi1
+	 * @param	tx_icstcafeadmin_pi1		$pi: Instance of tx_icstcafeadmin_pi1
 	 * @param	string		$table: The tablename
 	 * @param	array		$row: The row
 	 * @param	array		$fields: Array of fields
 	 * @param	array		$piVars: $pi POST and GET incoming array
 	 * @param	array		$lConf: Typoscript configuration
-	 *
 	 * @return	void
 	 */
 	function __construct($pi, $table, $row, array $fields, array $piVars, array $lConf) {
 		$this->table = $table;
 		$this->row = $row;
 		$this->fields = $fields;
-		
+
 		$this->piVars = $piVars;
 		$this->conf = $lConf;
-	}	
-	
+	}
+
 	/**
 	 * Checks entries
 	 *
-	 * @return	boolean	Whether entries are checked, it returns true. Otherwise it returns false.
+	 * @return	boolean		Whether entries are checked, it returns true. Otherwise it returns false.
 	 */
 	public function controlEntries() {
 		$control = true;
@@ -83,8 +87,8 @@ class tx_icstcafeadmin_controlForm{
 	/**
 	 * Checks entry
 	 *
-	 * @param	string $field: The field name
-	 * @return	boolean	Whether entry is checked, it returns true. Otherwise it returns false.
+	 * @param	string		$field: The field name
+	 * @return	boolean		Whether entry is checked, it returns true. Otherwise it returns false.
 	 */
 	public function controlEntry($field) {
 		$GLOBALS['TSFE']->includeTCA();
@@ -93,7 +97,7 @@ class tx_icstcafeadmin_controlForm{
 		$evals = t3lib_div::trimExplode(',', $config['eval'], true);
 		if ($this->conf['controlEntries.'][$field.'.']['eval.'])
 			$evals = array_merge(t3lib_div::trimExplode(',', $this->conf['controlEntries.'][$field.'.']['eval.']), $evals);
-		
+
 		$value = $this->piVars[$field];
 		$control = true;
 		foreach ($evals as $eval) {
@@ -162,6 +166,7 @@ class tx_icstcafeadmin_controlForm{
 					}
 					break;
 				default:
+					// Hook on controlEntry
 					if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['controlEntry'])) {
 						foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['controlEntry'] as $class) {
 							$procObj = & t3lib_div::getUserObj($class);
@@ -174,16 +179,16 @@ class tx_icstcafeadmin_controlForm{
 			$this->noCheckFields[] = $field;
 		return $control;
 	}
-	
+
 	/**
 	 * Retrieves noCheckFields
 	 *
-	 * @return	mixed	Array of fields not checked
+	 * @return	mixed		Array of fields not checked
 	 */
 	public function getNoCheckFields() {
 		return $this->noCheckFields;
 	}
-	
+
 	/**
 	 * Reset noCheckFields
 	 *
@@ -192,7 +197,7 @@ class tx_icstcafeadmin_controlForm{
 	public function resetNoCheckFields() {
 		$this->noCheckFields = array();
 	}
-	
+
 }
 
 
