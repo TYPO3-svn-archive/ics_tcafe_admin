@@ -26,18 +26,21 @@
  *
  *
  *
- *   54: class tx_icstcafeadmin_pi1 extends tslib_pibase
- *   76:     function main($content, $conf)
- *  147:     protected function init()
- *  193:     private function setTable()
- *  206:     private function setFields()
- *  243:     public function displayList()
- *  282:     public function displaySingle()
- *  290:     public function displayEdit()
- *  298:     public function displayNew()
- *  306:     private function getRows()
+ *   57: class tx_icstcafeadmin_pi1 extends tslib_pibase
+ *   83:     function main($content, $conf)
+ *  160:     protected function init()
+ *  209:     private function setTable()
+ *  222:     private function setFields()
+ *  264:     public function displayList()
+ *  303:     public function displaySingle()
+ *  323:     public function displayEdit()
+ *  343:     public function displayNew()
+ *  352:     public function displayValidatedForm()
+ *  361:     private function getRecords()
+ *  390:     private function getSingleRecord()
+ *  410:     function saveDB()
  *
- * TOTAL FUNCTIONS: 9
+ * TOTAL FUNCTIONS: 12
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -61,11 +64,11 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 
 	var $defaultPage = 1;
 	var $defaultSize = 20;
-	
+
 	private $fieldLabels = array();
 	private $fields = array();
 	private $table;
-	
+
 	private $groupBy = '';
 	private $limit = '';
 	private $orderBy = '';
@@ -219,7 +222,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	private function setFields() {
 		$fields = t3lib_div::trimExplode(',', $this->piVars['fields'], true);
 		$fields = !empty($fields)? $fields: t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'fields', 'table'), true);
-		
+
 		$fields = !empty($fields)? $fields: t3lib_div::trimExplode(',', $this->conf['table.']['fields'], true);
 
 		$fields_confTS = t3lib_div::trimExplode(',', $this->conf['table.']['fields'], true);
@@ -236,7 +239,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		}
 		if ($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'withUid', 'table') && !in_array('uid', $fields))
 			$fields = array_merge(array('uid'), $fields);
-		
+
 		$this->fields = array();
 		$this->fieldLabels = array();
 		foreach ($fields as $field) {
@@ -346,24 +349,24 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 *
 	 * @return	string		HTML content for new form
 	 */
-	public function displayValidatedForm() { 
+	public function displayValidatedForm() {
 		return 'displayValidatedForm is not yet implemented.';
 	}
 
 	/**
 	 * Retrieves rows
 	 *
-	 * @return	mixed	The table rows
+	 * @return	mixed		The table rows
 	 */
 	private function getRecords() {
 		$requestFields = $this->fields;
 		if (!in_array('uid', $requestFields))
 			$requestFields = array_merge(array('uid'), $requestFields);
-			
+
 		$addWhere_storage = '';
 		if (!empty($this->storage) && ((count($this->storage)>1) || count($this->storage)==1 && $this->storage[0]>0))
 			$addWhere_storage = ' AND pid IN(' . implode(',', $this->storage) . ')';
-		
+
 		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			implode(',', $requestFields),
 			$this->table,
@@ -373,16 +376,16 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$this->limit,
 			'uid'
 		);
-		
+
 		// TODO : insert here the hook to get rows with complex resquest
-		
+
 		return $rows;
 	}
-	
+
 	/**
 	 * Retrieves single row
 	 *
-	 * @return mixed	The record
+	 * @return	mixed		The record
 	 */
 	private function getSingleRecord() {
 		$requestFields = $this->fields;
@@ -398,7 +401,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		);
 		return $rows[0];
 	}
-	
+
 	/**
 	 * Save in DB
 	 *
@@ -406,22 +409,78 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 */
 	function saveDB() {
 		$this->ctrlEntries = t3lib_div::makeInstance(
-			'tx_icstcafeadmin_controlForm', 
-			$this, 
-			$this->table, 
-			$this->getSingleRecord(), 
-			$this->fields, 
-			$this->piVars, 
+			'tx_icstcafeadmin_controlForm',
+			$this,
+			$this->table,
+			$this->getSingleRecord(),
+			$this->fields,
+			$this->piVars,
 			$this->conf
 		);
-		
+
 		if ($this->ctrlEntries->controlEntries()) {
-			// $db = t3lib_div::makeInstance('tx_icstcafeadmin_DB');
-			// $dataArray = $db->process_valuesToDB($fields, $this->pivars);
+			$dbTools = t3lib_div::makeInstance('tx_icstcafeadmin_DBTools', $this);
+			$dataArray = $dbTools->process_valuesToDB($this->table, $this->getSingleRecord(), $this->fields, $this->piVars);
 		}
 		
+		// var_dump($dataArray);
+		
+		// if ($new) { // Insert new record
+			// $result = $this->cObj->DBgetInsert(
+				// $table,
+				// $id,
+				// $dataArray,
+				// implode(',', $fields),
+				// true
+			// );
+
+		// } else {	// Update record
+			// $result = $this->cObj->DBgetUpdate(
+				// $table,
+				// $id,
+				// $dataArray,
+				// implode(',', $fields),
+				// true
+			// );
+		// }
+
 		return false;
 	}
+	
+	// /**
+	 // * Delete record
+	 // *
+	 // * @param	string		$table	The tablename
+	 // * @param	int		$rowUid	The record's uid
+	 // * @return	mixed		Result from handler
+	 // */
+	// public function deleteRecord($table, $rowUid) {
+		// return $this->cObj->DBgetUpdate(
+			// $table,
+			// $rowUid,
+			// array('deleted' => '1'),
+			// 'deleted',
+			// true
+		// );
+	// }
+
+	// /**
+	 // * Hide record
+	 // *
+	 // * @param	string		$table	The tablename
+	 // * @param	int		$rowUid	The record's uid
+	 // * @return	mixed		Result from handler
+	 // */
+	// public function hideRecord($table, $rowUid) {
+		// return $this->cObj->DBgetUpdate(
+			// $table,
+			// $rowUid,
+			// array('hidden' => '1'),
+			// 'hidden',
+			// true
+		// );
+	// }
+	
 }
 
 

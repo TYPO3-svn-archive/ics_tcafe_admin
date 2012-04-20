@@ -96,7 +96,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		$this->row = $row;
 		$this->fields = $fields;
 		$this->fieldLabels = $fieldLabels;
-
+		
 		parent::__construct($pi, $cObj, $table, $lConf);
 	}
 
@@ -349,8 +349,13 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		}
 		else {
 			if ($config['cols'] && $config['cols']>1) {
-				$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK###');
+				tx_icstcafeadmin_debug::notice('handleFormField_typeCheck with cols  is not implemented.');
+				$content = '<div>
+					<p>' . $this->fieldLabels[$field]  . ': handle associates with this fiels is not implemented</p>
+					<input type="hidden" name="' . $this->prefixId . '[' . $field . ']" value="' . $this->row[$field] . '"/>
+					</div>';
 				/* TODO : implements form field with tca field on type check and sevrals cols
+				$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK###');
 					Makes loop to fill ###CHECK_ITEMS### markers like
 						for ($col=0; $cols<$config['cols']; $cols++) {
 							$locMarkers['CHECK_ITEMS'] .= handleFormField_typeCheck_item($field, $config, $cols);
@@ -419,18 +424,33 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		else {
 			if ($config['maxitems'] <= 1 && $config['renderMode'] !== 'tree') {	// Single selector box
 				$content = $this->handleFormField_typeSelect_single($items, $field, $config);
-			// } elseif (!strcmp($config['renderMode'], 'checkbox')) {
+			} elseif (!strcmp($config['renderMode'], 'checkbox')) {
 				// TODO : Implements Checkbox renderMode
-			// } elseif (!strcmp($config['renderMode'], 'singlebox')) {
+				tx_icstcafeadmin_debug::notice('handleFormField_typeSelect with renderMode  is not implemented.');
+				$content = '<div>
+					<p>' . $this->fieldLabels[$field]  . ': handle associates with this fiels is not implemented</p>
+					<input type="hidden" name="' . $this->prefixId . '[' . $field . ']" value="' . $this->row[$field] . '"/>
+					</div>';
+			} elseif (!strcmp($config['renderMode'], 'singlebox')) {
 				// TODO : Implements Single selector box renderMode
-			// } elseif (!strcmp($config['renderMode'], 'tree')) { //
+				tx_icstcafeadmin_debug::notice('handleFormField_typeSelect with renderMode  is not implemented.');
+				$content = '<div>
+					<p>' . $this->fieldLabels[$field]  . ': handle associates with this fiels is not implemented</p>
+					<input type="hidden" name="' . $this->prefixId . '[' . $field . ']" value="' . $this->row[$field] . '"/>
+					</div>';
+			} elseif (!strcmp($config['renderMode'], 'tree')) { //
 				// TODO : Implements Tree renderMode
+				tx_icstcafeadmin_debug::notice('handleFormField_typeSelect with renderMode  is not implemented.');
+				$content = '<div>
+					<p>' . $this->fieldLabels[$field]  . ': handle associates with this fiels is not implemented</p>
+					<input type="hidden" name="' . $this->prefixId . '[' . $field . ']" value="' . $this->row[$field] . '"/>
+					</div>';
 			}
-			else { // Traditional multiple selector box:
+			else { // Multiple checkbox
 				$content = $this->handleFormField_typeSelect_multiple($items, $field, $config);
 			}
 		}
-	return $content;
+		return $content;
 	}
 
 	/**
@@ -528,6 +548,10 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			}
 			else {
 				tx_icstcafeadmin_debug::notice('handleFormField_typeGroup of internal_type "' . $config['internal_type'] . '" is not implemented.');
+				$content = '<div>
+					<p>' . $this->fieldLabels[$field]  . ': handle associates with this fiels is not implemented</p>
+					<input type="hidden" name="' . $this->prefixId . '[' . $field . ']" value="' . $this->row[$field] . '"/>
+					</div>';
 			}
 		}
 		return $content;
