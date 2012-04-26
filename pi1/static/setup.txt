@@ -145,6 +145,18 @@ plugin.tx_icstcafeadmin_pi1 {
 				file.height = 68
 			}
 		}
+		label {
+			cObject = TEXT
+			cObject {
+				field = title
+			}
+			typolink {
+				parameter.data = tsfe:id
+				additionalParams=&tx_icstcafeadmin_pi1[showUid]={field:id}
+				additionalParams.insertData = 1
+			}
+			
+		}
 	}
 		
 	# Render
