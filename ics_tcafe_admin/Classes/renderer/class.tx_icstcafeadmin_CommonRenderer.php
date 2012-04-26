@@ -117,13 +117,26 @@ class tx_icstcafeadmin_CommonRenderer {
 		if (!$field)
 			throw new Exception('Field is not set on RenderValue.');
 
+		$label = $GLOBALS['TCA'][$this->table]['ctrl']['label'];
 		$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
+		
 		// Hook to render value
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderValue'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderValue'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
 				$value = $procObj->renderValue($this, $this->table,$recId, $field, $value, $config, $view);
 			}
+		}
+		elseif ($field===$label && $view=='viewList') {
+			$data = array(
+				'id' => $recId,
+				'title' => $this->handleFieldValue($recId ,$value, $config),
+			);
+			$cObj = t3lib_div::makeInstance('tslib_cObj');
+			$cObj->start($data, $this->table);
+			$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
+
+			$value = $cObj->stdWrap('', $this->conf['defaultConf.']['label.']);
 		}
 		else {
 			$value = $this->default_renderValue($field, $this->handleFieldValue($recId ,$value, $config), $view);
