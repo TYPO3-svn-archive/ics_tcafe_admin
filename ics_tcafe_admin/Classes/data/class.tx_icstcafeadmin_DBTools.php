@@ -78,7 +78,7 @@ class tx_icstcafeadmin_DBTools {
 	 * @param	array		$values: The values to process where key/value pairs are fieldnames/values
 	 * @return	mixed		The data array with values processed where key/value pairs are fieldnames/values
 	 */
-	public function process_valuesToDB($table, array $row, array $fields, array $values) {
+	public function process_valuesToDB($table, $row=null, array $fields, array $values) {
 		$data = array();
 		foreach ($fields as $field) {
 			$dateArray[$field] = $this->process_valueToDB($table, $row, $field, $values[$field]);
@@ -94,7 +94,7 @@ class tx_icstcafeadmin_DBTools {
 	 * @param	[type]		$value: ...
 	 * @return	mixed		The processed value
 	 */
-	public function process_valueToDB($table, array $row, $field, $value) {
+	public function process_valueToDB($table, $row=null, $field, $value) {
 		$GLOBALS['TSFE']->includeTCA();
 		t3lib_div::loadTCA($table);
 		$config = $GLOBALS['TCA'][$table]['columns'][$field]['config'];
@@ -103,7 +103,7 @@ class tx_icstcafeadmin_DBTools {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_valueToDB'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_valueToDB'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$value = $procObj->process_valueToDB($this, $this->table, $this->row, $field, $value);
+				$value = $procObj->process_valueToDB($this, $table, $row, $field, $value);
 			}
 		}
 		else {
@@ -133,7 +133,7 @@ class tx_icstcafeadmin_DBTools {
 	 * @param	array		$evals: The TCA eval
 	 * @return	mixed		The value processing
 	 */
-	public function renderField_config_evals($field, array $row, $value, array $evals) {
+	public function renderField_config_evals($field, $row=null, $value, array $evals) {
 		foreach ($evals as $eval) {
 			switch ($eval) {
 				case 'required':
@@ -332,7 +332,7 @@ class tx_icstcafeadmin_DBTools {
 	 * @param	array		$config: TCA field config
 	 * @return	int
 	 */
-	public function renderField_check($field, array $row, $value, $config) {
+	public function renderField_check($field, $row=null, $value, $config) {
 		if ($config['cols'] && $config['cols']>1) {
 			// TODO: Implements form section and implements this
 		}
@@ -354,7 +354,10 @@ class tx_icstcafeadmin_DBTools {
 	 * @param	array		$config: TCA field config
 	 * @return	int
 	 */
-	public function renderField_select($field, array $row, $value, $config) {
+	public function renderField_select($field, $row=null, $value, $config) {
+		if (!$value)
+			return null;
+	
 		// Hook on process_dateToDB
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_dateToDB'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_dateToDB'] as $class) {
@@ -373,10 +376,9 @@ class tx_icstcafeadmin_DBTools {
 				// TODO : Implements Tree renderMode
 			}
 			else {	// Multiple checkbox
-			
 				if ($config['MM']) {
-					$value = count($value);
 					$this->select_MM[$field] = array_keys($value);
+					$value = count($value);
 				}
 				else{
 					$value = implode(',', array_keys($value));
@@ -395,7 +397,7 @@ class tx_icstcafeadmin_DBTools {
 	 * @param	array		$config: TCA field config
 	 * @return	void
 	 */
-	function renderField_group_parseFiles($field, array $row, array $value, $config) {
+	function renderField_group_parseFiles($field, $row=null, array $value, $config) {
 		$uploadfolder = $config['uploadfolder']? $config['uploadfolder'].'/': '';
 		$files = t3lib_div::trimExplode(',', $value['files'], true);
 		if (is_array($value) && !empty($value)) {

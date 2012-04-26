@@ -119,6 +119,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 
 		$locMarkers = array(
 			'HEADERTITLES' => $this->renderHeaderTitles($markers),
+			'HEADERACTIONS' => $this->getLl('actions', 'Actions', true),
 		);
 		$headerTemplate = $this->cObj->getSubpart($template, '###HEADER###');
 		$headerContent = $this->cObj->substituteMarkerArray($headerTemplate, $locMarkers, '###|###');
@@ -134,11 +135,21 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 			$subparts['###ROW###'] .= $this->cObj->substituteMarkerArray($itemContent, $markers, '###|###');
 		}
 
+		$data = array(
+			'newId' => 'New'.uniqid(),
+			'table' => $this->table,
+			'fields' => implode(',', $this->fields),
+			'hidden' => $row['hidden'],
+		);
+		$cObj = t3lib_div::makeInstance('tslib_cObj');
+		$cObj->start($data, 'TCAFE_Admin_actions');
+		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
 			'TABLENAME' => $this->table,
 			'PAGEBROWSE' => $this->getListGetPageBrowser(),
 			'CAPTION' => $this->getLL('caption_list', 'List rows', true),
+			'NEW' => $cObj->stdWrap('', $this->conf['listActions.']['new.']),
 		);
 
 		$template = $this->cObj->substituteSubpartArray($template, $subparts);
@@ -212,12 +223,28 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @return	string		HTML row fields content
 	 */
 	private function renderRowActions(array $row, &$markers) {
-		// TODO: implements this
+		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_RESULTS_ROW_ACTIONS###');
+		
+		$data = array(
+			'id' => $row['uid'],
+			'newId' => 'New'.uniqid(),
+			'table' => $this->table,
+			'fields' => implode(',', $this->fields),
+			'hidden' => $row['hidden'],
+		);
+		$cObj = t3lib_div::makeInstance('tslib_cObj');
+		$cObj->start($data, 'TCAFE_Admin_actions');
+		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 
-		// $template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_RESULTS_ROW_ACTIONS###');
-		// return $template;
-
-		return '';
+		$locMarkers = array(
+			'EDIT' => $cObj->stdWrap('', $this->conf['listActions.']['edit.']),
+			'SINGLE' => $cObj->stdWrap('', $this->conf['listActions.']['single.']),
+			'NEW' => $cObj->stdWrap('', $this->conf['listActions.']['new.']),
+			'DELETE' => $cObj->stdWrap('', $this->conf['listActions.']['delete.']),
+			'HIDE' => $cObj->stdWrap('', $this->conf['listActions.']['hide.']),
+		);
+		
+		return $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');
 	}
 
 	/**

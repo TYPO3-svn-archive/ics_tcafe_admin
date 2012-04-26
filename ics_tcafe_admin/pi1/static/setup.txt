@@ -157,12 +157,85 @@ plugin.tx_icstcafeadmin_pi1 {
 			}
 			
 		}
+		require {
+			stdWrap.noTrimWrap = - || *|
+		}
 	}
 		
 	# Render
 	renderConf {
 		# Put here render of a field like
 		# fieldname.theView.theConf
+	}
+	
+	# Render actions on list view
+	listActions {
+		edit {
+			cObject = TEXT
+			cObject {
+				data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:action_edit
+			}
+			typolink {
+				parameter.data = tsfe:id
+				additionalParams = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[fields]={field:fields}&tx_icstcafeadmin_pi1[showUid]={field:id}&tx_icstcafeadmin_pi1[mode]=EDIT
+				additionalParams.insertData = 1
+			}
+		}
+		single {
+			cObject = TEXT
+			cObject {
+				data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:action_single
+			}
+			typolink {
+				parameter.data = tsfe:id
+				additionalParams = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[fields]={field:fields}&tx_icstcafeadmin_pi1[showUid]={field:id}&tx_icstcafeadmin_pi1[mode]=SINGLE
+				additionalParams.insertData = 1
+			}
+		}
+		new {
+			cObject = TEXT
+			cObject {
+				data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:action_new
+			}
+			typolink {
+				parameter.data = tsfe:id
+				additionalParams = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[fields]={field:fields}&tx_icstcafeadmin_pi1[newUid]={field:newId}&tx_icstcafeadmin_pi1[mode]=NEW
+				additionalParams.insertData = 1
+			}
+		}
+		delete {
+			cObject = TEXT
+			cObject {
+				data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:action_delete
+			}
+			typolink {
+				parameter.data = tsfe:id
+				additionalParams = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}&tx_icstcafeadmin_pi1[mode]=DELETE
+				additionalParams.insertData = 1
+			}
+		}
+		hide {
+			cObject = COA_INT
+			cObject {
+				10 = TEXT
+				10 {
+					if.isTrue.field = hidden
+					data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:action_show
+				}
+				20 = TEXT
+				20 {
+					if.isTrue.field = hidden
+					if.negate = 1
+					data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:action_hide
+				}
+			}
+			typolink {
+				parameter.data = tsfe:id
+				additionalParams = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}&tx_icstcafeadmin_pi1[mode]=HIDE
+				additionalParams.insertData = 1
+			}
+			
+		}
 	}
 	
 	# Javascript conform input

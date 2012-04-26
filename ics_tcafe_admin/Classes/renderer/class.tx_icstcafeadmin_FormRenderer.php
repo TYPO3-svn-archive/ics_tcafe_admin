@@ -91,7 +91,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$lConf: Typoscript configuration
 	 * @return	void
 	 */
-	function __construct($pi, tslib_cObj $cObj, $table, $row, array $fields, array $fieldLabels, array $lConf) {
+	function __construct($pi, tslib_cObj $cObj, $table, $row=null, array $fields, array $fieldLabels, array $lConf) {
 		$this->table = $table;
 		$this->row = $row;
 		$this->fields = $fields;
@@ -232,11 +232,16 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		$size = t3lib_div::intInRange($config['size'], 5, $this->maxInputWidth, 30);
 		$size = $size? 'size="' . $size . '"': '';
 
+		$label = $this->fieldLabels[$field];
+		$evalList = t3lib_div::trimExplode(',', $config['eval'], true);
+		if (in_array('required', $evalList))
+			$label = $this->cObj->stdWrap($label, $this->conf['defaultConf.']['require.']);
+		
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_TEXT###');
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
 			'ITEM_ID' => $field,
-			'FIELDLABEL' => $this->fieldLabels[$field],
+			'FIELDLABEL' => $label,
 			'FIELDNAME' => $field,
 			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
 			'ITEM_VALUE' => $this->getEntryValue($field, $config),
@@ -312,12 +317,16 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		$rows = t3lib_div::intInRange($config['rows'], 1, $this->maxTextareaRows, 5);
 		$rows =  $rows? 'rows="' . $rows . '"': '';
 
-		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_TEXTAREA###');
+		$label = $this->fieldLabels[$field];
+		$evalList = t3lib_div::trimExplode(',', $config['eval'], true);
+		if (in_array('required', $evalList))
+			$label = $this->cObj->stdWrap($label, $this->conf['defaultConf.']['require.']);
 
+		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_TEXTAREA###');
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
 			'ITEM_ID' => $field,
-			'FIELDLABEL' => $this->fieldLabels[$field],
+			'FIELDLABEL' => $label,
 			'FIELDNAME' => $field,
 			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
 			'ITEM_VALUE' => $this->getEntryValue($field, $config),
@@ -477,10 +486,13 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			$subparts['###GROUP_OPTIONS###'] .= $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
 		}
 
+		$label = $this->fieldLabels[$field];
+		if ($config['minitems']>0)
+			$label = $this->cObj->stdWrap($label, $this->conf['defaultConf.']['require.']);
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
 			'ITEM_ID' => $field,
-			'FIELDLABEL' => $this->fieldLabels[$field],
+			'FIELDLABEL' => $label,
 			'FIELDNAME' => $field,
 			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
 		);
@@ -516,9 +528,12 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			}
 		}
 
+		$label = $this->fieldLabels[$field];
+		if ($config['minitems']>0)
+			$label = $this->cObj->stdWrap($label, $this->conf['defaultConf.']['require.']);
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
-			'FIELDLABEL' => $this->fieldLabels[$field],
+			'FIELDLABEL' => $label,
 			'FIELDNAME' => $field,
 		);
 
