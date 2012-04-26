@@ -396,6 +396,7 @@ class tx_icstcafeadmin_DBTools {
 	 * @return	void
 	 */
 	function renderField_group_parseFiles($field, array $row, array $value, $config) {
+		$uploadfolder = $config['uploadfolder']? $config['uploadfolder'].'/': '';
 		$files = t3lib_div::trimExplode(',', $value['files'], true);
 		if (is_array($value) && !empty($value)) {
 			$pFiles = $value;
@@ -404,7 +405,7 @@ class tx_icstcafeadmin_DBTools {
 			$files = array_diff($files, array_values($pFiles));
 			foreach ($fileToDeleteArray as $file) {
 				if ($file) {
-					@unlink(t3lib_div::getFileAbsFileName($config['uploadfolder'] . '/' . $file));
+					@unlink(t3lib_div::getFileAbsFileName($uploadfolder . $file));
 					$this->group_files['deletedFiles'][$field][] = $file;
 				}
 			}
@@ -425,7 +426,8 @@ class tx_icstcafeadmin_DBTools {
 
 				$filefunc = t3lib_div::makeInstance('t3lib_basicFileFunctions');
 				$newFile = $filefunc->cleanFileName($newFile);
-				$newFile = $filefunc->getUniqueName($newFile, t3lib_div::getFileAbsFileName($config['uploadfolder']));
+				if ($uploadfolder)
+					$newFile = $filefunc->getUniqueName($newFile, t3lib_div::getFileAbsFileName($uploadfolder));
 				$newFile = basename($newFile);
 
 				$ext = '';
@@ -436,7 +438,7 @@ class tx_icstcafeadmin_DBTools {
 					$ext = strtolower(substr($newFile, strrpos($newFile, '.') + 1));
 
 				if (in_array($ext, $allowed) || !in_array($ext, $disallowed)) {
-					if (move_uploaded_file($_FILES[$this->prefixId]['tmp_name'][$field]['file'], t3lib_div::getFileAbsFileName($config['uploadfolder'] . '/' . $newFile))) {
+					if (move_uploaded_file($_FILES[$this->prefixId]['tmp_name'][$field]['file'], t3lib_div::getFileAbsFileName($uploadfolder . $newFile))) {
 						$files[] = $newFile;
 						$this->group_files['newFile'][$field] = $newFile;
 					}
@@ -446,6 +448,7 @@ class tx_icstcafeadmin_DBTools {
 				}
 			}
 		}
+		return implode(',', $files);
 	}
 
 	/**
