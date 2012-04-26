@@ -569,8 +569,10 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_FILE###');
 		$subparts = array();
 
-		$isIllustration = array_intersect(t3lib_div::trimExplode(',', $config['allowed'], true), tx_icstcafeadmin_CommonRenderer::$allowedImgFileExtArray);
-
+		$isIllustration = false;
+		if (array_intersect(t3lib_div::trimExplode(',', $config['allowed'], true), tx_icstcafeadmin_CommonRenderer::$allowedImgFileExtArray))
+			$isIllustration = true;
+		
 		$cObj = t3lib_div::makeInstance('tslib_cObj');
 		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 		$lConf = $this->conf['defaultConf.']['file.']['viewForm.']['delete.'];
@@ -581,8 +583,13 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		$subparts['###SUBPART_FILE_DELETE###'] = '';
 		foreach ($files as $file) {
 			$uniqid = uniqid();
+			if ($isIllustration) {
+				$illustration = $file;
+				if ($config['uploadfolder'])
+					$illustration = $config['uploadfolder'].'/'.$file;
+			}
 			$data = array(
-				'illustration' => $isIllustration? $file : '',
+				'illustration' => $illustration,
 				'filename' => $file,
 			);
 
