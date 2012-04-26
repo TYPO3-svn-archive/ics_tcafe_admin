@@ -26,21 +26,26 @@
  *
  *
  *
- *   57: class tx_icstcafeadmin_pi1 extends tslib_pibase
- *   83:     function main($content, $conf)
- *  160:     protected function init()
- *  209:     private function setTable()
- *  222:     private function setFields()
- *  264:     public function displayList()
- *  303:     public function displaySingle()
- *  323:     public function displayEdit()
- *  343:     public function displayNew()
- *  352:     public function displayValidatedForm()
- *  361:     private function getRecords()
- *  390:     private function getSingleRecord()
- *  410:     function saveDB()
+ *   62: class tx_icstcafeadmin_pi1 extends tslib_pibase
+ *   88:     function main($content, $conf)
+ *  195:     protected function init()
+ *  246:     private function setTable()
+ *  259:     private function setFields()
+ *  301:     public function displayList()
+ *  340:     public function displaySingle()
+ *  360:     public function displayEdit()
+ *  380:     public function displayNew()
+ *  400:     public function displayValidatedForm()
+ *  417:     public function displayErrorValidatedForm()
+ *  431:     public function displayDelete()
+ *  444:     public function displayHide()
+ *  463:     private function getRecords()
+ *  495:     private function getSingleRecord()
+ *  515:     function saveDB()
+ *  595:     public function deleteRecord($table, $rowUid)
+ *  612:     public function hideRecord($table, $rowUid)
  *
- * TOTAL FUNCTIONS: 12
+ * TOTAL FUNCTIONS: 17
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -108,7 +113,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			try {
 				$content = $this->displaySingle();
 			} catch (Exception $e) {
-				tx_icstcafeadmin_debug::error('Retrieves data set failed: ' . $e);
+				tx_icstcafeadmin_debug::error('Retrieves data failed: ' . $e);
 			}
 		}
 		elseif ($this->showUid && in_array('EDIT', $this->codes)) {
@@ -120,21 +125,51 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 							$content .= $this->displayEdit();
 					}
 					else {
-						$content = $this->displayEdit();
+						$content = $this->displayErrorValidatedForm();
+						$content .= $this->displayEdit();
 					}
 				}
 				else {
 					$content = $this->displayEdit();
 				}
 			} catch (Exception $e) {
-				tx_icstcafeadmin_debug::error('Edit data set failed: ' . $e);
+				tx_icstcafeadmin_debug::error('Edit data failed: ' . $e);
 			}
 		}
 		elseif ($this->newUid && in_array('NEW', $this->codes)) {
 			try {
-				$content = $this->displayNew();
+				if ($this->piVars['valid']) {
+					if ($this->saveDB()) {
+						$content = $this->displayValidatedForm();
+						if ($this->conf['displayFormAfterSaveDB'])
+							$content .= $this->displayNew();
+					}
+					else {
+						$content = $this->displayErrorValidatedForm();
+						$content .= $this->displayNew();
+					}
+				}
+				else {
+					$content = $this->displayNew();
+				}
 			} catch (Exception $e) {
-				tx_icstcafeadmin_debug::error('New data set failed: ' . $e);
+				tx_icstcafeadmin_debug::error('New data failed: ' . $e);
+			}
+		}
+		elseif ($this->showUid && in_array('DELETE', $this->codes)) {
+			try {
+				$this->deleteRecord($this->table, $this->showUid);
+				$content = $this->displayDelete();
+			} catch (Exception $e) {
+				tx_icstcafeadmin_debug::error('Delete data failed: ' . $e);
+			}
+		}
+		elseif ($this->showUid && in_array('HIDE', $this->codes)) {
+			try {
+				$this->hideRecord($this->table, $this->showUid);
+				$content = $this->displayHide();
+			} catch (Exception $e) {
+				tx_icstcafeadmin_debug::error('Hide data failed: ' . $e);
 			}
 		}
 		elseif (count(array_intersect(array('SEARCH', 'LIST'), $this->codes)) > 0) {
@@ -188,6 +223,8 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		if ($this->piVars['pidStorage'])
 			$pids = t3lib_div::trimExplode(',', $this->piVars['pidStorage'], true);
 		$this->storage = $pids? $pids: array(0);
+
+		$this->newUid = $this->piVars['newUid'];
 
 			// Get page size
 		// $size = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'size', 'general');
@@ -324,12 +361,12 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$renderEdit = t3lib_div::makeInstance(
 			'tx_icstcafeadmin_FormRenderer',
 			$this,
-				$this->cObj,
-				$this->table,
-				$this->getSingleRecord(),
-				$this->fields,
-				$this->fieldLabels,
-				$this->conf
+			$this->cObj,
+			$this->table,
+			$this->getSingleRecord(),
+			$this->fields,
+			$this->fieldLabels,
+			$this->conf
 		);
 		$renderEdit->init();
 		return $renderEdit->render();
@@ -341,7 +378,18 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 * @return	string		HTML content for new form
 	 */
 	public function displayNew() {
-		return 'displayNew is not yet implemented.';
+		$renderEdit = t3lib_div::makeInstance(
+			'tx_icstcafeadmin_FormRenderer',
+			$this,
+			$this->cObj,
+			$this->table,
+			null,
+			$this->fields,
+			$this->fieldLabels,
+			$this->conf
+		);
+		$renderEdit->init();
+		return $renderEdit->render();
 	}
 
 	/**
@@ -350,7 +398,61 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 * @return	string		HTML content for new form
 	 */
 	public function displayValidatedForm() {
-		return 'displayValidatedForm is not yet implemented.';
+		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_VALIDATED_FORM###');
+		if ($this->newUid)
+			$text = $this->pi_getLL('record_added', 'New record is added.', true);
+		else
+			$text = $this->pi_getLL('record_updated', 'New record is updated.', true);
+		$markers = array(
+			'VALIDATED_FORM_TEXT' => $text,
+		);
+		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
+	}
+
+	/**
+	 * Display submitted form
+	 *
+	 * @return	string		HTML content for new form
+	 */
+	public function displayErrorValidatedForm() {
+		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_ERROR_VALIDATED_FORM###');
+		$markers = array(
+			'ERROR_VVALIDATED_FORM_TEXT' => $this->pi_getLL('error_validated_form', 'Form is properly filled.', true),
+		);
+		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
+	}
+
+
+	/**
+	 * Display delete record
+	 *
+	 * @return	string		HTML content
+	 */
+	public function displayDelete() {
+		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_DELETED_RECORD###');
+		$markers = array(
+			'DELETED_RECORD_TEXT' => sprintf($this->pi_getLL('deleted_record', 'Record\'s %s is deleted.', true), $this->showUid),
+		);
+		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
+	}
+
+	/**
+	 * Display hide record
+	 *
+	 * @return	string		HTML content
+	 */
+	public function displayHide() {
+		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_HIDDEN_SHOWN_RECORD###');
+		$row = $this->getSingleRecord();
+		if ($row['hidden'])
+			$text = sprintf($this->pi_getLL('hidden_record', 'Record\'s %s is hidden.', true), $this->showUid) ;
+		else
+			$text = sprintf($this->pi_getLL('shown_record', 'Record\'s %s is visible.', true), $this->showUid);
+
+		$markers = array(
+			'HIDDEN_SHOWN_RECORD_TEXT' => $text,
+		);
+		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
 
 	/**
@@ -362,9 +464,12 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$requestFields = $this->fields;
 		if (!in_array('uid', $requestFields))
 			$requestFields = array_merge(array('uid'), $requestFields);
+		if (!in_array('hidden', $requestFields))
+			$requestFields = array_merge(array('hidden'), $requestFields);
 
-		$addWhere_storage = '';
-		if (!empty($this->storage) && ((count($this->storage)>1) || count($this->storage)==1 && $this->storage[0]>0))
+			// TODO: implements select on pid storage on displayNew and decomments this
+		// $addWhere_storage = '';
+		// if (!empty($this->storage) && ((count($this->storage)>1) || count($this->storage)==1 && $this->storage[0]>0))
 			$addWhere_storage = ' AND pid IN(' . implode(',', $this->storage) . ')';
 
 		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
@@ -418,69 +523,113 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$this->conf
 		);
 
+
 		if ($this->ctrlEntries->controlEntries()) {
 			$dbTools = t3lib_div::makeInstance('tx_icstcafeadmin_DBTools', $this);
-			$dataArray = $dbTools->process_valuesToDB($this->table, $this->getSingleRecord(), $this->fields, $this->piVars);
-		}
-		
-		// var_dump($dataArray);
-		
-		// if ($new) { // Insert new record
-			// $result = $this->cObj->DBgetInsert(
-				// $table,
-				// $id,
-				// $dataArray,
-				// implode(',', $fields),
-				// true
-			// );
+			$fields = array_diff($this->fields, array('uid'));
+			$dataArray = $dbTools->process_valuesToDB($this->table, $this->getSingleRecord(), $fields, $this->piVars);
 
-		// } else {	// Update record
-			// $result = $this->cObj->DBgetUpdate(
-				// $table,
-				// $id,
-				// $dataArray,
-				// implode(',', $fields),
-				// true
-			// );
-		// }
+			// var_dump($dataArray);
+
+			if ($this->newUid) { // Insert new record
+				$result = $this->cObj->DBgetInsert(
+					$this->table,
+					$this->storage[0],
+					$dataArray,
+					implode(',', $fields),
+					true
+				);
+
+			} else {	// Update record
+				$result = $this->cObj->DBgetUpdate(
+					$this->table,
+					$this->showUid,
+					$dataArray,
+					implode(',', $fields),
+					true
+				);
+			}
+
+			if ($select_MM = $dbTools->getSelect_MM()) {
+				foreach ($select_MM as $field=>$foreign_uids) {
+					$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
+					$GLOBALS['TYPO3_DB']->exec_DELETEquery(
+						$config['MM'],
+						'`uid_local` =' . $this->piVars['showUid']
+					);
+
+					foreach ($foreign_uids as $foreign) {
+						$dataArray = array(
+							'uid_local' => $this->piVars['showUid'],
+							'uid_foreign' => $foreign,
+						);
+						if ($config['MM_opposite_field']) {
+							$dataArray = array(
+								'uid_foreign' => $this->piVars['showUid'],
+								'uid_local' => $foreign,
+							);
+						}
+						$GLOBALS['TYPO3_DB']->exec_INSERTquery(
+							$config['MM'],
+							$dataArray
+						);
+					}
+
+				}
+			}
+
+			return true;
+
+		}
 
 		return false;
 	}
-	
-	// /**
-	 // * Delete record
-	 // *
-	 // * @param	string		$table	The tablename
-	 // * @param	int		$rowUid	The record's uid
-	 // * @return	mixed		Result from handler
-	 // */
-	// public function deleteRecord($table, $rowUid) {
-		// return $this->cObj->DBgetUpdate(
-			// $table,
-			// $rowUid,
-			// array('deleted' => '1'),
-			// 'deleted',
-			// true
-		// );
-	// }
 
-	// /**
-	 // * Hide record
-	 // *
-	 // * @param	string		$table	The tablename
-	 // * @param	int		$rowUid	The record's uid
-	 // * @return	mixed		Result from handler
-	 // */
-	// public function hideRecord($table, $rowUid) {
-		// return $this->cObj->DBgetUpdate(
-			// $table,
-			// $rowUid,
-			// array('hidden' => '1'),
-			// 'hidden',
-			// true
-		// );
-	// }
-	
+	/**
+	 * Delete record
+	 *
+	 * @param	string		$table	The tablename
+	 * @param	int		$rowUid	The record's uid
+	 * @return	mixed		Result from handler
+	 */
+	public function deleteRecord($table, $rowUid) {
+		return $this->cObj->DBgetUpdate(
+			$table,
+			$rowUid,
+			array('deleted' => '1'),
+			'deleted',
+			true
+		);
+	}
+
+	/**
+	 * Hide record
+	 *
+	 * @param	string		$table	The tablename
+	 * @param	int		$rowUid	The record's uid
+	 * @return	mixed		Result from handler
+	 */
+	public function hideRecord($table, $rowUid) {
+		$row = $this->getSingleRecord();
+		if ($row['hidden']) {
+			return $this->cObj->DBgetUpdate(
+				$table,
+				$rowUid,
+				array('hidden' => '0'),
+				'hidden',
+				true
+			);
+		}
+		return $this->cObj->DBgetUpdate(
+			$table,
+			$rowUid,
+			array('hidden' => '1'),
+			'hidden',
+			true
+		);
+	}
+
+
 }
 
 

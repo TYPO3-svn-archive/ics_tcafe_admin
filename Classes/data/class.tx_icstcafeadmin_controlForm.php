@@ -78,8 +78,10 @@ class tx_icstcafeadmin_controlForm{
 	public function controlEntries() {
 		$control = true;
 		foreach ($this->fields as $field) {
-			if (!$this->controlEntry($field)&& $this->conf['controlEntries.']['breakControl'])
+			$control = $control && $this->controlEntry($field);
+			if (!control && $this->conf['controlEntries.']['breakControl']) {
 				break;
+			}
 		}
 		return $control;
 	}

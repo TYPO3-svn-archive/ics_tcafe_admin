@@ -47,6 +47,7 @@
 
 
 <!-- ###TEMPLATE_RESULTS_LIST### start-->
+	<p class="action_new">###NEW###</p>
 	<div class="###PREFIXID###_list">
 		<table class="###PREFIXID###_table ###TABLENAME###" id="###UNIQID###">
 				<caption>###CAPTION###</caption>
@@ -54,6 +55,7 @@
 				<thead>
 					<tr class="###PREFIXID###_header">
 						###HEADERTITLES###
+						<th>###HEADERACTIONS###</th>
 					</tr>
 				</thead>
 				<!-- ###HEADER### end -->
@@ -69,6 +71,7 @@
 				<!-- ###ROWS### end -->
 		</table>
 	</div>
+	<p class="action_new">###NEW###</p>
 	###PAGEBROWSE###
 <!-- ###TEMPLATE_RESULTS_LIST### end-->
 
@@ -91,11 +94,10 @@
 
 <!-- ###TEMPLATE_RESULTS_ROW_ACTIONS### start-->
 	<td class="###PREFIXID###_actions">
-		<!-- ###ACTION_EDIT### -->###EDIT###<!-- ###ACTION_EDIT### -->
-		<!-- ###ACTION_SINGLE### -->###SINGLE###<!-- ###ACTION_SINGLE### -->					
-		<!-- ###ACTION_NEW### -->###NEW###<!-- ###ACTION_NEW### -->
-		<!-- ###ACTION_DELETE### -->###DELETE###<!-- ###ACTION_DELETE### -->
-		<!-- ###ACTION_HIDE### -->###HIDE###<!-- ###ACTION_HIDE### -->
+		<p>###SINGLE###</p>
+		<p>###EDIT###</p>
+		<p>###DELETE###</p>
+		<p>###HIDE###</p>
 	</td>
 <!-- ###TEMPLATE_RESULTS_ROW_ACTIONS### end-->
 
@@ -137,8 +139,15 @@
 -->
 
 <!-- ###TEMPLATE_VALIDATED_FORM### start-->
-	<p>Submitted form is not implemented yet.</p>
+	<p>###VALIDATED_FORM_TEXT###</p>
 <!-- ###TEMPLATE_VALIDATED_FORM### end-->
+
+
+<!-- ###TEMPLATE_ERROR_VALIDATED_FORM### start-->
+	<p>###ERROR_VVALIDATED_FORM_TEXT###</p>
+<!-- ###TEMPLATE_ERROR_VALIDATED_FORM### end-->
+
+
 
 <!-- ###TEMPLATE_FORM### start-->
 	<form class="###PREFIXID###_form" name="form" method="post" action="###URL###"  enctype="multipart/form-data" >
@@ -253,3 +262,20 @@
 		</div>
 	</div>
 <!-- ###TEMPLATE_FORM_FILE### end-->
+
+
+
+
+
+
+
+
+<!-- ###TEMPLATE_DELETED_RECORD### start-->
+	<p>###DELETED_RECORD_TEXT###</p>
+<!-- ###TEMPLATE_DELETED_RECORD### end-->
+
+
+
+<!-- ###TEMPLATE_HIDDEN_SHOWN_RECORD### start-->
+	<p>###HIDDEN_SHOWN_RECORD_TEXT###</p>
+<!-- ###TEMPLATE_HIDDEN_SHOWN_RECORD### end-->
