@@ -172,7 +172,7 @@ class tx_icstcafeadmin_controlForm{
 					if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['controlEntry'])) {
 						foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['controlEntry'] as $class) {
 							$procObj = & t3lib_div::getUserObj($class);
-							$control = $procObj->controlEntry($field, $value, $evals, $this, $this->conf);
+							$control = $procObj->controlEntry($this->table, $field, $value, $evals, $this, $this->conf);
 						}
 					}
 				}

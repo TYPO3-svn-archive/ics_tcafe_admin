@@ -189,7 +189,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderListRowFields'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderListRowFields'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$content = $procObj->renderListRowFields($template, $markers, $this->conf, $this);
+				$content = $procObj->renderListRowFields($this->table, $this->fields, $template, $markers, $this->conf, $this);
 			}
 		}
 		else {

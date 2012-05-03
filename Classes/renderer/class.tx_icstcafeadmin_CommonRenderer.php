@@ -124,7 +124,7 @@ class tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderValue'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderValue'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$value = $procObj->renderValue($this, $this->table,$recId, $field, $value, $config, $view);
+				$value = $procObj->renderValue($this, $this->table, $recId, $field, $value, $config, $view);
 			}
 		}
 		elseif ($field===$label && $view=='viewList') {

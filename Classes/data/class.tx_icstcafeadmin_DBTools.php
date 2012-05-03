@@ -103,7 +103,7 @@ class tx_icstcafeadmin_DBTools {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_valueToDB'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_valueToDB'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$value = $procObj->process_valueToDB($this, $table, $row, $field, $value);
+				$value = $procObj->process_valueToDB($table, $row, $field, $value, $this);
 			}
 		}
 		else {
