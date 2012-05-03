@@ -57,9 +57,9 @@
 class tx_icstcafeadmin_CommonRenderer {
 	protected $pi;
 	protected $templateCode;
-	protected $prefixId;
+	public $prefixId;
 	protected $conf;
-	protected $cObj;
+	public $cObj;
 
 	protected $table;
 
