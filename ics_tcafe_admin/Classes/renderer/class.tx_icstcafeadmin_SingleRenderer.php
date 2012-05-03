@@ -103,7 +103,7 @@ class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
 			$markers = array();
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderSingleFields'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$content = $procObj->renderSingleFields($template, $markers, $this->conf, $this);
+				$content = $procObj->renderSingleFields($this->table, $this->fields, $template, $markers, $this->conf, $this);
 			}
 		}
 		else {

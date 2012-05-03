@@ -1,3 +1,7 @@
+2012-05-03 In Cite Solution  <technique@in-cite.net>
+	* Refactor: Reworked call to hook.
+	* Feature: Added manual.
+
 2012-04-26 In Cite Solution  <technique@in-cite.net>
 	* Feature: Added list actions.
 	* Feature: Implemented actions.

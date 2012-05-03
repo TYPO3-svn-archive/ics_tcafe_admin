@@ -153,18 +153,19 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			);
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderFormFields'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$content = $procObj->renderFormFields($template, $markers, $this->conf, $this);
+				if ($content = $procObj->renderFormFields($this->table, $this->row, $this->fields, $template, $markers, $this->conf, $this))
+					break;
 			}
 		}
-		else {
+		if (!$content) {
 			$markers = array(
 				'PREFIXID' => $this->prefixId,
 				'FIELDSET_FIELDS' => $this->getLL('formFields_fieldset', 'Fields entries', true),
 				'FIELDS_TITLE' => $this->getLL('formFields_title', 'Fields entries', true),
 				'ENTRIES' => $this->renderEntries(),
 			);
-			$content = $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 		}
+		$content = $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 		return $content;
 	}
 
@@ -176,18 +177,18 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 */
 	private function renderEntries() {
 		$content = '';
-		// Hook on render form entries
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderFormFields'] as $class) {
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderEntries'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderEntries'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$content = $procObj->renderEntries($this->table, $this->row, $this->fields, $this->conf, $this);
+				if ($content = $procObj->renderEntries($this->table, $this->row, $this->fields, $this->conf, $this))
+					break;
 			}
 		}
-		else {
+		if (!$content)
 			foreach ($this->fields as $field) {
-					$content .= $this->handleFormField($field);
+				$content .= $this->handleFormField($field);
 			}
-		}
+		
 		return $content;
 	}
 
@@ -198,25 +199,34 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @return	string		HTML form field content
 	 */
 	public function handleFormField($field) {
-		$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
-		switch ($config['type']) {
-			case 'input':
-				$content =  $this->handleFormField_typeInput($field, $config);
-				break;
-			case 'text':
-				$content =  $this->handleFormField_typeText($field, $config);
-				break;
-			case 'check':
-				$content = $this->handleFormField_typeCheck($field, $config);
-				break;
-			case 'select':
-				$content = $this->handleFormField_typeSelect($field, $config);
-				break;
-			case 'group':
-				$content = $this->handleFormField_typeGroup($field, $config);
-				break;
-			default:
-				$content = '';
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if ($content = $procObj->handleFormField($this->table, $this->row, $field, $this->conf, $this))
+					break;
+			}
+		}
+		if (!$content) {
+			$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
+			switch ($config['type']) {
+				case 'input':
+					$content =  $this->handleFormField_typeInput($field, $config);
+					break;
+				case 'text':
+					$content =  $this->handleFormField_typeText($field, $config);
+					break;
+				case 'check':
+					$content = $this->handleFormField_typeCheck($field, $config);
+					break;
+				case 'select':
+					$content = $this->handleFormField_typeSelect($field, $config);
+					break;
+				case 'group':
+					$content = $this->handleFormField_typeGroup($field, $config);
+					break;
+				default:
+					$content = '';
+			}
 		}
 		return $content;
 	}
@@ -353,10 +363,11 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeCheck'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeCheck'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$content = $procObj->handleFormField_typeCheck($this->table, $this->row, $field, $this->conf, $this);
+				if ($content = $procObj->handleFormField_typeCheck($this->table, $this->row, $field, $this->conf, $this))
+					break;
 			}
 		}
-		else {
+		if (!$content) {
 			if ($config['cols'] && $config['cols']>1) {
 				tx_icstcafeadmin_debug::notice('handleFormField_typeCheck with cols  is not implemented.');
 				$content = '<div>
@@ -427,10 +438,11 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeSelect'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeSelect'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$content = $procObj->handleFormField_typeSelect($this->table, $this->row, $field, $this->conf, $this);
+				if ($content = $procObj->handleFormField_typeSelect($this->table, $this->row, $field, $this->conf, $this))
+					break;
 			}
 		}
-		else {
+		if (!$content) {
 			if ($config['maxitems'] <= 1 && $config['renderMode'] !== 'tree') {	// Single selector box
 				$content = $this->handleFormField_typeSelect_single($items, $field, $config);
 			} elseif (!strcmp($config['renderMode'], 'checkbox')) {
@@ -554,10 +566,11 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeGroup'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeGroup'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$content = $procObj->handleFormField_typeGroup($this->table, $this->row, $field, $this->conf, $this);
+				if ($content = $procObj->handleFormField_typeGroup($this->table, $this->row, $field, $this->conf, $this))
+					break;
 			}
 		}
-		else {
+		if (!$content) {
 			if ($config['internal_type']=='file') {
 				$content = $this->handleFormField_typeGroup_file($field, $config);
 			}
