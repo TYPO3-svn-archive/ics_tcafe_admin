@@ -124,28 +124,31 @@ class tx_icstcafeadmin_CommonRenderer {
 		$label = $GLOBALS['TCA'][$this->table]['ctrl']['label'];
 		$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
 
+		$process = false;
 		// Hook to render value
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderValue'])) {
 			$conf = $this->conf;
 			$conf['currentView'] = $view;
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderValue'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$value = $procObj->renderValue($this->pi_base, $this->table, $field, $this->fieldLabels, $value, $recordId, $conf, $this);
+				$process = $procObj->renderValue($this->pi_base, $this->table, $field, $this->fieldLabels, $value, $recordId, $conf, $this);
 			}
 		}
-		elseif ($field===$label && $view=='viewList') {
-			$data = array(
-				'id' => $recordId,
-				'title' => $this->handleFieldValue($recordId ,$value, $config),
-			);
-			$cObj = t3lib_div::makeInstance('tslib_cObj');
-			$cObj->start($data, $this->table);
-			$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
+		if (!$process) {
+			if ($field===$label && $view=='viewList') {
+				$data = array(
+					'id' => $recordId,
+					'title' => $this->handleFieldValue($recordId ,$value, $config),
+				);
+				$cObj = t3lib_div::makeInstance('tslib_cObj');
+				$cObj->start($data, $this->table);
+				$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 
-			$value = $cObj->stdWrap('', $this->conf['defaultConf.']['label.']);
-		}
-		else {
-			$value = $this->default_renderValue($field, $this->handleFieldValue($recordId ,$value, $config), $view);
+				$value = $cObj->stdWrap('', $this->conf['defaultConf.']['label.']);
+			}
+			else {
+				$value = $this->default_renderValue($field, $this->handleFieldValue($recordId ,$value, $config), $view);
+			}
 		}
 		return $value;
 	}
