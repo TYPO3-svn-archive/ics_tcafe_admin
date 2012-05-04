@@ -107,14 +107,16 @@ class tx_icstcafeadmin_DBTools {
 		t3lib_div::loadTCA($table);
 		$config = $GLOBALS['TCA'][$table]['columns'][$field]['config'];
 
+		$process = false;
 		// Hook on process_valueToDB
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_valueToDB'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_valueToDB'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$value = $procObj->process_valueToDB($table, $row, $field, $value, $this);
+				if ($process = $procObj->process_valueToDB($table, $row, $field, $value, $this))
+					break;
 			}
 		}
-		else {
+		if (!$process) {
 			$evals = t3lib_div::trimExplode(',', $config['eval'], true);
 			if (!empty($evals)) {
 				$value = $this->renderField_config_evals($field, $row, $value, $evals);
