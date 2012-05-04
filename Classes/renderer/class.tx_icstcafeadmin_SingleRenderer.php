@@ -87,16 +87,17 @@ class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 */
 	private function renderFields() {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_SINGLE_FIELDS###');
-		$content = '';
 		// Hook for render row fields
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderSingleFields'])) {
 			$markers = array();
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderSingleFields'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
 				$content = $procObj->renderSingleFields($this->pi_base, $this->table, $this->fields, $this->fieldLabels, $this->row, $markers, $this->conf, $this);
+				if (is_string($content))
+					break;
 			}
 		}
-		else {
+		if (!isset($content) || is_bool($content)) {
 			$genericFieldTemplate = $this->cObj->getSubpart($template, '###SUBPART_GENERIC###');
 			foreach ($this->fields as $field) {
 				$value = $this->renderValue($field, $this->row['uid'], $this->row[$field], self::$view);

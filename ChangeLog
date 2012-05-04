@@ -1,10 +1,11 @@
 2012-05-04 In Cite Solution  <technique@in-cite.net>
+	* Refactor: Reworked hook return.
 	* Refactor: Call to renderer and hook.
 
 2012-05-03 In Cite Solution  <technique@in-cite.net>
 	* Refactor: Visibility of renderer properties.
 	* Refactor: Reworked call to hook.
-	* Feature: Added manual.
+	* Documentation: Added manual.
 
 2012-04-26 In Cite Solution  <technique@in-cite.net>
 	* Feature: Added list actions.

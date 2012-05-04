@@ -160,15 +160,16 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 */
 	private function renderRowFields(array $row, &$markers) {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_RESULTS_ROW_FIELDS###');
-		$content = '';
 		// Hook for render row fields
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderListRowFields'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderListRowFields'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
 				$content = $procObj->renderListRowFields($this->pi_base, $this->table, $this->fields, $this->fieldLabels, $row, $markers, $this->conf, $this);
+				if (is_string($content))
+					break;
 			}
 		}
-		else {
+		if (!isset($content) || is_bool($content)) {
 			$genericFieldTemplate = $this->cObj->getSubpart($template, '###SUBPART_GENERIC###');
 			foreach ($this->fields as $field) {
 				$value = $this->renderValue($field, $row['uid'], $row[$field], self::$view);
