@@ -112,7 +112,7 @@ class tx_icstcafeadmin_DBTools {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_valueToDB'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_valueToDB'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($process = $procObj->process_valueToDB($this->pi_base, $table, $row, $field, $value,$this->conf, $this))
+				if ($process = $procObj->process_valueToDB($this->pi_base, $table, $field, $value, $row, $this->conf, $this))
 					break;
 			}
 		}
@@ -224,7 +224,7 @@ class tx_icstcafeadmin_DBTools {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_dateToDB'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_dateToDB'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($process = $procObj->process_dateToDB($this->pi_base, $table, $field, $value, $this->conf, $this))
+				if ($process = $procObj->process_dateToDB($this->pi_base, $table, $field, $value, $row, $this->conf, $this))
 					break;
 			}
 		}
@@ -266,7 +266,7 @@ class tx_icstcafeadmin_DBTools {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_datetimeToDB'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_datetimeToDB'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($process = $procObj->process_datetimeToDB($this->pi_base, $table, $field, $value, $this->conf, $this))
+				if ($process = $procObj->process_datetimeToDB($this->pi_base, $table, $field, $value, $row, $this->conf, $this))
 					break;
 			}
 		}
