@@ -311,7 +311,6 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$renderList = t3lib_div::makeInstance(
 				'tx_icstcafeadmin_ListRenderer',
 				$this,
-				$this->cObj,
 				$this->table,
 				$this->fields,
 				$this->fieldLabels,
@@ -341,12 +340,11 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$renderSingle = t3lib_div::makeInstance(
 			'tx_icstcafeadmin_SingleRenderer',
 			$this,
-				$this->cObj,
-				$this->table,
-				$this->getSingleRecord(),
-				$this->fields,
-				$this->fieldLabels,
-				$this->conf
+			$this->table,
+			$this->fields,
+			$this->fieldLabels,
+			$this->getSingleRecord(),
+			$this->conf
 		);
 		$renderSingle->init();
 		return $renderSingle->render();
@@ -361,11 +359,10 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$renderEdit = t3lib_div::makeInstance(
 			'tx_icstcafeadmin_FormRenderer',
 			$this,
-			$this->cObj,
 			$this->table,
-			$this->getSingleRecord(),
 			$this->fields,
 			$this->fieldLabels,
+			$this->getSingleRecord(),
 			$this->conf
 		);
 		$renderEdit->init();
@@ -381,11 +378,10 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$renderEdit = t3lib_div::makeInstance(
 			'tx_icstcafeadmin_FormRenderer',
 			$this,
-			$this->cObj,
 			$this->table,
-			null,
 			$this->fields,
 			$this->fieldLabels,
+			null,
 			$this->conf
 		);
 		$renderEdit->init();

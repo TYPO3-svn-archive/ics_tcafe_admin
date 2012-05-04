@@ -27,7 +27,7 @@
  *
  *
  *   66: class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer
- *   93:     function __construct($pi, tslib_cObj $cObj, $table, $row, array $fields, array $fieldLabels, array $lConf)
+ *   93:     function __construct($pi_base, tslib_cObj $cObj, $table, $row, array $fields, array $fieldLabels, array $lConf)
  *  107:     public function render()
  *  130:     private function renderPIDStorage()
  *  145:     private function renderFormFields()
@@ -64,40 +64,30 @@
  * @subpackage	tx_icstcafeadmin
  */
 class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
-	private $headersId = array();
-
-	private $fields;
-	private $labelFields;
 	private $row = null;
-
 	private static $view = 'viewForm';
 
 	private static $datepickerIncluded = false;
 	private static $conformInputIncluded = false;
 
-	var $maxInputWidth = 48; // The maximum abstract value for input fields
-	var $maxTextareaCols	= 48;			// The maximum abstract value for textareas
-	var $maxTextareaRows	= 20;			// The maximum abstract value for textareas
+	var $maxInputWidth = 48; 		// The maximum abstract value for input fields
+	var $maxTextareaCols	= 48;	// The maximum abstract value for textareas
+	var $maxTextareaRows	= 20;	// The maximum abstract value for textareas
 
 	/**
 	 * Constructor
 	 *
-	 * @param	tx_icstcafeadmin_pi1		$pi: Instance of tx_icstcafeadmin_pi1
-	 * @param	tslib_cObj		$cObj: tx_icstcafeadmin_pi1 cObj
+	 * @param	tx_icstcafeadmin_pi1		$pi_base: Instance of tx_icstcafeadmin_pi1
 	 * @param	string		$table: The tablename
-	 * @param	array		$row: The row
 	 * @param	array		$fields: Array of fields
 	 * @param	array		$fieldLabels: Associative array of fields labels like field=>labelfield
-	 * @param	array		$lConf: Typoscript configuration
+	 * @param	array		$row: The row
+	 * @param	array		$conf: Typoscript configuration
 	 * @return	void
 	 */
-	function __construct($pi, tslib_cObj $cObj, $table, $row=null, array $fields, array $fieldLabels, array $lConf) {
-		$this->table = $table;
+	function __construct($pi_base, $table, array $fields, array $fieldLabels, $row=null, array $conf) {
 		$this->row = $row;
-		$this->fields = $fields;
-		$this->fieldLabels = $fieldLabels;
-		
-		parent::__construct($pi, $cObj, $table, $lConf);
+		parent::__construct($pi_base, $table, $fields, $fieldLabels, $conf);
 	}
 
 	/**
@@ -153,7 +143,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			);
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderFormFields'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($content = $procObj->renderFormFields($this->table, $this->fields, $this->row, $this->pi->piVars, $template, $markers, $this->conf, $this))
+				if ($content = $procObj->renderFormFields($this->pi_base, $this->table, $this->fields, $this->fieldLabels, $this->row, $markers, $this->conf, $this))
 					break;
 			}
 		}
@@ -180,7 +170,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderEntries'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderEntries'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($content = $procObj->renderEntries($this->table, $this->fields, $this->row, $this->pi->piVars, $this->conf, $this))
+				if ($content = $procObj->renderEntries($this->pi_base, $this->table, $this->fields, $this->fieldLabels, $this->row, $this->conf, $this))
 					break;
 			}
 		}
@@ -202,7 +192,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($content = $procObj->handleFormField($this->table, $field, $this->row, $this->pi->piVars, $this->conf, $this))
+				if ($content = $procObj->handleFormField($this->pi_base, $this->table, $field, $this->fieldLabels, $this->row, $this->conf, $this))
 					break;
 			}
 		}
@@ -363,7 +353,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeCheck'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeCheck'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($content = $procObj->handleFormField_typeCheck($this->table, $field, $this->row, $this->pi->pivars, $this->conf, $this))
+				if ($content = $procObj->handleFormField_typeCheck($this->pi_base, $this->table, $field, $this->fieldLabels, $this->row, $this->conf, $this))
 					break;
 			}
 		}
@@ -438,7 +428,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeSelect'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeSelect'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($content = $procObj->handleFormField_typeSelect($this->table, $field, $this->row, $this->pi->pivars, $this->conf, $this))
+				if ($content = $procObj->handleFormField_typeSelect($this->pi_base, $this->table, $field, $this->fieldLabels, $this->row, $this->conf, $this))
 					break;
 			}
 		}
@@ -566,7 +556,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeGroup'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeGroup'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($content = $procObj->handleFormField_typeGroup($this->table, $field, $this->row, $this->pi->piVars, $this->conf, $this))
+				if ($content = $procObj->handleFormField_typeGroup($this->pi_base, $this->table, $field, $this->labelfield, $this->row, $this->conf, $this))
 					break;
 			}
 		}
@@ -687,10 +677,10 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @return	mixed		The entry value
 	 */
 	public function getDefaultEntryValue($field) {
-		if ($this->pi->piVars['valid']) {
-			return $this->pi->piVars[$field];
+		if ($this->pi_base->piVars['valid']) {
+			return $this->pi_base->piVars[$field];
 		}
-		// $this->pi->piVars['cancel'] or any submit
+		// $this->pi_base->piVars['cancel'] or any submit
 		return $this->renderValue($field, $this->row['uid'], $this->row[$field], self::$view);
 	}
 
@@ -702,13 +692,13 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @return	mixed		The entry value
 	 */
 	private function getEntryValue_select($field, $config=null) {
-		if ($this->pi->piVars['valid']) {
+		if ($this->pi_base->piVars['valid']) {
 			if ($config['maxitems'] >1)
-				$value = array_keys($this->pi->piVars[$field]);
+				$value = array_keys($this->pi_base->piVars[$field]);
 			else
-				$value = $this->pi->piVars[$field];
+				$value = $this->pi_base->piVars[$field];
 		}
-		else {	// $this->pi->piVars['cancel'] or any submit
+		else {	// $this->pi_base->piVars['cancel'] or any submit
 			$value = $this->row[$field];
 			if ($config['maxitems'] >1) {
 				if ($config['MM']) {

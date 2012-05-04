@@ -27,9 +27,9 @@
  *
  *
  *   48: class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer
- *   67:     function __construct($pi, tslib_cObj $cObj, $table, array $fields, array $fieldLabels, array $lConf)
- *   81:     public function render(array $row)
- *   97:     private function renderFields(array $row)
+ *   63:     function __construct($pi_base, $table, array $fields, array $fieldLabels, array $row, array $conf)
+ *   73:     public function render()
+ *   88:     private function renderFields()
  *
  * TOTAL FUNCTIONS: 3
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -46,33 +46,23 @@
  * @subpackage	tx_icstcafeadmin
  */
 class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
-	private $headersId = array();
-
-	private $fields;
-	private $labelFields;
 	private $row;
-
 	private static $view = 'viewSingle';
 
 	/**
 	 * Constructor
 	 *
-	 * @param	tx_icstcafeadmin_pi1		$pi: Instance of tx_icstcafeadmin_pi1
-	 * @param	tslib_cObj		$cObj: tx_icstcafeadmin_pi1 cObj
+	 * @param	tx_icstcafeadmin_pi1		$pi_base: Instance of tx_icstcafeadmin_pi1
 	 * @param	string		$table: The tablename
-	 * @param	array		$row: The row
 	 * @param	array		$fields: Array of fields
 	 * @param	array		$fieldLabels: Associative array of fields labels like field=>labelfield
-	 * @param	array		$lConf: Typoscript configuration
+	 * @param	array		$row: The row
+	 * @param	array		$conf: Typoscript configuration
 	 * @return	void
 	 */
-	function __construct($pi, tslib_cObj $cObj, $table, $row, array $fields, array $fieldLabels, array $lConf) {
-		$this->table = $table;
+	function __construct($pi_base, $table, array $fields, array $fieldLabels, array $row, array $conf) {
 		$this->row = $row;
-		$this->fields = $fields;
-		$this->fieldLabels = $fieldLabels;
-
-		parent::__construct($pi, $cObj, $table, $lConf);
+		parent::__construct($pi_base, $table, $fields, $fieldLabels, $conf);
 	}
 
 	/**
@@ -103,7 +93,7 @@ class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
 			$markers = array();
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderSingleFields'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$content = $procObj->renderSingleFields($this->table, $this->fields, $template, $markers, $this->conf, $this);
+				$content = $procObj->renderSingleFields($this->pi_base, $this->table, $this->fields, $this->fieldLabels, $this->row, $markers, $this->conf, $this);
 			}
 		}
 		else {
