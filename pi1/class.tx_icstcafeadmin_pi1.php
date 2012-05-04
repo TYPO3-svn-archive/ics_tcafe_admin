@@ -515,7 +515,6 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$this->table,
 			$this->getSingleRecord(),
 			$this->fields,
-			$this->piVars,
 			$this->conf
 		);
 

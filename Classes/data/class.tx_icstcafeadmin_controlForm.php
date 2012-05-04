@@ -27,7 +27,7 @@
  *
  *
  *   49: class tx_icstcafeadmin_controlForm
- *   64:     function __construct($pi, $table, $row, array $fields, array $piVars, array $lConf)
+ *   64:     function __construct($pi_base, $table, $row, array $fields, array $pi_baseVars, array $lConf)
  *   78:     public function controlEntries()
  *   93:     public function controlEntry($field)
  *  187:     public function getNoCheckFields()
@@ -53,21 +53,25 @@ class tx_icstcafeadmin_controlForm{
 	/**
 	 * Constructor
 	 *
-	 * @param	tx_icstcafeadmin_pi1		$pi: Instance of tx_icstcafeadmin_pi1
+	 * @param	tx_icstcafeadmin_pi1		$pi_base: Instance of tx_icstcafeadmin_pi1
 	 * @param	string		$table: The tablename
 	 * @param	array		$row: The row
 	 * @param	array		$fields: Array of fields
-	 * @param	array		$piVars: $pi POST and GET incoming array
+	 * @param	array		$pi_baseVars: $pi_base POST and GET incoming array
 	 * @param	array		$lConf: Typoscript configuration
 	 * @return	void
 	 */
-	function __construct($pi, $table, $row, array $fields, array $piVars, array $lConf) {
+	function __construct($pi_base, $table, $row, array $fields, array $conf) {
+		$this->pi_base = $pi_base;
+		$this->prefixId = $pi_base->prefixId;
+		$this->extKey = $pi_base->extKey;
+		$this->conf = $conf;
+		$this->cObj = $pi_base->cObj;
+		$this->piVars = $pi_base->piVars;
+		
 		$this->table = $table;
 		$this->row = $row;
 		$this->fields = $fields;
-
-		$this->piVars = $piVars;
-		$this->conf = $lConf;
 	}
 
 	/**
@@ -172,7 +176,7 @@ class tx_icstcafeadmin_controlForm{
 					if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['controlEntry'])) {
 						foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['controlEntry'] as $class) {
 							$procObj = & t3lib_div::getUserObj($class);
-							$control = $procObj->controlEntry($this->table, $field, $value, $evals, $this, $this->conf);
+							$control = $procObj->controlEntry($this->pi_base, $this->table, $field, $value, $evals, $this->conf, $this);
 						}
 					}
 				}
