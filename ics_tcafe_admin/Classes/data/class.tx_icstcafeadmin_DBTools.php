@@ -27,7 +27,7 @@
  *
  *
  *   54: class tx_icstcafeadmin_DBTools
- *   67:     function __construct($pi)
+ *   67:     function __construct($pi_base)
  *   79:     public function process_valuesToDB($table, array $row, array $fields, array $values)
  *   95:     public function process_valueToDB($table, array $row, $field, $value)
  *  128:     public function renderField_config_evals($field, array $row, $value, array $evals)
@@ -52,6 +52,11 @@
  * @subpackage	tx_icstcafeadmin
  */
 class tx_icstcafeadmin_DBTools {
+	protected $pi_base;
+	var $prefixId;
+	var $extKey;
+	var $conf;
+	var $cObj;
 
 	private $group_files = array(
 		'deletedFiles' => array(),	// Tableau des champs group files où key/value sont fieldname/tableau des fichiers
@@ -63,12 +68,15 @@ class tx_icstcafeadmin_DBTools {
 	/**
 	 * Constructor
 	 *
-	 * @param	tx_icstcafeadmin_pi1		$pi: Instance of tx_icstcafeadmin_pi1
+	 * @param	tx_icstcafeadmin_pi1		$pi_base: Instance of tx_icstcafeadmin_pi1
 	 * @return	void
 	 */
-	function __construct($pi) {
-		$this->pi = $pi;
-		$this->prefixId = $pi->prefixId;
+	function __construct($pi_base) {
+		$this->pi_base = $pi_base;
+		$this->prefixId = $pi_base->prefixId;
+		$this->extKey = $pi_base->extKey;
+		$this->conf = $conf;
+		$this->cObj = $pi_base->cObj;
 	}
 
 	/**
