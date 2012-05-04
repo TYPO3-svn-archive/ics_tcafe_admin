@@ -219,14 +219,16 @@ class tx_icstcafeadmin_DBTools {
 	private function process_dateToDB($table, $field, $value) {
 		if (!$value)
 			return 0;
+		$process = false;
 		// Hook on process_dateToDB
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_dateToDB'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_dateToDB'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$value = $procObj->process_dateToDB($table, $field, $value);
+				if ($process = $procObj->process_dateToDB($table, $field, $value))
+					break;
 			}
 		}
-		else {
+		if (!$process) {
 			if (preg_match( '`^\d{1,2}-\d{1,2}-\d{4}$`' , $value) && ($date = strtotime($value))) {
 				$value = $date;
 			}
@@ -258,14 +260,17 @@ class tx_icstcafeadmin_DBTools {
 	private function process_datetimeToDB($table, $field, $value) {
 		if (!$value)
 			return 0;
+		
+		$process = false;
 		// Hook on process_datetimeToDB
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_datetimeToDB'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_datetimeToDB'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$value = $procObj->process_datetimeToDB($table, $field, $value);
+				if ($process = $procObj->process_datetimeToDB($table, $field, $value))
+					break;
 			}
 		}
-		else {
+		if(!$process) {
 			if (preg_match( '`^\d{1,2}-\d{1,2}-\d{4} \d{1,2}:\d{1,2}$`' , $value) && ($date = strtotime($value))) {
 				$value = $date;
 			}
@@ -368,14 +373,16 @@ class tx_icstcafeadmin_DBTools {
 		if (!$value)
 			return null;
 	
-		// Hook on process_dateToDB
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_dateToDB'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_dateToDB'] as $class) {
+		$process = false;
+		// Hook on renderField_select
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderField_select'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderField_select'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$value = $procObj->process_dateToDB($table, $field, $value);
+				if ($process = $procObj->renderField_select($this->pi_base, $table, $field, $value, $row, $this->conf, $this))
+					break;
 			}
 		}
-		else {
+		if(!$process) {
 			if ($config['maxitems'] <= 1 && $config['renderMode'] !== 'tree') {
 				// nothing to do
 			// } elseif (!strcmp($config['renderMode'], 'checkbox')) {

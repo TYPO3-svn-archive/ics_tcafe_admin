@@ -1,4 +1,6 @@
 2012-05-04 In Cite Solution  <technique@in-cite.net>
+	* Fix: Mistakes on handle on hook.
+	* Documentation: Updated manual.
 	* Refactor: Reworked hook return.
 	* Refactor: Call to renderer and hook.
 
