@@ -26,17 +26,16 @@
  *
  *
  *
- *   53: class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer
- *   72:     function __construct($pi, tslib_cObj $cObj, $table, array $fields, array $fieldLabels, array $lConf)
- *   86:     public function render(array $rows)
- *   97:     private function renderListEmpty()
- *  111:     private function renderList(array $rows)
- *  154:     private function renderHeaderTitles(&$markers)
- *  174:     private function renderRowFields(array $row, &$markers)
- *  195:     private function renderRowActions(array $row, &$markers)
- *  209:     private function getListGetPageBrowser()
+ *   52: class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer
+ *   62:     public function render(array $rows)
+ *   73:     private function renderListEmpty()
+ *   87:     private function renderList(array $rows)
+ *  141:     private function renderHeaderTitles(&$markers)
+ *  161:     private function renderRowFields(array $row, &$markers)
+ *  201:     private function renderRowActions(array $row, &$markers)
+ *  231:     private function getListGetPageBrowser()
  *
- * TOTAL FUNCTIONS: 8
+ * TOTAL FUNCTIONS: 7
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -52,30 +51,7 @@
  */
 class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 	private $headersId = array();
-
-	private $fields;
-	private $labelFields;
-
 	private static $view = 'viewList';
-
-	/**
-	 * Constructor
-	 *
-	 * @param	tx_icstcafeadmin_pi1		$pi: Instance of tx_icstcafeadmin_pi1
-	 * @param	tslib_cObj		$cObj: tx_icstcafeadmin_pi1 cObj
-	 * @param	string		$table: The tablename
-	 * @param	array		$fields: Array of fields
-	 * @param	array		$fieldLabels: Associative array of fields labels like field=>labelfield
-	 * @param	array		$lConf: Typoscript configuration
-	 * @return	void
-	 */
-	function __construct($pi, tslib_cObj $cObj, $table, array $fields, array $fieldLabels, array $lConf) {
-		$this->table = $table;
-		$this->fields = $fields;
-		$this->fieldLabels = $fieldLabels;
-
-		parent::__construct($pi, $cObj, $table, $lConf);
-	}
 
 	/**
 	 * Render the view
@@ -189,7 +165,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderListRowFields'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderListRowFields'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$content = $procObj->renderListRowFields($this->table, $this->fields, $template, $markers, $this->conf, $this);
+				$content = $procObj->renderListRowFields($this->pi_base, $this->table, $this->fields, $this->fieldLabels, $row, $markers, $this->conf, $this);
 			}
 		}
 		else {
@@ -204,7 +180,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 					$locMarkers[strtoupper($field) . '_LABEL'] = $this->fieldLabels[$field];
 					$locMarkers[strtoupper($field) . '_VALUE'] = $value;
 					$content .= $this->cObj->substituteMarkerArray($specificFieldTemplate, $locMarkers, '###|###');
-				} 
+				}
 				else {
 					$locMarkers['FIELDLABEL'] = $this->fieldLabels[$field];
 					$locMarkers['FIELDVALUE'] = $value;
@@ -224,7 +200,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 */
 	private function renderRowActions(array $row, &$markers) {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_RESULTS_ROW_ACTIONS###');
-		
+
 		$data = array(
 			'id' => $row['uid'],
 			'newId' => 'New'.uniqid(),
@@ -243,7 +219,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'DELETE' => $cObj->stdWrap('', $this->conf['listActions.']['delete.']),
 			'HIDE' => $cObj->stdWrap('', $this->conf['listActions.']['hide.']),
 		);
-		
+
 		return $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');
 	}
 
