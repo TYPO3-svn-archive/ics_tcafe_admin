@@ -414,8 +414,10 @@ class tx_icstcafeadmin_DBTools {
 	 * @param	array		$config: TCA field config
 	 * @return	void
 	 */
-	function renderField_group_parseFiles($field, $row=null, array $value, $config) {
-		$uploadfolder = $config['uploadfolder']? $config['uploadfolder'].'/': '';
+	function renderField_group_parseFiles($field, $row=null, array $value, $config, $uploadfolder=null) {
+		if (!$uploadfolder)
+			$uploadfolder = $config['uploadfolder']? $config['uploadfolder'].'/': '';
+		
 		$files = t3lib_div::trimExplode(',', $value['files'], true);
 		if (is_array($value) && !empty($value)) {
 			$pFiles = $value;

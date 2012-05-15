@@ -128,7 +128,7 @@ plugin.tx_icstcafeadmin_pi1 {
 						30 = TEXT
 						30 {
 							if.isTrue.field = disallowed
-							field = allowed
+							field = disallowed
 							noTrimWrap = |Interdit (|)|
 						}
 						wrap = <span>|</span>
