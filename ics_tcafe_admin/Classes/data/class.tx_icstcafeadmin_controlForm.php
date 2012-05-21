@@ -82,8 +82,10 @@ class tx_icstcafeadmin_controlForm{
 	public function controlEntries() {
 		$control = true;
 		foreach ($this->fields as $field) {
-			$control = $control && $this->controlEntry($field);
-			if (!control && $this->conf['controlEntries.']['breakControl']) {
+			$controlEntry = $this->controlEntry($field);
+			if ($control)
+				$control = $controlEntry;
+			if (!$control && $this->conf['controlEntries.']['breakControl']) {
 				break;
 			}
 		}
@@ -101,9 +103,9 @@ class tx_icstcafeadmin_controlForm{
 		t3lib_div::loadTCA($this->table);
 		$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
 		$evals = t3lib_div::trimExplode(',', $config['eval'], true);
-		if ($this->conf['controlEntries.'][$this->table.'.'][$field.'.']['eval.'])
-			$evals = array_merge(t3lib_div::trimExplode(',', $this->conf['controlEntries.'][$this->table.'.'][$field.'.']['eval.']), $evals);
-
+		if ($this->conf['controlEntries.'][$this->table.'.'][$field.'.']['eval'])
+			$evals = array_merge(t3lib_div::trimExplode(',', $this->conf['controlEntries.'][$this->table.'.'][$field.'.']['eval']), $evals);
+		
 		$value = $this->piVars[$field];
 		$control = true;
 		foreach ($evals as $eval) {
