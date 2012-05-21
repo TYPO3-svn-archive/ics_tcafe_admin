@@ -1,4 +1,5 @@
 2012-05-15 2012-05-15 Tsi YANG <tsi@in-cite.net>
+	* Refactor: Make clear typoscript configuration renderConf for table name on controlEntry.
 	* Refactor: Make clear typoscript configuration renderConf for table name.
 
 2012-05-15 2012-05-21 Tsi YANG <tsi@in-cite.net>
