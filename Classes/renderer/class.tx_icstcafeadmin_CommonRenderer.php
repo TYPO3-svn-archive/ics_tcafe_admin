@@ -166,8 +166,8 @@ class tx_icstcafeadmin_CommonRenderer {
 		$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
 
 		// Render value on field Typoscript configuration
-		if ($this->conf['renderConf.'][$field . '.'][$view . '.']) {
-			$value = $this->cObj->stdWrap($value, $this->conf['renderConf.'][$field . '.'][$view . '.']);
+		if ($this->conf['renderConf.'][$this->table][$field . '.'][$view . '.']) {
+			$value = $this->cObj->stdWrap($value, $this->conf['renderConf.'][$this->table][$field . '.'][$view . '.']);
 		}
 		// Render value on TCA type Typoscript configuration
 		else {
