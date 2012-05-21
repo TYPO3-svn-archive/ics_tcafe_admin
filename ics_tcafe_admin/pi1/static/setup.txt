@@ -165,7 +165,7 @@ plugin.tx_icstcafeadmin_pi1 {
 	# Render
 	renderConf {
 		# Put here render of a field like
-		# fieldname.theView.theConf
+		# tablename.fieldname.theView.theConf
 	}
 	
 	# Render actions on list view
