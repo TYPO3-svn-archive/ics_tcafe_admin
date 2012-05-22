@@ -488,7 +488,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @return	string		HTML form field content
 	 */
 	public function handleFormField_typeSelect_single(array $items, $field, array $config, $template) {
-		if ($template)
+		if (!$template)
 			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_SELECT_SINGLE###');
 			
 		$subparts = array();
