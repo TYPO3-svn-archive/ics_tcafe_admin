@@ -26,19 +26,22 @@
  *
  *
  *
- *   54: class tx_icstcafeadmin_DBTools
- *   67:     function __construct($pi_base)
- *   79:     public function process_valuesToDB($table, array $row, array $fields, array $values)
- *   95:     public function process_valueToDB($table, array $row, $field, $value)
- *  128:     public function renderField_config_evals($field, array $row, $value, array $evals)
- *  201:     private function process_dateToDB($table, $field, $value)
- *  240:     private function process_datetimeToDB($table, $field, $value)
- *  279:     private function process_timeToDB($value)
- *  301:     private function process_timesecToDB($value)
- *  327:     function renderField_group_parseFiles($field, array $row, array $value, $config)
- *  385:     public function getGroup_files()
+ *   59: class tx_icstcafeadmin_DBTools
+ *   79:     function __construct($pi_base)
+ *   94:     public function process_valuesToDB($table, $row=null, array $fields, array $values)
+ *  111:     public function process_valueToDB($table, $row=null, $field, $value)
+ *  152:     public function renderField_config_evals($field, $row=null, $value, array $evals)
+ *  225:     private function process_dateToDB($table, $field, $value)
+ *  266:     private function process_datetimeToDB($table, $field, $value)
+ *  308:     private function process_timeToDB($value)
+ *  330:     private function process_timesecToDB($value)
+ *  356:     public function renderField_check($field, $row=null, $value, $config)
+ *  378:     public function renderField_select($field, $row=null, $value, $config)
+ *  423:     function renderField_group_parseFiles($field, $row=null, array $value, $config, $uploadfolder=null)
+ *  486:     public function getGroup_files()
+ *  495:     public function getSelect_MM()
  *
- * TOTAL FUNCTIONS: 10
+ * TOTAL FUNCTIONS: 13
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -46,6 +49,8 @@
 
 /**
  * Class 'tx_icstcafeadmin_DBTools' for the 'ics_tcafe_admin' extension.
+ *
+ * This class process value to DB.
  *
  * @author	Tsi YANG <tsi@in-cite.net>
  * @package	TYPO3
@@ -59,11 +64,11 @@ class tx_icstcafeadmin_DBTools {
 	var $cObj;
 
 	private $group_files = array(
-		'deletedFiles' => array(),	// Tableau des champs group files où key/value sont fieldname/tableau des fichiers
-		'newFiles' => array()		// Tableau des champs group files où key/value sont fieldname/nouveau fichier
+		'deletedFiles' => array(),	// Associative array of field type "group", internal type "file" where key/value are fieldname/array of files
+		'newFiles' => array()		// Associative array of field type "group", internal type "file" where key/value are fieldname/new files
 	);
-	
-	private $select_MM = array();	// Tableau des champs select ayant une ralation MM où key/value sont fieldname/tableau des uid de la table étrangère
+
+	private $select_MM = array();	// Associative array of field type "select" with MM relation where key/value are fieldname/array of foreign table uids
 
 	/**
 	 * Constructor
@@ -71,7 +76,7 @@ class tx_icstcafeadmin_DBTools {
 	 * @param	tx_icstcafeadmin_pi1		$pi_base: Instance of tx_icstcafeadmin_pi1
 	 * @return	void
 	 */
-	function __construct($pi_base) {
+	function __construct($pi_base, $conf) {
 		$this->pi_base = $pi_base;
 		$this->prefixId = $pi_base->prefixId;
 		$this->extKey = $pi_base->extKey;
@@ -97,9 +102,10 @@ class tx_icstcafeadmin_DBTools {
 	/**
 	 * Process values to DB
 	 *
+	 * @param	string		$table: The table name
+	 * @param	array		$row: The record
 	 * @param	string		$field: The field name
-	 * @param	mixed		$value: The value to process
-	 * @param	[type]		$value: ...
+	 * @param	mixed		$value: The entry value
 	 * @return	mixed		The processed value
 	 */
 	public function process_valueToDB($table, $row=null, $field, $value) {
@@ -260,7 +266,7 @@ class tx_icstcafeadmin_DBTools {
 	private function process_datetimeToDB($table, $field, $value) {
 		if (!$value)
 			return 0;
-		
+
 		$process = false;
 		// Hook on process_datetimeToDB
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_datetimeToDB'])) {
@@ -354,7 +360,7 @@ class tx_icstcafeadmin_DBTools {
 		else {
 			if ($value)
 				$value = 1;
-			else 
+			else
 				$value = 0;
 		}
 		return $value;
@@ -372,7 +378,7 @@ class tx_icstcafeadmin_DBTools {
 	public function renderField_select($field, $row=null, $value, $config) {
 		if (!$value)
 			return null;
-	
+
 		$process = false;
 		// Hook on renderField_select
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderField_select'])) {
@@ -404,7 +410,7 @@ class tx_icstcafeadmin_DBTools {
 		}
 		return $value;
 	}
-	
+
 	/**
 	 * Upload file
 	 *
@@ -417,7 +423,7 @@ class tx_icstcafeadmin_DBTools {
 	function renderField_group_parseFiles($field, $row=null, array $value, $config, $uploadfolder=null) {
 		if (!$uploadfolder)
 			$uploadfolder = $config['uploadfolder']? $config['uploadfolder'].'/': '';
-		
+
 		$files = t3lib_div::trimExplode(',', $value['files'], true);
 		if (is_array($value) && !empty($value)) {
 			$pFiles = $value;
@@ -480,7 +486,12 @@ class tx_icstcafeadmin_DBTools {
 	public function getGroup_files() {
 		return $this->group_files;
 	}
-	
+
+	/**
+	 * Retrieves foreign table uids of MM relation
+	 *
+	 * @return	mixed		Associative array of field type "select" with MM relation where key/value are fieldname/array of foreign table uids
+	 */
 	public function getSelect_MM() {
 		return $this->select_MM;
 	}
