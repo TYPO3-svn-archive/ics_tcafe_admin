@@ -1,4 +1,5 @@
 2012-05-15 2012-05-22 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added form renderer param.
 	* Refactor: Modified hook on extra eval name form "controlEntry" to "extra_evalEntry".
 	* Feature: Added hook on control entry "controlEntry".
 	* Comments: Completed function comments.

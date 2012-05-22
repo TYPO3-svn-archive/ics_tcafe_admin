@@ -226,9 +226,11 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 *
 	 * @param	string		$field: The field name
 	 * @param	array		$config: TCA field conf
+	 * @param	string		$template: The template code
+	 *
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeInput($field, array $config) {
+	public function handleFormField_typeInput($field, array $config, $template) {
 		$size = t3lib_div::intInRange($config['size'], 5, $this->maxInputWidth, 30);
 		$size = $size? 'size="' . $size . '"': '';
 
@@ -237,7 +239,9 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (in_array('required', $evalList))
 			$label = $this->cObj->stdWrap($label, $this->conf['defaultConf.']['require.']);
 		
-		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_TEXT###');
+		if (!$template)
+			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_TEXT###');
+			
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
 			'ITEM_ID' => $field,
@@ -309,9 +313,11 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 *
 	 * @param	string		$field: The field name
 	 * @param	array		$config: TCA field conf
+	 * @param	string		$template: The template code
+	 *
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeText($field, array $config) {
+	public function handleFormField_typeText($field, array $config, $template) {
 		$cols = t3lib_div::intInRange($config['cols'], 5, $this->maxTextareaCols, 30);
 		$cols =  $cols? 'cols="' . $cols . '"': '';
 		$rows = t3lib_div::intInRange($config['rows'], 1, $this->maxTextareaRows, 5);
@@ -322,7 +328,9 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (in_array('required', $evalList))
 			$label = $this->cObj->stdWrap($label, $this->conf['defaultConf.']['require.']);
 
-		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_TEXTAREA###');
+		if (!$template)
+			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_TEXTAREA###');
+			
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
 			'ITEM_ID' => $field,
@@ -386,11 +394,15 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 *
 	 * @param	string		$field: The field name
 	 * @param	array		$config: TCA field conf
-	 * @param	int		$col: The col number
+	 * @param	int			$col: The col number
+	 * @param	string		$template: The template code
+	 *
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeCheck_item($field, array $config, $col=null) {
-		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK_ITEM###');
+	public function handleFormField_typeCheck_item($field, array $config, $col=null, $template) {
+		if (!$template)
+			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK_ITEM###');
+			
 		$value = $this->getEntryValue($field, $config);
 		if (is_null($col) && $value) {
 			$checked = 'checked="checked"';
@@ -471,10 +483,14 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$items: The items array
 	 * @param	string		$field: The field name
 	 * @param	array		$config: TCA field conf
+	 * @param	string		$template: The template code
+	 *
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeSelect_single(array $items, $field, array $config) {
-		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_SELECT_SINGLE###');
+	public function handleFormField_typeSelect_single(array $items, $field, array $config, $template) {
+		if ($template)
+			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_SELECT_SINGLE###');
+			
 		$subparts = array();
 
 		$itemTemplate =  $this->cObj->getSubpart($template, '###GROUP_OPTIONS###');
@@ -510,10 +526,14 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$items: The items array
 	 * @param	string		$field: The field name
 	 * @param	array		$config: TCA field conf
+	 * @param	string		$template: The template code
+	 *
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeSelect_multiple(array $items, $field, array $config) {
-		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_SELECT_MULTIPLE###');
+	public function handleFormField_typeSelect_multiple(array $items, $field, array $config, $template) {
+		if (!$template)
+			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_SELECT_MULTIPLE###');
+			
 		$subparts = array();
 
 		$itemTemplate =  $this->cObj->getSubpart($template, '###GROUP_OPTIONS###');
@@ -581,10 +601,14 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 *
 	 * @param	string		$field: The field name
 	 * @param	array		$config: TCA field conf
+	 * @param	string		$template: The template code
+	 *
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeGroup_file($field, array $config) {
-		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_FILE###');
+	public function handleFormField_typeGroup_file($field, array $config, $template) {
+		if (!$template)
+			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_FILE###');
+			
 		$subparts = array();
 
 		$isIllustration = false;
