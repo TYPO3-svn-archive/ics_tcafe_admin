@@ -520,7 +520,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 
 
 		if ($this->ctrlEntries->controlEntries()) {
-			$dbTools = t3lib_div::makeInstance('tx_icstcafeadmin_DBTools', $this);
+			$dbTools = t3lib_div::makeInstance('tx_icstcafeadmin_DBTools', $this, $this->conf);
 			$fields = array_diff($this->fields, array('uid'));
 			$dataArray = $dbTools->process_valuesToDB($this->table, $this->getSingleRecord(), $fields, $this->piVars);
 

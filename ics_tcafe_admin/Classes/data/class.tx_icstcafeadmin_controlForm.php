@@ -27,11 +27,11 @@
  *
  *
  *   49: class tx_icstcafeadmin_controlForm
- *   64:     function __construct($pi_base, $table, $row, array $fields, array $pi_baseVars, array $lConf)
- *   78:     public function controlEntries()
- *   93:     public function controlEntry($field)
- *  187:     public function getNoCheckFields()
- *  196:     public function resetNoCheckFields()
+ *   64:     function __construct($pi_base, $table, $row, array $fields, array $conf)
+ *   82:     public function controlEntries()
+ *  110:     public function controlEntry($field)
+ *  205:     public function getnoCheckOnFields()
+ *  214:     public function resetnoCheckOnFields()
  *
  * TOTAL FUNCTIONS: 5
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -48,7 +48,7 @@
  */
 class tx_icstcafeadmin_controlForm{
 
-	private $noCheckFields = array();	// Array of no checked field
+	private $noCheckOnFields = array();	// Array of no checked field
 
 	/**
 	 * Constructor
@@ -68,7 +68,7 @@ class tx_icstcafeadmin_controlForm{
 		$this->conf = $conf;
 		$this->cObj = $pi_base->cObj;
 		$this->piVars = $pi_base->piVars;
-		
+
 		$this->table = $table;
 		$this->row = $row;
 		$this->fields = $fields;
@@ -82,7 +82,17 @@ class tx_icstcafeadmin_controlForm{
 	public function controlEntries() {
 		$control = true;
 		foreach ($this->fields as $field) {
-			$controlEntry = $this->controlEntry($field);
+			$controlEntry = true;
+			// Hook on controlEntry
+			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['controlEntry'])) {
+				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['controlEntry'] as $class) {
+					$procObj = & t3lib_div::getUserObj($class);
+					if ($process = $procObj->controlEntry($this->pi_base, $this->table, $field, $value, $this->conf, $this, $controlEntry))
+						break;
+				}
+			}
+			if (!$process)
+				$controlEntry = $this->controlEntry($field);
 			if ($control)
 				$control = $controlEntry;
 			if (!$control && $this->conf['controlEntries.']['breakControl']) {
@@ -105,7 +115,7 @@ class tx_icstcafeadmin_controlForm{
 		$evals = t3lib_div::trimExplode(',', $config['eval'], true);
 		if ($this->conf['controlEntries.'][$this->table.'.'][$field.'.']['eval'])
 			$evals = array_merge(t3lib_div::trimExplode(',', $this->conf['controlEntries.'][$this->table.'.'][$field.'.']['eval']), $evals);
-		
+
 		$value = $this->piVars[$field];
 		$control = true;
 		foreach ($evals as $eval) {
@@ -174,36 +184,37 @@ class tx_icstcafeadmin_controlForm{
 					}
 					break;
 				default:
-					// Hook on controlEntry
-					if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['controlEntry'])) {
-						foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['controlEntry'] as $class) {
+					// Hook on extra eval entry
+					if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_evalEntry'])) {
+						foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_evalEntry'] as $class) {
 							$procObj = & t3lib_div::getUserObj($class);
-							$control = $procObj->controlEntry($this->pi_base, $this->table, $field, $value, $evals, $this->conf, $this);
+							if ($process = $procObj->extra_evalEntry($this->pi_base, $this->table, $field, $value, $this->conf, $this, $control))
+								break;
 						}
 					}
-				}
+			}
 		}
 		if (!$control)
-			$this->noCheckFields[] = $field;
+			$this->noCheckOnFields[] = $field;
 		return $control;
 	}
 
 	/**
-	 * Retrieves noCheckFields
+	 * Retrieves noCheckOnFields
 	 *
-	 * @return	mixed		Array of fields not checked
+	 * @return	mixed		Array of fields not check on
 	 */
-	public function getNoCheckFields() {
-		return $this->noCheckFields;
+	public function getNoCheckOnFields() {
+		return $this->noCheckOnFields;
 	}
 
 	/**
-	 * Reset noCheckFields
+	 * Reset noCheckOnFields
 	 *
 	 * @return	void
 	 */
-	public function resetNoCheckFields() {
-		$this->noCheckFields = array();
+	public function resetNoCheckOnFields() {
+		$this->noCheckOnFields = array();
 	}
 
 }

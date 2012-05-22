@@ -299,7 +299,7 @@ plugin.tx_icstcafeadmin_pi1 {
 		# Break control entries whether entry is not checked
 		breakControl =
 		# Add evals on field. These evals taking precedence on TCA field evals
-		#like tablename.fieldname.eval = list of eval separated by coma ","
+		#like tablename.fieldname.extraEval = list of eval separated by coma ","
 	}
 }
 
