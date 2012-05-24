@@ -588,6 +588,17 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 * @return	mixed		Result from handler
 	 */
 	public function deleteRecord($table, $rowUid) {
+		$delete = false;
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deleteRecord'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deleteRecord'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if ($process = $procObj->deleteRecord($table, $rowUid, $this->conf, $this, $delete))
+					break;
+			}
+		}
+		if ($process)
+			return $delete;
+			
 		return $this->cObj->DBgetUpdate(
 			$table,
 			$rowUid,

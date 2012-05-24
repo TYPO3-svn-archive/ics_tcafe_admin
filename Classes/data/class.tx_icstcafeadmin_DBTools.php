@@ -418,9 +418,11 @@ class tx_icstcafeadmin_DBTools {
 	 * @param	array		$row: The row
 	 * @param	array		$value: The value to process
 	 * @param	array		$config: TCA field config
+	 * @param	boolean		$basename: Filename is basename or path. Default is basename.
+	 *
 	 * @return	void
 	 */
-	function renderField_group_parseFiles($field, $row=null, array $value, $config, $uploadfolder=null) {
+	function renderField_group_parseFiles($field, $row=null, array $value, $config, $uploadfolder=null, $basename=true) {
 		if (!$uploadfolder)
 			$uploadfolder = $config['uploadfolder']? $config['uploadfolder'].'/': '';
 
@@ -432,7 +434,11 @@ class tx_icstcafeadmin_DBTools {
 			$files = array_diff($files, array_values($pFiles));
 			foreach ($fileToDeleteArray as $file) {
 				if ($file) {
-					@unlink(t3lib_div::getFileAbsFileName($uploadfolder . $file));
+					if ($basename)
+						$unlink = t3lib_div::getFileAbsFileName($uploadfolder . $file);
+					else 
+						$unlink = t3lib_div::getFileAbsFileName($file);
+					@unlink($unlink);
 					$this->group_files['deletedFiles'][$field][] = $file;
 				}
 			}
@@ -466,7 +472,10 @@ class tx_icstcafeadmin_DBTools {
 
 				if (in_array($ext, $allowed) || !in_array($ext, $disallowed)) {
 					if (move_uploaded_file($_FILES[$this->prefixId]['tmp_name'][$field]['file'], t3lib_div::getFileAbsFileName($uploadfolder . $newFile))) {
-						$files[] = $newFile;
+						if ($basename)
+							$files[] = $newFile;
+						else 
+							$files[] = $uploadfolder.$newFile;
 						$this->group_files['newFile'][$field] = $newFile;
 					}
 				}
