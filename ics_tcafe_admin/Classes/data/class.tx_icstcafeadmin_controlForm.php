@@ -27,11 +27,11 @@
  *
  *
  *   49: class tx_icstcafeadmin_controlForm
- *   64:     function __construct($pi_base, $table, $row, array $fields, array $conf)
- *   82:     public function controlEntries()
- *  110:     public function controlEntry($field)
- *  205:     public function getnoCheckOnFields()
- *  214:     public function resetnoCheckOnFields()
+ *   72:     function __construct($pi_base, $table, $recordId=0, array $fields, array $conf)
+ *  103:     public function controlEntries()
+ *  142:     public function controlEntry($field)
+ *  308:     public function getNoCheckOnFields()
+ *  317:     public function resetNoCheckOnFields()
  *
  * TOTAL FUNCTIONS: 5
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -50,18 +50,26 @@ class tx_icstcafeadmin_controlForm{
 
 	private $noCheckOnFields = array();	// Array of no checked field
 
+	var $pi_base;
+	var $prefixId;
+	var $extKey;
+
+	private $table;
+	private $fields;
+	private $row = null;
+
 	/**
 	 * Constructor
 	 *
 	 * @param	tx_icstcafeadmin_pi1		$pi_base: Instance of tx_icstcafeadmin_pi1
 	 * @param	string		$table: The tablename
-	 * @param	array		$row: The row
+	 * @param	int		$row: The recordId
 	 * @param	array		$fields: Array of fields
 	 * @param	array		$pi_baseVars: $pi_base POST and GET incoming array
 	 * @param	array		$lConf: Typoscript configuration
 	 * @return	void
 	 */
-	function __construct($pi_base, $table, $row, array $fields, array $conf) {
+	function __construct($pi_base, $table, $recordId=0, array $fields, array $conf) {
 		$this->pi_base = $pi_base;
 		$this->prefixId = $pi_base->prefixId;
 		$this->extKey = $pi_base->extKey;
@@ -70,8 +78,21 @@ class tx_icstcafeadmin_controlForm{
 		$this->piVars = $pi_base->piVars;
 
 		$this->table = $table;
-		$this->row = $row;
 		$this->fields = $fields;
+
+		$this->recordId = $recordId;
+		if ($this->recordId) {
+			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+				'*',
+				$table,
+				'deleted = 0 AND uid=' . $recordId,
+				'',
+				'',
+				'1'
+			);
+			if (is_array($rows) && !empty($rows))
+				$this->row = $rows[0];
+		}
 	}
 
 	/**
@@ -80,6 +101,8 @@ class tx_icstcafeadmin_controlForm{
 	 * @return	boolean		Whether entries are checked, it returns true. Otherwise it returns false.
 	 */
 	public function controlEntries() {
+		$extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ics_tcafe_admin']);
+
 		$control = true;
 		foreach ($this->fields as $field) {
 			$controlEntry = true;
@@ -87,7 +110,7 @@ class tx_icstcafeadmin_controlForm{
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['controlEntry'])) {
 				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['controlEntry'] as $class) {
 					$procObj = & t3lib_div::getUserObj($class);
-					if ($process = $procObj->controlEntry($this->pi_base, $this->table, $field, $value, $this->conf, $this, $controlEntry))
+					if ($process = $procObj->controlEntry($this->pi_base, $this->table, $field, $value, $this->recordId, $this->conf, $this, $controlEntry))
 						break;
 				}
 			}
@@ -95,6 +118,14 @@ class tx_icstcafeadmin_controlForm{
 				$controlEntry = $this->controlEntry($field);
 			if ($control)
 				$control = $controlEntry;
+
+			if ($extConf['debug.']['formControllerDebug']) {
+				$tables = t3lib_div::trimExplode(',', $extConf['debug.']['tables'], true);
+				if (empty($tables) || in_array($this->table, $tables)) {
+					t3lib_div::devLog('Form controller (controlEntries)', 'ics_tcafe_admin', 0, array('Field'=>$field, 'Control'=>$controlEntry));
+				}
+			}
+
 			if (!$control && $this->conf['controlEntries.']['breakControl']) {
 				break;
 			}
@@ -109,6 +140,8 @@ class tx_icstcafeadmin_controlForm{
 	 * @return	boolean		Whether entry is checked, it returns true. Otherwise it returns false.
 	 */
 	public function controlEntry($field) {
+		$extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ics_tcafe_admin']);
+
 		$GLOBALS['TSFE']->includeTCA();
 		t3lib_div::loadTCA($this->table);
 		$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
@@ -116,11 +149,24 @@ class tx_icstcafeadmin_controlForm{
 		if ($this->conf['controlEntries.'][$this->table.'.'][$field.'.']['eval'])
 			$evals = array_merge(t3lib_div::trimExplode(',', $this->conf['controlEntries.'][$this->table.'.'][$field.'.']['eval']), $evals);
 
+		if ($extConf['debug.']['formControllerDebug']) {
+			$tables = t3lib_div::trimExplode(',', $extConf['debug.']['tables'], true);
+			if (empty($tables) || in_array($this->table, $tables)) {
+				t3lib_div::devLog('Form controller (controlEntry)', 'ics_tcafe_admin', 0, array('Evals'=>$evals));
+			}
+		}
+
 		$value = $this->piVars[$field];
 		$control = true;
 		foreach ($evals as $eval) {
 			switch ($eval) {
 				case 'required':
+					if ($extConf['debug.']['formControllerDebug']) {
+						$tables = t3lib_div::trimExplode(',', $extConf['debug.']['tables'], true);
+						if (empty($tables) || in_array($this->table, $tables)) {
+							t3lib_div::devLog('Form controller (controlEntry)', 'ics_tcafe_admin', 0, array('Pass eval'=>'required'));
+						}
+					}
 					if (!$value) {
 						$control = false;
 						if ($this->conf['controlEntries.']['breakControl'])
@@ -128,6 +174,12 @@ class tx_icstcafeadmin_controlForm{
 					}
 					break;
 				case 'date':
+					if ($extConf['debug.']['formControllerDebug']) {
+						$tables = t3lib_div::trimExplode(',', $extConf['debug.']['tables'], true);
+						if (empty($tables) || in_array($this->table, $tables)) {
+							t3lib_div::devLog('Form controller (controlEntry)', 'ics_tcafe_admin', 0, array('Pass eval'=>'date'));
+						}
+					}
 					if ($value && !strtotime($value)) {
 						$control = false;
 						if ($this->conf['controlEntries.']['breakControl'])
@@ -135,6 +187,12 @@ class tx_icstcafeadmin_controlForm{
 					}
 					break;
 				case 'datetime':// date + time
+					if ($extConf['debug.']['formControllerDebug']) {
+						$tables = t3lib_div::trimExplode(',', $extConf['debug.']['tables'], true);
+						if (empty($tables) || in_array($this->table, $tables)) {
+							t3lib_div::devLog('Form controller (controlEntry)', 'ics_tcafe_admin', 0, array('Pass eval'=>'datetime'));
+						}
+					}
 					if ($value && !strtotime($value)) {
 						$control = false;
 						if ($this->conf['controlEntries.']['breakControl'])
@@ -142,6 +200,12 @@ class tx_icstcafeadmin_controlForm{
 					}
 					break;
 				case 'time':	// time (hours, minutes)
+					if ($extConf['debug.']['formControllerDebug']) {
+						$tables = t3lib_div::trimExplode(',', $extConf['debug.']['tables'], true);
+						if (empty($tables) || in_array($this->table, $tables)) {
+							t3lib_div::devLog('Form controller (controlEntry)', 'ics_tcafe_admin', 0, array('Pass eval'=>'time'));
+						}
+					}
 					if ($value && !strtotime($value)) {
 						$control = false;
 						if ($this->conf['controlEntries.']['breakControl'])
@@ -149,6 +213,12 @@ class tx_icstcafeadmin_controlForm{
 					}
 					break;
 				case 'timesec':	// time + sec
+					if ($extConf['debug.']['formControllerDebug']) {
+						$tables = t3lib_div::trimExplode(',', $extConf['debug.']['tables'], true);
+						if (empty($tables) || in_array($this->table, $tables)) {
+							t3lib_div::devLog('Form controller (controlEntry)', 'ics_tcafe_admin', 0, array('Pass eval'=>'timesec'));
+						}
+					}
 					if ($value && !strtotime($value)) {
 						$control = false;
 						if ($this->conf['controlEntries.']['breakControl'])
@@ -156,6 +226,12 @@ class tx_icstcafeadmin_controlForm{
 					}
 					break;
 				case 'year':
+					if ($extConf['debug.']['formControllerDebug']) {
+						$tables = t3lib_div::trimExplode(',', $extConf['debug.']['tables'], true);
+						if (empty($tables) || in_array($this->table, $tables)) {
+							t3lib_div::devLog('Form controller (controlEntry)', 'ics_tcafe_admin', 0, array('Pass eval'=>'year'));
+						}
+					}
 					if ($value && !strtotime('01-01-' . $value)) {
 						$control = false;
 						if ($this->conf['controlEntries.']['breakControl'])
@@ -163,6 +239,12 @@ class tx_icstcafeadmin_controlForm{
 					}
 					break;
 				case 'int':
+					if ($extConf['debug.']['formControllerDebug']) {
+						$tables = t3lib_div::trimExplode(',', $extConf['debug.']['tables'], true);
+						if (empty($tables) || in_array($this->table, $tables)) {
+							t3lib_div::devLog('Form controller (controlEntry)', 'ics_tcafe_admin', 0, array('Pass eval'=>'int'));
+						}
+					}
 					if ($value && !is_numeric($value)) {
 						$control = false;
 						if ($this->conf['controlEntries.']['breakControl'])
@@ -170,6 +252,12 @@ class tx_icstcafeadmin_controlForm{
 					}
 					break;
 				case 'double2':
+					if ($extConf['debug.']['formControllerDebug']) {
+						$tables = t3lib_div::trimExplode(',', $extConf['debug.']['tables'], true);
+						if (empty($tables) || in_array($this->table, $tables)) {
+							t3lib_div::devLog('Form controller (controlEntry)', 'ics_tcafe_admin', 0, array('Pass eval'=>'double2'));
+						}
+					}
 					if ($value && !is_numeric($value)) {
 						$control = false;
 						if ($this->conf['controlEntries.']['breakControl'])
@@ -177,6 +265,12 @@ class tx_icstcafeadmin_controlForm{
 					}
 					break;
 				case 'alphanum':
+					if ($extConf['debug.']['formControllerDebug']) {
+						$tables = t3lib_div::trimExplode(',', $extConf['debug.']['tables'], true);
+						if (empty($tables) || in_array($this->table, $tables)) {
+							t3lib_div::devLog('Form controller (controlEntry)', 'ics_tcafe_admin', 0, array('Pass eval'=>'alphanum'));
+						}
+					}
 					if ($value && preg_match('[^a-zA-Z0-9]+', $value)) {
 						$control = false;
 						if ($this->conf['controlEntries.']['breakControl'])
@@ -188,8 +282,15 @@ class tx_icstcafeadmin_controlForm{
 					if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_evalEntry'])) {
 						foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_evalEntry'] as $class) {
 							$procObj = & t3lib_div::getUserObj($class);
-							if ($process = $procObj->extra_evalEntry($this->pi_base, $this->table, $field, $value, $this->conf, $this, $control))
+							if ($process = $procObj->extra_evalEntry($this->pi_base, $this->table, $field, $value, $this->recordId, $this->conf, $this, $control)) {
+								if ($extConf['debug.']['formControllerDebug']) {
+									$tables = t3lib_div::trimExplode(',', $extConf['debug.']['tables'], true);
+									if (empty($tables) || in_array($this->table, $tables)) {
+										t3lib_div::devLog('Form controller (controlEntry)', 'ics_tcafe_admin', 0, array('Pass eval'=>'extra'));
+									}
+								}
 								break;
+							}
 						}
 					}
 			}

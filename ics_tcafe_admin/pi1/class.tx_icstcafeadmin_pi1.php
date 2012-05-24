@@ -362,7 +362,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$this->table,
 			$this->fields,
 			$this->fieldLabels,
-			$this->getSingleRecord(),
+			$this->showUid,
 			$this->conf
 		);
 		$renderEdit->init();
@@ -513,7 +513,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			'tx_icstcafeadmin_controlForm',
 			$this,
 			$this->table,
-			$this->getSingleRecord(),
+			($this->showUid? $this->showUid: 0),
 			$this->fields,
 			$this->conf
 		);
@@ -522,7 +522,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		if ($this->ctrlEntries->controlEntries()) {
 			$dbTools = t3lib_div::makeInstance('tx_icstcafeadmin_DBTools', $this, $this->conf);
 			$fields = array_diff($this->fields, array('uid'));
-			$dataArray = $dbTools->process_valuesToDB($this->table, $this->getSingleRecord(), $fields, $this->piVars);
+			$dataArray = $dbTools->process_valuesToDB($this->table, ($this->showUid? $this->showUid: 0), $fields, $this->piVars);
 
 			// var_dump($dataArray);
 

@@ -27,19 +27,19 @@
  *
  *
  *   59: class tx_icstcafeadmin_DBTools
- *   79:     function __construct($pi_base)
- *   94:     public function process_valuesToDB($table, $row=null, array $fields, array $values)
- *  111:     public function process_valueToDB($table, $row=null, $field, $value)
- *  152:     public function renderField_config_evals($field, $row=null, $value, array $evals)
- *  225:     private function process_dateToDB($table, $field, $value)
- *  266:     private function process_datetimeToDB($table, $field, $value)
- *  308:     private function process_timeToDB($value)
- *  330:     private function process_timesecToDB($value)
- *  356:     public function renderField_check($field, $row=null, $value, $config)
- *  378:     public function renderField_select($field, $row=null, $value, $config)
- *  423:     function renderField_group_parseFiles($field, $row=null, array $value, $config, $uploadfolder=null)
- *  486:     public function getGroup_files()
- *  495:     public function getSelect_MM()
+ *   80:     function __construct($pi_base, $conf)
+ *   97:     public function process_valuesToDB($table, $recordId=0, array $fields, array $values)
+ *  114:     public function process_valueToDB($table, $recordId=0, $field, $value)
+ *  156:     public function renderField_config_evals($table, $field, $recordId=0, $value, array $evals)
+ *  239:     private function process_dateToDB($table, $field, $value)
+ *  280:     private function process_datetimeToDB($table, $field, $value)
+ *  322:     private function process_timeToDB($value)
+ *  344:     private function process_timesecToDB($value)
+ *  371:     public function renderField_check($table, $field, $recordId=0, $value, $config)
+ *  394:     public function renderField_select($table, $field, $recordId=0, $value, $config)
+ *  441:     function renderField_group_parseFiles($table, $field, $recordId=0, array $value, $config, $uploadfolder=null, $basename=true)
+ *  511:     public function getGroup_files()
+ *  520:     public function getSelect_MM()
  *
  * TOTAL FUNCTIONS: 13
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -74,6 +74,7 @@ class tx_icstcafeadmin_DBTools {
 	 * Constructor
 	 *
 	 * @param	tx_icstcafeadmin_pi1		$pi_base: Instance of tx_icstcafeadmin_pi1
+	 * @param	array		$conf: Typoscript configuration
 	 * @return	void
 	 */
 	function __construct($pi_base, $conf) {
@@ -87,14 +88,16 @@ class tx_icstcafeadmin_DBTools {
 	/**
 	 * Process values to DB
 	 *
-	 * @param	array		$fields: Array of fields
-	 * @param	array		$values: The values to process where key/value pairs are fieldnames/values
+	 * @param	string		$table: The table name
+	 * @param	int		$recordId: The record id
+	 * @param	string		$field: Array of fields name
+	 * @param	mixed		$value: The entry value
 	 * @return	mixed		The data array with values processed where key/value pairs are fieldnames/values
 	 */
-	public function process_valuesToDB($table, $row=null, array $fields, array $values) {
+	public function process_valuesToDB($table, $recordId=0, array $fields, array $values) {
 		$data = array();
 		foreach ($fields as $field) {
-			$dateArray[$field] = $this->process_valueToDB($table, $row, $field, $values[$field]);
+			$dateArray[$field] = $this->process_valueToDB($table, $recordId, $field, $values[$field]);
 		}
 		return $dateArray;
 	}
@@ -103,12 +106,12 @@ class tx_icstcafeadmin_DBTools {
 	 * Process values to DB
 	 *
 	 * @param	string		$table: The table name
-	 * @param	array		$row: The record
+	 * @param	int		$recordId: The record id
 	 * @param	string		$field: The field name
 	 * @param	mixed		$value: The entry value
 	 * @return	mixed		The processed value
 	 */
-	public function process_valueToDB($table, $row=null, $field, $value) {
+	public function process_valueToDB($table, $recordId=0, $field, $value) {
 		$GLOBALS['TSFE']->includeTCA();
 		t3lib_div::loadTCA($table);
 		$config = $GLOBALS['TCA'][$table]['columns'][$field]['config'];
@@ -118,23 +121,23 @@ class tx_icstcafeadmin_DBTools {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_valueToDB'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_valueToDB'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($process = $procObj->process_valueToDB($this->pi_base, $table, $field, $value, $row, $this->conf, $this))
+				if ($process = $procObj->process_valueToDB($this->pi_base, $table, $field, $value, $recordId, $this->conf, $this))
 					break;
 			}
 		}
 		if (!$process) {
 			$evals = t3lib_div::trimExplode(',', $config['eval'], true);
 			if (!empty($evals)) {
-				$value = $this->renderField_config_evals($field, $row, $value, $evals);
+				$value = $this->renderField_config_evals($table, $field, $recordId, $value, $evals);
 			}
 			elseif ($config['type']=='check') {
-				$value = $this->renderField_check($field, $row, $value, $config);
+				$value = $this->renderField_check($table, $field, $recordId, $value, $config);
 			}
 			elseif ($config['type']=='select') {
-				$value = $this->renderField_select($field, $row, $value, $config);
+				$value = $this->renderField_select($table, $field, $recordId, $value, $config);
 			}
 			elseif($config['type']=='group' && $config['internal_type']=='file') {
-				$value = $this->renderField_group_parseFiles($field, $row, $value, $config);
+				$value = $this->renderField_group_parseFiles($table, $field, $recordId, $value, $config);
 			}
 		}
 		return $value;
@@ -143,13 +146,14 @@ class tx_icstcafeadmin_DBTools {
 	/**
 	 * Process value switch evals
 	 *
+	 * @param	string		$table: The table name
 	 * @param	string		$field: The field name
-	 * @param	array		$row: The row
+	 * @param	array		$recordId: The record id
 	 * @param	mixed		$value: The value to process
 	 * @param	array		$evals: The TCA eval
 	 * @return	mixed		The value processing
 	 */
-	public function renderField_config_evals($field, $row=null, $value, array $evals) {
+	public function renderField_config_evals($table, $field, $recordId=0, $value, array $evals) {
 		foreach ($evals as $eval) {
 			switch ($eval) {
 				case 'required':
@@ -204,6 +208,16 @@ class tx_icstcafeadmin_DBTools {
 					// Nothing to do
 					break;
 				case 'md5':
+					$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+						$field,
+						$table,
+						'deleted = 0 AND uid=' . $recordId,
+						'',
+						'',
+						'1'
+					);
+					if (is_array($rows) && !empty($rows))
+						$row = $rows[0];
 					if ($value && ($value != $row[$field])) {
 						$value = md5($value);
 					}
@@ -230,7 +244,7 @@ class tx_icstcafeadmin_DBTools {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_dateToDB'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_dateToDB'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($process = $procObj->process_dateToDB($this->pi_base, $table, $field, $value, $row, $this->conf, $this))
+				if ($process = $procObj->process_dateToDB($this->pi_base, $table, $field, $value, $this->conf, $this))
 					break;
 			}
 		}
@@ -272,7 +286,7 @@ class tx_icstcafeadmin_DBTools {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_datetimeToDB'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_datetimeToDB'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($process = $procObj->process_datetimeToDB($this->pi_base, $table, $field, $value, $row, $this->conf, $this))
+				if ($process = $procObj->process_datetimeToDB($this->pi_base, $table, $field, $value, $this->conf, $this))
 					break;
 			}
 		}
@@ -347,13 +361,14 @@ class tx_icstcafeadmin_DBTools {
 	/**
 	 * Process check value to DB
 	 *
+	 * @param	string		$table: The table name
 	 * @param	string		$field: The fieldname
-	 * @param	array		$row: The row
+	 * @param	array		$recordId: The record id
 	 * @param	mixed		$value: The value to process
 	 * @param	array		$config: TCA field config
 	 * @return	int
 	 */
-	public function renderField_check($field, $row=null, $value, $config) {
+	public function renderField_check($table, $field, $recordId=0, $value, $config) {
 		if ($config['cols'] && $config['cols']>1) {
 			// TODO: Implements form section and implements this
 		}
@@ -369,13 +384,14 @@ class tx_icstcafeadmin_DBTools {
 	/**
 	 * Process select value to DB
 	 *
+	 * @param	string		$table: The table name
 	 * @param	string		$field: The fieldname
-	 * @param	array		$row: The row
+	 * @param	array		$recordId: The record id
 	 * @param	mixed		$value: The value to process
 	 * @param	array		$config: TCA field config
 	 * @return	int
 	 */
-	public function renderField_select($field, $row=null, $value, $config) {
+	public function renderField_select($table, $field, $recordId=0, $value, $config) {
 		if (!$value)
 			return null;
 
@@ -384,7 +400,7 @@ class tx_icstcafeadmin_DBTools {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderField_select'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderField_select'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($process = $procObj->renderField_select($this->pi_base, $table, $field, $value, $row, $this->conf, $this))
+				if ($process = $procObj->renderField_select($this->pi_base, $table, $field, $value, $recordId, $this->conf, $this))
 					break;
 			}
 		}
@@ -414,15 +430,15 @@ class tx_icstcafeadmin_DBTools {
 	/**
 	 * Upload file
 	 *
+	 * @param	string		$table: The table name
 	 * @param	string		$field: The fieldname
-	 * @param	array		$row: The row
+	 * @param	array		$recordId: The record id
 	 * @param	array		$value: The value to process
 	 * @param	array		$config: TCA field config
 	 * @param	boolean		$basename: Filename is basename or path. Default is basename.
-	 *
 	 * @return	void
 	 */
-	function renderField_group_parseFiles($field, $row=null, array $value, $config, $uploadfolder=null, $basename=true) {
+	function renderField_group_parseFiles($table, $field, $recordId=0, array $value, $config, $uploadfolder=null, $basename=true) {
 		if (!$uploadfolder)
 			$uploadfolder = $config['uploadfolder']? $config['uploadfolder'].'/': '';
 
@@ -436,7 +452,7 @@ class tx_icstcafeadmin_DBTools {
 				if ($file) {
 					if ($basename)
 						$unlink = t3lib_div::getFileAbsFileName($uploadfolder . $file);
-					else 
+					else
 						$unlink = t3lib_div::getFileAbsFileName($file);
 					@unlink($unlink);
 					$this->group_files['deletedFiles'][$field][] = $file;
@@ -474,7 +490,7 @@ class tx_icstcafeadmin_DBTools {
 					if (move_uploaded_file($_FILES[$this->prefixId]['tmp_name'][$field]['file'], t3lib_div::getFileAbsFileName($uploadfolder . $newFile))) {
 						if ($basename)
 							$files[] = $newFile;
-						else 
+						else
 							$files[] = $uploadfolder.$newFile;
 						$this->group_files['newFile'][$field] = $newFile;
 					}
