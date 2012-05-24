@@ -1,4 +1,7 @@
 2012-05-15 2012-05-24 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added debug on contorlForm.
+	* Feature: Added conf debug.
+	* Refactor: Hook parameter row to recordId and where need record, get row by record Id.
 	* Feature: Added hook on fucntion deleteRecord.
 	* Feature: Added parameter "basename" to DBTools renderField_group_parseFiles function.
 	
