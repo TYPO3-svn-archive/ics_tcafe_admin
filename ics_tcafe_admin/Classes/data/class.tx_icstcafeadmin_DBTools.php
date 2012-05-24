@@ -406,7 +406,10 @@ class tx_icstcafeadmin_DBTools {
 		}
 		if(!$process) {
 			if ($config['maxitems'] <= 1 && $config['renderMode'] !== 'tree') {
-				// nothing to do
+				if ($config['MM']) {
+					$this->select_MM[$field] = array($value);
+					$value = 1;
+				}				
 			// } elseif (!strcmp($config['renderMode'], 'checkbox')) {
 				// TODO : Implements Checkbox renderMode
 			// } elseif (!strcmp($config['renderMode'], 'singlebox')) {
@@ -419,7 +422,7 @@ class tx_icstcafeadmin_DBTools {
 					$this->select_MM[$field] = array_keys($value);
 					$value = count($value);
 				}
-				else{
+				else {
 					$value = implode(',', array_keys($value));
 				}
 			}
