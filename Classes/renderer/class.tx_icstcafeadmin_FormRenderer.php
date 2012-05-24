@@ -26,32 +26,31 @@
  *
  *
  *
- *   68: class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer
- *   92:     function __construct($pi_base, $table, array $fields, array $fieldLabels, $recordId=0, array $conf)
- *  115:     public function render()
- *  138:     private function renderPIDStorage()
- *  153:     private function renderFormFields()
- *  185:     private function renderEntries()
- *  209:     public function handleFormField($field)
- *  251:     public function handleFormField_typeInput($field, array $config, $template)
- *  295:     private function getConformInput($field, array $config)
- *  336:     public function handleFormField_typeText($field, array $config, $template)
- *  375:     public function handleFormField_typeCheck($field, array $config)
- *  417:     public function handleFormField_typeCheck_item($field, array $config, $col=null, $template)
- *  452:     public function handleFormField_typeSelect($field, array $config)
- *  504:     public function handleFormField_typeSelect_single(array $items, $field, array $config, $template)
- *  546:     public function handleFormField_typeSelect_multiple(array $items, $field, array $config, $template)
- *  587:     public function handleFormField_typeGroup($field, array $config)
- *  620:     public function handleFormField_typeGroup_file($field, array $config, $template)
- *  699:     public function getEntryValue($field, array $config)
- *  715:     public function getDefaultEntryValue($field)
- *  730:     private function getEntryValue_select($field, $config=null)
- *  762:     public function getSelectItemArray($field, array $config)
- *  797:     private function initItemArray(array $config)
- *  817:     private static function includeJSConformInput(array $files)
- *  836:     private static function includeLibDatepicker()
+ *   67: class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer
+ *   89:     function __construct($pi_base, $table, array $fields, array $fieldLabels, $recordId=0, array $conf)
+ *  112:     public function render()
+ *  135:     private function renderPIDStorage()
+ *  150:     private function renderFormFields()
+ *  182:     private function renderEntries()
+ *  206:     public function handleFormField($field)
+ *  248:     public function handleFormField_typeInput($field, array $config, $template)
+ *  292:     private function getConformInput($field, array $config)
+ *  333:     public function handleFormField_typeText($field, array $config, $template)
+ *  372:     public function handleFormField_typeCheck($field, array $config)
+ *  414:     public function handleFormField_typeCheck_item($field, array $config, $col=null, $template)
+ *  449:     public function handleFormField_typeSelect($field, array $config)
+ *  501:     public function handleFormField_typeSelect_single(array $items, $field, array $config, $template)
+ *  543:     public function handleFormField_typeSelect_multiple(array $items, $field, array $config, $template)
+ *  584:     public function handleFormField_typeGroup($field, array $config)
+ *  617:     public function handleFormField_typeGroup_file($field, array $config, $template)
+ *  695:     public function getEntryValue($field)
+ *  711:     public function getEntryValue_selectedOption($field, $item, array $config)
+ *  748:     public function getSelectItemArray($field, array $config)
+ *  783:     private function initItemArray(array $config)
+ *  803:     private static function includeJSConformInput(array $files)
+ *  822:     private static function includeLibDatepicker()
  *
- * TOTAL FUNCTIONS: 23
+ * TOTAL FUNCTIONS: 22
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -264,7 +263,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'FIELDLABEL' => $label,
 			'FIELDNAME' => $field,
 			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
-			'ITEM_VALUE' => $this->getEntryValue($field, $config),
+			'ITEM_VALUE' => $this->getEntryValue($field),
 			'SIZE' => $size,
 			'CONFORM' => $this->getConformInput($field, $config),
 			'CTRL_MESSAGE' => '',
@@ -351,7 +350,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'FIELDLABEL' => $label,
 			'FIELDNAME' => $field,
 			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
-			'ITEM_VALUE' => $this->getEntryValue($field, $config),
+			'ITEM_VALUE' => $this->getEntryValue($field),
 			'COLS' => $cols,
 			'ROWS' =>  $rows,
 			'WRAP' => '',
@@ -416,7 +415,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (!$template)
 			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK_ITEM###');
 
-		$value = $this->getEntryValue($field, $config);
+		$value = $this->getEntryValue($field);
 		if (is_null($col) && $value) {
 			$checked = 'checked="checked"';
 		}
@@ -510,7 +509,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		foreach ($items as $item) {
 			$locMarkers = array(
 				'OPTION_ITEM_VALUE' => $item['value'],
-				'OPTION_SELECTED' => ($item['value'] == $this->getEntryValue($field, $config))? ' selected="selected"': '',
+				'OPTION_SELECTED' => $this->getEntryValue_selectedOption($field, $item['value'], $config),
 				'OPTION_ITEM_LABEL' => $item['label'],
 			);
 			$subparts['###GROUP_OPTIONS###'] .= $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
@@ -554,7 +553,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 				$locMarkers = array(
 					'OPTION_ITEM_NAME' => $this->prefixId . '[' . $field . '][' . $item['value'] . ']',
 					'OPTION_ITEM_ID' => $field . '_' . $item['value'],
-					'OPTION_CHECKED' => in_array($item['value'], $this->getEntryValue($field, $config))? ' checked="checked"': '',
+					'OPTION_CHECKED' => in_array($item['value'], $this->getEntryValue($field))? ' checked="checked"': '',
 					'OPTION_ITEM_LABEL' => $item['label'],
 				);
 				$subparts['###GROUP_OPTIONS###'] .= $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
@@ -691,26 +690,9 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * Retrieves entry value
 	 *
 	 * @param	string		$field: The field name
-	 * @param	array		$config: TCA field conf
 	 * @return	mixed		The entry value
 	 */
-	public function getEntryValue($field, array $config) {
-		if ($config['type']=='select') {
-			$value = $this->getEntryValue_select($field, $config);
-		}
-		else {
-			$value = $this->getDefaultEntryValue($field, $config);
-		}
-		return $value;
-	}
-
-	/**
-	 * Retrieves entry value
-	 *
-	 * @param	string		$field: The field name
-	 * @return	mixed		The entry value
-	 */
-	public function getDefaultEntryValue($field) {
+	public function getEntryValue($field) {
 		if ($this->pi_base->piVars['valid']) {
 			return $this->pi_base->piVars[$field];
 		}
@@ -722,32 +704,36 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * Retrieves TCA type "select" entry value
 	 *
 	 * @param	string		$field: The field name
+	 * @param	int		$item: The item value
 	 * @param	array		$config: TCA field conf
 	 * @return	mixed		The entry value
 	 */
-	private function getEntryValue_select($field, $config=null) {
+	public function getEntryValue_selectedOption($field, $item, array $config) {
+		$selectedOption = '';
+		$options = array();
 		if ($this->pi_base->piVars['valid']) {
 			if ($config['maxitems'] >1)
-				$value = array_keys($this->pi_base->piVars[$field]);
+				$options = array_keys($this->pi_base->piVars[$field]);
 			else
-				$value = $this->pi_base->piVars[$field];
+				$options = array($this->pi_base->piVars[$field]);
 		}
 		else {	// $this->pi_base->piVars['cancel'] or any submit
-			$value = $this->row[$field];
-			if ($config['maxitems'] >1) {
-				if ($config['MM']) {
-					$value = array();
-					$result = $this->getMMRecords($this->row['uid'], $config);
-					while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
-						$value[] = $row['ft_uid'];
-					}
-				}
-				else {
-					$value = t3lib_div::trimExplode(',', $value);
+			if ($config['MM']) {
+				$result = $this->getMMRecords($this->row['uid'], $config);
+				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
+					$options[] = $row['ft_uid'];
 				}
 			}
+			elseif ($config['maxitems'] >1) {
+				$options = t3lib_div::trimExplode(',', $this->row[$field]);
+			}
+			else {
+				$options = array($this->row[$field]);
+			}
 		}
-		return $value;
+		if (in_array($item, $options))
+			$selectedOption = 'selected="selected"';
+		return $selectedOption;
 	}
 
 	/**

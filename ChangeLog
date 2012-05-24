@@ -1,4 +1,5 @@
 2012-05-15 2012-05-24 Tsi YANG <tsi@in-cite.net>
+	* Fix: Proccessed on MM relation.
 	* Feature: Added debug on contorlForm.
 	* Feature: Added conf debug.
 	* Refactor: Hook parameter row to recordId and where need record, get row by record Id.
