@@ -1,3 +1,7 @@
+2012-05-15 2012-05-24 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added hook on fucntion deleteRecord.
+	* Feature: Added parameter "basename" to DBTools renderField_group_parseFiles function.
+	
 2012-05-15 2012-05-22 Tsi YANG <tsi@in-cite.net>
 	* Fix: Checked wrong condition.
 	* Feature: Added form renderer param.
