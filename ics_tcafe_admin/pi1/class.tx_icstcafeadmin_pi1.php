@@ -93,6 +93,18 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 
 		$this->pi_initPIflexForm();
 
+		$content = '';
+		
+		// Hook plugin before init
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_beforeInit'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_beforeInit'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if (!$process = $procObj->process_beforeInit($content, $this->conf, $this)) {
+					return $this->pi_wrapInBaseClass($content);
+				}
+			}
+		}
+		
 		$this->init();
 
 		$this->setTable();
@@ -108,6 +120,16 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		}
 
 		$this->setFields();
+
+		// Hook plugin before init
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_afterInit'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_afterInit'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if (!$process = $procObj->process_afterInit($this->table, $this->fields, $this->fieldLabels, $content, $this->conf, $this)) {
+					return $this->pi_wrapInBaseClass($content);
+				}
+			}
+		}
 
 		if ($this->showUid && in_array('SINGLE', $this->codes)) {
 			try {
@@ -158,8 +180,9 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		}
 		elseif ($this->showUid && in_array('DELETE', $this->codes)) {
 			try {
+				$row = $this->getSingleRecord();
 				$this->deleteRecord($this->table, $this->showUid);
-				$content = $this->displayDelete();
+				$content = $this->displayDelete($row);
 			} catch (Exception $e) {
 				tx_icstcafeadmin_debug::error('Delete data failed: ' . $e);
 			}
@@ -424,10 +447,10 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 *
 	 * @return	string		HTML content
 	 */
-	public function displayDelete() {
+	public function displayDelete($previousRow) {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_DELETED_RECORD###');
 		$markers = array(
-			'DELETED_RECORD_TEXT' => sprintf($this->pi_getLL('deleted_record', 'Record\'s %s is deleted.', true), $this->showUid),
+			'DELETED_RECORD_TEXT' => sprintf($this->pi_getLL('deleted_record', 'Record\'s %2$s is deleted.', true), $this->showUid, $previousRow[$GLOBALS['TCA'][$this->table]['ctrl']['label']]),
 		);
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
@@ -441,9 +464,9 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_HIDDEN_SHOWN_RECORD###');
 		$row = $this->getSingleRecord();
 		if ($row['hidden'])
-			$text = sprintf($this->pi_getLL('hidden_record', 'Record\'s %s is hidden.', true), $this->showUid) ;
+			$text = sprintf($this->pi_getLL('hidden_record', 'Record\'s %2$s is hidden.', true), $this->showUid, $row[$GLOBALS['TCA'][$this->table]['ctrl']['label']]) ;
 		else
-			$text = sprintf($this->pi_getLL('shown_record', 'Record\'s %s is visible.', true), $this->showUid);
+			$text = sprintf($this->pi_getLL('shown_record', 'Record\'s %2$s is visible.', true), $this->showUid, $row[$GLOBALS['TCA'][$this->table]['ctrl']['label']]);
 
 		$markers = array(
 			'HIDDEN_SHOWN_RECORD_TEXT' => $text,

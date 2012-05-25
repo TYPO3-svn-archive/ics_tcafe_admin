@@ -394,7 +394,6 @@ class tx_icstcafeadmin_DBTools {
 	public function renderField_select($table, $field, $recordId=0, $value, $config) {
 		if (!$value)
 			return null;
-
 		$process = false;
 		// Hook on renderField_select
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderField_select'])) {
@@ -409,7 +408,7 @@ class tx_icstcafeadmin_DBTools {
 				if ($config['MM']) {
 					$this->select_MM[$field] = array($value);
 					$value = 1;
-				}				
+				}
 			// } elseif (!strcmp($config['renderMode'], 'checkbox')) {
 				// TODO : Implements Checkbox renderMode
 			// } elseif (!strcmp($config['renderMode'], 'singlebox')) {
