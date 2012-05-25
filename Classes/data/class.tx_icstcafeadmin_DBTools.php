@@ -491,11 +491,14 @@ class tx_icstcafeadmin_DBTools {
 
 				if (in_array($ext, $allowed) || !in_array($ext, $disallowed)) {
 					if (move_uploaded_file($_FILES[$this->prefixId]['tmp_name'][$field]['file'], t3lib_div::getFileAbsFileName($uploadfolder . $newFile))) {
-						if ($basename)
+						if ($basename) {
 							$files[] = $newFile;
-						else
+							$this->group_files['newFile'][$field] = $newFile;
+						}
+						else {
 							$files[] = $uploadfolder.$newFile;
-						$this->group_files['newFile'][$field] = $newFile;
+							$this->group_files['newFile'][$field] = $uploadfolder.$newFile;
+						}
 					}
 				}
 				else {
