@@ -33,22 +33,22 @@
  *  150:     private function renderFormFields()
  *  182:     private function renderEntries()
  *  206:     public function handleFormField($field)
- *  248:     public function handleFormField_typeInput($field, array $config, $template)
+ *  248:     public function handleFormField_typeInput($field, array $config, $template='')
  *  292:     private function getConformInput($field, array $config)
- *  333:     public function handleFormField_typeText($field, array $config, $template)
+ *  333:     public function handleFormField_typeText($field, array $config, $template='')
  *  372:     public function handleFormField_typeCheck($field, array $config)
- *  414:     public function handleFormField_typeCheck_item($field, array $config, $col=null, $template)
+ *  414:     public function handleFormField_typeCheck_item($field, array $config, $col=null, $template='')
  *  449:     public function handleFormField_typeSelect($field, array $config)
- *  501:     public function handleFormField_typeSelect_single(array $items, $field, array $config, $template)
- *  543:     public function handleFormField_typeSelect_multiple(array $items, $field, array $config, $template)
+ *  501:     public function handleFormField_typeSelect_single(array $items, $field, array $config, $template='')
+ *  543:     public function handleFormField_typeSelect_multiple(array $items, $field, array $config, $template='')
  *  584:     public function handleFormField_typeGroup($field, array $config)
- *  617:     public function handleFormField_typeGroup_file($field, array $config, $template)
+ *  617:     public function handleFormField_typeGroup_file($field, array $config, $template='')
  *  695:     public function getEntryValue($field)
  *  711:     public function getEntryValue_selectedOption($field, $item, array $config)
- *  748:     public function getSelectItemArray($field, array $config)
- *  783:     private function initItemArray(array $config)
- *  803:     private static function includeJSConformInput(array $files)
- *  822:     private static function includeLibDatepicker()
+ *  746:     public function getSelectItemArray($field, array $config)
+ *  781:     private function initItemArray(array $config)
+ *  801:     private static function includeJSConformInput(array $files)
+ *  820:     private static function includeLibDatepicker()
  *
  * TOTAL FUNCTIONS: 22
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -245,7 +245,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	string		$template: The template code
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeInput($field, array $config, $template) {
+	public function handleFormField_typeInput($field, array $config, $template='') {
 		$size = t3lib_div::intInRange($config['size'], 5, $this->maxInputWidth, 30);
 		$size = $size? 'size="' . $size . '"': '';
 
@@ -330,7 +330,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	string		$template: The template code
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeText($field, array $config, $template) {
+	public function handleFormField_typeText($field, array $config, $template='') {
 		$cols = t3lib_div::intInRange($config['cols'], 5, $this->maxTextareaCols, 30);
 		$cols =  $cols? 'cols="' . $cols . '"': '';
 		$rows = t3lib_div::intInRange($config['rows'], 1, $this->maxTextareaRows, 5);
@@ -411,7 +411,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	string		$template: The template code
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeCheck_item($field, array $config, $col=null, $template) {
+	public function handleFormField_typeCheck_item($field, array $config, $col=null, $template='') {
 		if (!$template)
 			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK_ITEM###');
 
@@ -498,7 +498,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	string		$template: The template code
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeSelect_single(array $items, $field, array $config, $template) {
+	public function handleFormField_typeSelect_single(array $items, $field, array $config, $template='') {
 		if (!$template)
 			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_SELECT_SINGLE###');
 
@@ -540,7 +540,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	string		$template: The template code
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeSelect_multiple(array $items, $field, array $config, $template) {
+	public function handleFormField_typeSelect_multiple(array $items, $field, array $config, $template='') {
 		if (!$template)
 			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_SELECT_MULTIPLE###');
 
@@ -614,7 +614,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	string		$template: The template code
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeGroup_file($field, array $config, $template) {
+	public function handleFormField_typeGroup_file($field, array $config, $template='') {
 		if (!$template)
 			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_FILE###');
 
