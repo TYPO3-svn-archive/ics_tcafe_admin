@@ -139,6 +139,8 @@ class tx_icstcafeadmin_CommonRenderer {
 				$data = array(
 					'id' => $recordId,
 					'title' => $this->handleFieldValue($recordId ,$value, $config),
+					'table' => $this->table,
+					'PIDitemDisplay' => $this->conf['view.']['PIDitemDisplay'],
 				);
 				$cObj = t3lib_div::makeInstance('tslib_cObj');
 				$cObj->start($data, $this->table);

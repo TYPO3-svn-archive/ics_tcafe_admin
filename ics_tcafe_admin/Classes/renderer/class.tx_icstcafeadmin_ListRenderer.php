@@ -112,10 +112,17 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		}
 
 		$data = array(
+			'id' => $row['uid'],
 			'newId' => 'New'.uniqid(),
 			'table' => $this->table,
 			'fields' => implode(',', $this->fields),
 			'hidden' => $row['hidden'],
+			'PIDitemDisplay' => $this->conf['view.']['PIDitemDisplay'],
+			'withDataItemDisplay' => $this->conf['view.']['withDataItemDisplay'],
+			'PIDeditItem' => $this->conf['view.']['PIDeditItem'],
+			'withDataEditItem' => $this->conf['view.']['withDataEditItem'],
+			'PIDnewItem' => $this->conf['view.']['PIDnewItem'],
+			'withDataNewItem' => $this->conf['view.']['withDataNewItem'],
 		);
 		$cObj = t3lib_div::makeInstance('tslib_cObj');
 		$cObj->start($data, 'TCAFE_Admin_actions');
@@ -208,6 +215,12 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'table' => $this->table,
 			'fields' => implode(',', $this->fields),
 			'hidden' => $row['hidden'],
+			'PIDitemDisplay' => $this->conf['view.']['PIDitemDisplay'],
+			'withDataItemDisplay' => $this->conf['view.']['withDataItemDisplay'],
+			'PIDeditItem' => $this->conf['view.']['PIDeditItem'],
+			'withDataEditItem' => $this->conf['view.']['withDataEditItem'],
+			'PIDnewItem' => $this->conf['view.']['PIDnewItem'],
+			'withDataNewItem' => $this->conf['view.']['withDataNewItem'],
 		);
 		$cObj = t3lib_div::makeInstance('tslib_cObj');
 		$cObj->start($data, 'TCAFE_Admin_actions');

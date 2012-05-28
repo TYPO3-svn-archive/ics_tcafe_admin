@@ -7,10 +7,13 @@ plugin.tx_icstcafeadmin_pi1 {
 		modes = {$config.tx_icstcafeadmin_pi1.modes}
 		# Size
 		size = {$config.tx_icstcafeadmin_pi1.size}
-		# PID to display item
+		# PID to display item with table configuration
 		PIDitemDisplay = {$config.tx_icstcafeadmin_pi1.single}
+		withDataItemDisplay = 1
 		PIDeditItem = {$config.tx_icstcafeadmin_pi1.edit}
+		withDataEditItem = 1
 		PIDnewItem = {$config.tx_icstcafeadmin_pi1.new}
+		withDataNewItem = 1
 	}
 	
 	# Table configuration
@@ -152,7 +155,8 @@ plugin.tx_icstcafeadmin_pi1 {
 			}
 			typolink {
 				parameter.data = tsfe:id
-				additionalParams=&tx_icstcafeadmin_pi1[showUid]={field:id}
+				parameter.override.field = PIDitemDisplay
+				additionalParams = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}
 				additionalParams.insertData = 1
 			}
 			
@@ -169,7 +173,7 @@ plugin.tx_icstcafeadmin_pi1 {
 	}
 	
 	# Render actions on list view
-	listActions {
+	listActions {		
 		edit {
 			cObject = TEXT
 			cObject {
@@ -177,10 +181,21 @@ plugin.tx_icstcafeadmin_pi1 {
 			}
 			typolink {
 				parameter.data = tsfe:id
-				additionalParams = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[fields]={field:fields}&tx_icstcafeadmin_pi1[showUid]={field:id}&tx_icstcafeadmin_pi1[mode]=EDIT
+				parameter.override.field = PIDeditItem
+				additionalParams.cObject = COA
+				additionalParams.cObject {
+					10 = TEXT
+					10.value = &tx_icstcafeadmin_pi1[mode]=EDIT&tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}
+					20 = TEXT
+					20 {
+						if.isTrue.field = withDataEditItem
+						value = &tx_icstcafeadmin_pi1[fields]={field:fields}
+					}
+				}
 				additionalParams.insertData = 1
 			}
 		}
+		
 		single {
 			cObject = TEXT
 			cObject {
@@ -188,7 +203,17 @@ plugin.tx_icstcafeadmin_pi1 {
 			}
 			typolink {
 				parameter.data = tsfe:id
-				additionalParams = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[fields]={field:fields}&tx_icstcafeadmin_pi1[showUid]={field:id}&tx_icstcafeadmin_pi1[mode]=SINGLE
+				parameter.override.field = PIDitemDisplay
+				additionalParams.cObject = COA
+				additionalParams.cObject {
+					10 = TEXT
+					10.value = &tx_icstcafeadmin_pi1[mode]=SINGLE&tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}
+					20 = TEXT
+					20 {
+						if.isTrue.field = withDataItemDisplay
+						value = &tx_icstcafeadmin_pi1[fields]={field:fields}
+					}
+				}
 				additionalParams.insertData = 1
 			}
 		}
@@ -199,7 +224,18 @@ plugin.tx_icstcafeadmin_pi1 {
 			}
 			typolink {
 				parameter.data = tsfe:id
-				additionalParams = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[fields]={field:fields}&tx_icstcafeadmin_pi1[newUid]={field:newId}&tx_icstcafeadmin_pi1[mode]=NEW
+				parameter.override.field = PIDnewItem
+				additionalParams.cObject = COA
+				additionalParams.cObject {
+					10 = TEXT
+					10.value = &tx_icstcafeadmin_pi1[mode]=NEW&tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[newUid]={field:newId}
+					20 = TEXT
+					20 {
+						if.isTrue.field = withDataNewItem
+						value = &tx_icstcafeadmin_pi1[fields]={field:fields}
+					}
+				}
+
 				additionalParams.insertData = 1
 			}
 		}
