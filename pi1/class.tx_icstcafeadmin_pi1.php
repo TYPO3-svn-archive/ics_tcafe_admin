@@ -234,11 +234,6 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$codes = t3lib_div::trimExplode(',', $this->conf['view.']['modes'], true);
 		$this->codes = array_unique($codes);
 
-		$PIDitemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'PIDitemDisplay', 'general');
-		if ($PIDitemDisplay)
-			$this->conf['view.']['PIDitemDisplay'] = $PIDitemDisplay;
-		if (!$this->conf['view.']['PIDitemDisplay'])
-			$this->conf['view.']['PIDitemDisplay'] = $GLOBALS['TSFE']->id;
 
 		// Get pid storage
 		if ($this->cObj->data['pages'])
@@ -249,7 +244,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 
 		$this->newUid = $this->piVars['newUid'];
 
-			// Get page size
+		// Get page size
 		// $size = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'size', 'general');
 		// $this->conf['view.']['size'] = $size ? $size : $this->conf['view.']['size'];
 		// $this->conf['view.']['size'] = $this->conf['view.']['size'] ? $this->conf['view.']['size'] : $this->defaultSize;
@@ -259,6 +254,22 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$this->conf['view.']['page'] = $this->piVars['page'] + 1;
 		if (!$this->conf['view.']['page'])
 			$this->conf['view.']['page'] = 1;
+			
+		// Get PIDs link to single, edit or new
+		$PIDitemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'singleID', 'miscellaneous');
+		$this->conf['view.']['PIDitemDisplay'] = $PIDitemDisplay? $PIDitemDisplay: $this->conf['view.']['PIDitemDisplay'];
+		$withDataItemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'withSingleData', 'miscellaneous');
+		$this->conf['view.']['withDataItemDisplay'] = $withDataItemDisplay? $withDataItemDisplay: $this->conf['view.']['withDataItemDisplay'];
+
+		$PIDeditItem = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'editID', 'miscellaneous');
+		$this->conf['view.']['PIDeditItem'] = $PIDeditItem? $PIDeditItem: $this->conf['view.']['PIDeditItem'];
+		$withDataEditItem = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'withEditData', 'miscellaneous');
+		$this->conf['view.']['withDataEditItem'] = $withDataEditItem? $withDataEditItem: $this->conf['view.']['withDataEditItem'];
+		
+		$PIDnewItem = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'newID', 'miscellaneous');
+		$this->conf['view.']['PIDnewItem'] = $PIDnewItem? $PIDnewItem: $this->conf['view.']['PIDnewItem'];
+		$withDataNewItem = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'withNewData', 'miscellaneous');
+		$this->conf['view.']['withDataNewItem'] = $withDataNewItem? $withDataNewItem: $this->conf['view.']['withDataNewItem'];
 	}
 
 	/**

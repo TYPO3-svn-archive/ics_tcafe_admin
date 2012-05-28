@@ -98,7 +98,7 @@
 				</el>
 			</ROOT>
 		</table>
-		<!--<miscellaneous>
+		<miscellaneous>
 			<ROOT>
 				<TCEforms>
 					<sheetTitle>LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:miscellaneous</sheetTitle>
@@ -119,6 +119,14 @@
 							</config>
 						</TCEforms>
 					</singleID>
+					<withSingleData>
+						<TCEforms>
+							<label>LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:withSingleData</label>
+							<config>
+								<type>check</type>
+							</config>
+						</TCEforms>
+					</withSingleData>
 					<editID>
 						<TCEforms>
 							<exclude>1</exclude>
@@ -134,6 +142,14 @@
 							</config>
 						</TCEforms>
 					</editID>
+					<withEditData>
+						<TCEforms>
+							<label>LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:withEditData</label>
+							<config>
+								<type>check</type>
+							</config>
+						</TCEforms>
+					</withEditData>
 					<newID>
 						<TCEforms>
 							<exclude>1</exclude>
@@ -149,7 +165,15 @@
 							</config>
 						</TCEforms>
 					</newID>
-					<return>
+					<withNewData>
+						<TCEforms>
+							<label>LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:withNewData</label>
+							<config>
+								<type>check</type>
+							</config>
+						</TCEforms>
+					</withNewData>
+					<!--<return>
 						<TCEforms>
 							<exclude>1</exclude>
 							<label>LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:returnUrl</label>
@@ -163,9 +187,9 @@
 							<show_thumbs>1</show_thumbs>
 							</config>
 						</TCEforms>
-					</return>
+					</return>-->
 				</el>
 			</ROOT>
-		</miscellaneous>-->
+		</miscellaneous>
 	</sheets>
 </T3DataStructure>
