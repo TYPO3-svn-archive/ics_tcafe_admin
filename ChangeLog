@@ -1,3 +1,9 @@
+2012-05-15 2012-05-31 Tsi YANG <tsi@in-cite.net>
+	* Comments: Updated mannual.
+	* Refactor: Reworked init function and render content.
+	* Feature: Added user function. Alternative of main.
+	* Feature: Added Typoscript configuration for pid storage.
+
 2012-05-15 2012-05-28 Tsi YANG <tsi@in-cite.net>
 	* Feature: Added link to single, edit or new page with typoscript configuration and flex configuration.
 	* Feature: Added configuration to generate TCA ctrl label link to single.
