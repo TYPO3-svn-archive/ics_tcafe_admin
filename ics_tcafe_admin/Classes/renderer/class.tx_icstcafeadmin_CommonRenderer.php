@@ -96,6 +96,7 @@ class tx_icstcafeadmin_CommonRenderer {
 		$this->table = $table;
 		$this->fields = $fields;
 		$this->fieldLabels = $fieldLabels;
+		$this->storage = $pi_base->storage;
 	}
 
 	/**
@@ -131,7 +132,8 @@ class tx_icstcafeadmin_CommonRenderer {
 			$conf['currentView'] = $view;
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderValue'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$process = $procObj->renderValue($this->pi_base, $this->table, $field, $this->fieldLabels, $value, $recordId, $conf, $this);
+				if ($process = $procObj->renderValue($this->pi_base, $this->table, $field, $this->fieldLabels, $value, $recordId, $conf, $this))
+					break;
 			}
 		}
 		if (!$process) {

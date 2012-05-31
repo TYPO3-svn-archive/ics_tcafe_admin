@@ -2,6 +2,8 @@ plugin.tx_icstcafeadmin_pi1 {
 	# Template file
 	template = {$config.tx_icstcafeadmin_pi1.template}
 	
+	pidStorages = 
+	
 	view {
 		# Mode to display : list, single, search
 		modes = {$config.tx_icstcafeadmin_pi1.modes}

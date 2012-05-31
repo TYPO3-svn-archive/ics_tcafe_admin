@@ -26,26 +26,33 @@
  *
  *
  *
- *   62: class tx_icstcafeadmin_pi1 extends tslib_pibase
- *   88:     function main($content, $conf)
- *  195:     protected function init()
- *  246:     private function setTable()
- *  259:     private function setFields()
- *  301:     public function displayList()
- *  340:     public function displaySingle()
- *  360:     public function displayEdit()
- *  380:     public function displayNew()
- *  400:     public function displayValidatedForm()
- *  417:     public function displayErrorValidatedForm()
- *  431:     public function displayDelete()
- *  444:     public function displayHide()
- *  463:     private function getRecords()
- *  495:     private function getSingleRecord()
- *  515:     function saveDB()
- *  595:     public function deleteRecord($table, $rowUid)
- *  612:     public function hideRecord($table, $rowUid)
+ *   69: class tx_icstcafeadmin_pi1 extends tslib_pibase
+ *   98:     function main($content, $conf)
+ *  147:     function user_TCAFEAdmin($content, $conf)
+ *  180:     public function renderContent()
+ *  268:     public function setTable($mergePiVars = true)
+ *  281:     public function loadTable()
+ *  300:     public function init()
+ *  329:     protected function initTemplate()
+ *  341:     protected function initCodes()
+ *  352:     protected function initPidStorage()
+ *  364:     protected function initFields()
+ *  403:     protected function mergePiVars()
+ *  450:     public function displayList()
+ *  488:     public function displaySingle()
+ *  507:     public function displayEdit()
+ *  526:     public function displayNew()
+ *  545:     public function displayValidatedForm()
+ *  562:     public function displayErrorValidatedForm()
+ *  577:     public function displayDelete($previousRow)
+ *  590:     public function displayHide()
+ *  609:     private function getRecords()
+ *  641:     private function getSingleRecord()
+ *  661:     function saveDB()
+ *  738:     public function deleteRecord($table, $rowUid)
+ *  766:     public function hideRecord($table, $rowUid)
  *
- * TOTAL FUNCTIONS: 17
+ * TOTAL FUNCTIONS: 24
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -65,7 +72,9 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	var $extKey        = 'ics_tcafe_admin';	// The extension key.
 
 	var $templateFile = 'typo3conf/ext/ics_tcafe_admin/res/template.html';
-	var $codes = array('LIST');
+	var $templateCode;
+	var $codes = null;
+	var $storage = array(0);
 
 	var $defaultPage = 1;
 	var $defaultSize = 20;
@@ -77,6 +86,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	private $groupBy = '';
 	private $limit = '';
 	private $orderBy = '';
+
 
 	/**
 	 * The main method of the PlugIn
@@ -93,35 +103,26 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 
 		$this->pi_initPIflexForm();
 
-		$content = '';
-		
-		// Hook plugin before init
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_beforeInit'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_beforeInit'] as $class) {
+		// Hook plugin
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['startOff'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['startOff'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if (!$process = $procObj->process_beforeInit($content, $this->conf, $this)) {
+				if (!$process = $procObj->startOff($content, $this->conf, $this)) {
 					return $this->pi_wrapInBaseClass($content);
 				}
 			}
 		}
-		
-		$this->init();
 
-		$this->setTable();
-		if (!$this->table) {
-			tx_icstcafeadmin_debug::error('Table must not be empty.');
-			return $this->pi_wrapInBaseClass($this->pi_getLL('data_not_available', 'Invalid table.', true));
-		}
-		$GLOBALS['TSFE']->includeTCA();
-		t3lib_div::loadTCA($this->table);
-		if (!$GLOBALS['TCA'][$this->table]) {
+		$this->setTable(true);
+		if (!$this->loadTable()) {
 			tx_icstcafeadmin_debug::error('Table can not be loaded from TCA.');
 			return $this->pi_wrapInBaseClass($this->pi_getLL('data_not_available', 'Invalid table ' . $this->table, true));
 		}
 
-		$this->setFields();
+		$this->init();
+		$this->mergePiVars();
 
-		// Hook plugin before init
+		// Hook plugin after init
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_afterInit'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_afterInit'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
@@ -131,6 +132,53 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			}
 		}
 
+		$content = $this->renderContent();
+
+		return $this->pi_wrapInBaseClass($content);
+	}
+
+	/**
+	 * The main method of the PlugIn
+	 *
+	 * @param	string		$content: The PlugIn content
+	 * @param	array		$conf: The PlugIn configuration
+	 * @return	The		content that is displayed on the website
+	 */
+	function user_TCAFEAdmin($content, $conf) {
+		$this->conf = $conf;
+		$this->pi_loadLL();
+
+		// Hook plugin
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['user_TCAFEAdmin'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['user_TCAFEAdmin'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if ($process = $procObj->user_TCAFEAdmin($content, $this->conf, $this)) {
+					break;
+				}
+			}
+		}
+		if (!$process) {
+
+			$this->setTable(false);
+			if (!$this->loadTable()) {
+				tx_icstcafeadmin_debug::error('Table can not be loaded from TCA.');
+				return $this->pi_wrapInBaseClass($this->pi_getLL('data_not_available', 'Invalid table ' . $this->table, true));
+			}
+
+			$this->init();
+
+			$content = $this->renderContent();
+		}
+		return $this->pi_wrapInBaseClass($content);
+	}
+
+	/**
+	 * Renders content
+	 *
+	 * @return	string		The HTML content
+	 */
+	public function renderContent() {
+		$content = '';
 		if ($this->showUid && in_array('SINGLE', $this->codes)) {
 			try {
 				$content = $this->displaySingle();
@@ -197,6 +245,8 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		}
 		elseif (count(array_intersect(array('SEARCH', 'LIST'), $this->codes)) > 0) {
 			try {
+				if ($this->conf['tx_icsoddatastore_files_list.']['from_otherTableView'] ) {
+				}
 				$content = $this->displayList();
 			} catch (Exception $e) {
 				tx_icstcafeadmin_debug::error('Retrieves data list failed: ' . $e);
@@ -204,58 +254,57 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		}
 		else {
 			tx_icstcafeadmin_debug::warning('Any mode is set.');
-			return '';
+			$content = '';
 		}
-
-		return $this->pi_wrapInBaseClass($content);
+		return $content;
 	}
 
 	/**
-	 * Initialize the plugin
+	 * Sets table
 	 *
-	 * @return	boolean
+	 * @param	boolean		$mergePiVars: Flag to merge piVars
+	 * @return	void
 	 */
-	protected function init() {
-		// Get template code
-		$templateFile = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'templateFile', 'general');
-		$templateFile = $templateFile ? $templateFile : $this->conf['template'];
-		$templateFile = $templateFile ? $templateFile : $this->templateFile;
-		$this->templateCode = $this->cObj->fileResource($templateFile);
+	public function setTable($mergePiVars = true) {
+		if ($mergePiVars)
+			$table = $this->piVars['table'];
+		$table = $table? $table: $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'tablename', 'table');
+		$table = $table? $table: $this->conf['table.']['tablename'];
+		$this->table = $table;
+	}
 
-		// Get display mode
-		$codes = array();
-		if (isset($this->piVars['showUid'])) {
-			$this->showUid = $this->piVars['showUid'];
+	/**
+	 * Loads table
+	 *
+	 * @return	boolean		“True” whether table is loaded, otherwise “False”
+	 */
+	public function loadTable() {
+		if (!$this->table) {
+			tx_icstcafeadmin_debug::error('Table must not be empty.');
+			return false;
 		}
-		if ($this->piVars['mode'])
-			$codes = array($this->piVars['mode']);
-		$codes = $codes? $codes: t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'general'), true);
-		if (empty($codes))
-			$codes = t3lib_div::trimExplode(',', $this->conf['view.']['modes'], true);
-		$this->codes = array_unique($codes);
+		$GLOBALS['TSFE']->includeTCA();
+		t3lib_div::loadTCA($this->table);
+		if (!$GLOBALS['TCA'][$this->table]) {
+			tx_icstcafeadmin_debug::error('Table can not be loaded from TCA.');
+			return false;
+		}
+		return true;
+	}
 
+	/**
+	 * Initializes the plugin
+	 *
+	 * @return	void
+	 */
+	public function init() {
+		$this->initTemplate();
+		$this->initCodes();
+		$this->initPidStorage();
 
-		// Get pid storage
-		if ($this->cObj->data['pages'])
-			$pids = t3lib_div::trimExplode(',', $this->cObj->data['pages'], true);
-		if ($this->piVars['pidStorage'])
-			$pids = t3lib_div::trimExplode(',', $this->piVars['pidStorage'], true);
-		$this->storage = $pids? $pids: array(0);
+		$this->initFields();
 
-		$this->newUid = $this->piVars['newUid'];
-
-		// Get page size
-		// $size = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'size', 'general');
-		// $this->conf['view.']['size'] = $size ? $size : $this->conf['view.']['size'];
-		// $this->conf['view.']['size'] = $this->conf['view.']['size'] ? $this->conf['view.']['size'] : $this->defaultSize;
-		// $this->limit = $this->conf['view.']['size']? $this->conf['view.']['size']: '';
-
-		if (isset($this->piVars['page']))
-			$this->conf['view.']['page'] = $this->piVars['page'] + 1;
-		if (!$this->conf['view.']['page'])
-			$this->conf['view.']['page'] = 1;
-			
-		// Get PIDs link to single, edit or new
+		// Gets PIDs link to single, edit or new
 		$PIDitemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'singleID', 'miscellaneous');
 		$this->conf['view.']['PIDitemDisplay'] = $PIDitemDisplay? $PIDitemDisplay: $this->conf['view.']['PIDitemDisplay'];
 		$withDataItemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'withSingleData', 'miscellaneous');
@@ -265,7 +314,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$this->conf['view.']['PIDeditItem'] = $PIDeditItem? $PIDeditItem: $this->conf['view.']['PIDeditItem'];
 		$withDataEditItem = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'withEditData', 'miscellaneous');
 		$this->conf['view.']['withDataEditItem'] = $withDataEditItem? $withDataEditItem: $this->conf['view.']['withDataEditItem'];
-		
+
 		$PIDnewItem = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'newID', 'miscellaneous');
 		$this->conf['view.']['PIDnewItem'] = $PIDnewItem? $PIDnewItem: $this->conf['view.']['PIDnewItem'];
 		$withDataNewItem = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'withNewData', 'miscellaneous');
@@ -273,26 +322,47 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	}
 
 	/**
-	 * Sets the table
+	 * Reads template file
 	 *
 	 * @return	void
 	 */
-	private function setTable() {
-		$table = $this->piVars['table'];
-		$table = $table? $table: $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'tablename', 'table');
-		$table = $table? $table: $this->conf['table.']['tablename'];
-		$this->table = $table;
+	protected function initTemplate() {
+		$templateFile = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'templateFile', 'general');
+		$templateFile = $templateFile ? $templateFile : $this->conf['template'];
+		$templateFile = $templateFile ? $templateFile : $this->templateFile;
+		$this->templateCode = $this->cObj->fileResource($templateFile);
 	}
 
 	/**
-	 * Sets fields
-	 * Sets fields labels
+	 * Fills codes
 	 *
 	 * @return	void
 	 */
-	private function setFields() {
-		$fields = t3lib_div::trimExplode(',', $this->piVars['fields'], true);
-		$fields = !empty($fields)? $fields: t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'fields', 'table'), true);
+	protected function initCodes() {
+		$codes = t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'general'), true);
+		$codes = $codes? $codes: t3lib_div::trimExplode(',', $this->conf['view.']['modes'], true);
+		$this->codes = array_unique($codes);
+	}
+
+	/**
+	 * Fills Pid storage
+	 *
+	 * @return	void
+	 */
+	protected function initPidStorage() {
+		if ($this->cObj->data['pages'])
+			$pids = t3lib_div::trimExplode(',', $this->cObj->data['pages'], true);
+		$pids = $pids? $pids: t3lib_div::intExplode(',', $this->conf['pidStorages'], true);
+		$this->storage = $pids? $pids: $this->storage;
+	}
+
+	/**
+	 * Fills fields and labels
+	 *
+	 * @return	void
+	 */
+	protected function initFields() {
+		$fields = t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'fields', 'table'), true);
 
 		$fields = !empty($fields)? $fields: t3lib_div::trimExplode(',', $this->conf['table.']['fields'], true);
 
@@ -316,14 +386,59 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		foreach ($fields as $field) {
 			if ($columns[$field] || $field=='uid') {
 				$this->fields[] = $field;
-
-				$label = $this->piVars[$fieldname . 'Label'];
-				$label = $label? $label: $this->pi_getFFvalue($this->cObj->data['pi_flexform'], $fieldname . 'Label', 'table');
+				$label = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], $field . 'Label', 'table');
 				$label = $label? $label: $fieldLabels[$field];
 				$label = $label? $label: $GLOBALS['TSFE']->sL($GLOBALS['TCA'][$this->table]['columns'][$field]['label']);
 				$label = $label? $label: $field;
 				$this->fieldLabels[$field] = $label;
 			}
+		}
+	}
+
+	/**
+	 * Merges conf and properties from piVars with priority on piVars
+	 *
+	 * @return	void
+	 */
+	protected function mergePiVars() {
+		// Gets display mode
+		$codes = array();
+		if (isset($this->piVars['showUid'])) {
+			$this->showUid = $this->piVars['showUid'];
+		}
+		if ($this->piVars['mode'])
+			$codes = array($this->piVars['mode']);
+		$this->codes = $codes? $codes: $this->codes;
+		$this->codes = array_unique($this->codes );
+
+		$this->newUid = $this->piVars['newUid'];
+
+		// Gets pid storage
+		if ($this->piVars['pidStorage'])
+			$pids = t3lib_div::trimExplode(',', $this->piVars['pidStorage'], true);
+		$this->storage = $pids? $pids: $this->storage;
+
+		// Gets page number
+		if (isset($this->piVars['page']))
+			$this->conf['view.']['page'] = $this->piVars['page'] + 1;
+
+		// Inits fields and labels fields
+		$fields = t3lib_div::trimExplode(',', $this->piVars['fields'], true);
+		if (!empty($fields)) {
+			$columns = $GLOBALS['TCA'][$this->table]['columns'];
+			$localFields = array();
+			$localLabels = array();
+			foreach ($fields as $field) {
+				if ($columns[$field] || $field=='uid') {
+					$localFields[] = $field;
+					$label = $this->piVars[$field . 'Label'];
+					$label = $label? $label: $this->fieldLabels[$field];
+					$label = $label? $label: $GLOBALS['TSFE']->sL($GLOBALS['TCA'][$this->table]['columns'][$field]['label']);
+					$localFields[$field] = $label;
+				}
+			}
+			$this->fields = $localFields;
+			$this->fieldLabels = $localLabels;
 		}
 	}
 
@@ -456,6 +571,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	/**
 	 * Display delete record
 	 *
+	 * @param	[type]		$previousRow: ...
 	 * @return	string		HTML content
 	 */
 	public function displayDelete($previousRow) {
@@ -558,8 +674,6 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$fields = array_diff($this->fields, array('uid'));
 			$dataArray = $dbTools->process_valuesToDB($this->table, ($this->showUid? $this->showUid: 0), $fields, $this->piVars);
 
-			// var_dump($dataArray);
-
 			if ($this->newUid) { // Insert new record
 				$result = $this->cObj->DBgetInsert(
 					$this->table,
@@ -632,7 +746,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		}
 		if ($process)
 			return $delete;
-			
+
 		return $this->cObj->DBgetUpdate(
 			$table,
 			$rowUid,
