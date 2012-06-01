@@ -1,4 +1,10 @@
 2012-06-31 2012-05-31 Tsi YANG <tsi@in-cite.net>
+	* Fix: Mistakes on init fields with piVars.
+	* Refactor: Reworked hook calls in main and user functions and added parameter.
+	* Comments: Updated manual.
+
+	* Tagged version 0.0.0
+	
 	* Comments: Added forgotten comment on DBTools function.
 	* Fix: Forgotten page number init.
 
