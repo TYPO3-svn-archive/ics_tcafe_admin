@@ -437,6 +437,7 @@ class tx_icstcafeadmin_DBTools {
 	 * @param	array		$recordId: The record id
 	 * @param	array		$value: The value to process
 	 * @param	array		$config: TCA field config
+	 * @param	string		$uploadfolder: The upload folder whether diffrent of TCA uploadfolder
 	 * @param	boolean		$basename: Filename is basename or path. Default is basename.
 	 * @return	void
 	 */
