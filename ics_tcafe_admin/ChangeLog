@@ -1,3 +1,6 @@
+2012-06-31 2012-05-31 Tsi YANG <tsi@in-cite.net>
+	* Fix: Forgotten page number init.
+
 2012-05-15 2012-05-31 Tsi YANG <tsi@in-cite.net>
 	* Comments: Updated mannual.
 	* Refactor: Reworked init function and render content.
