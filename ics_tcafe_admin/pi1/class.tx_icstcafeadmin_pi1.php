@@ -103,22 +103,22 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 
 		$this->pi_initPIflexForm();
 
-		// Hook plugin
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['startOff'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['startOff'] as $class) {
-				$procObj = & t3lib_div::getUserObj($class);
-				if (!$process = $procObj->startOff($content, $this->conf, $this)) {
-					return $this->pi_wrapInBaseClass($content);
-				}
-			}
-		}
-
 		$this->setTable(true);
 		if (!$this->loadTable()) {
 			tx_icstcafeadmin_debug::error('Table can not be loaded from TCA.');
 			return $this->pi_wrapInBaseClass($this->pi_getLL('data_not_available', 'Invalid table ' . $this->table, true));
 		}
 
+		// Hook plugin
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['startOff'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['startOff'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if (!$process = $procObj->startOff($this->table, $content, $this->conf, $this)) {
+					return $this->pi_wrapInBaseClass($content);
+				}
+			}
+		}
+		
 		$this->init();
 		$this->mergePiVars();
 
@@ -148,25 +148,23 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$this->conf = $conf;
 		$this->pi_loadLL();
 
+		$this->setTable(false);
+		if (!$this->loadTable()) {
+			tx_icstcafeadmin_debug::error('Table can not be loaded from TCA.');
+			return $this->pi_wrapInBaseClass($this->pi_getLL('data_not_available', 'Invalid table ' . $this->table, true));
+		}
+			
 		// Hook plugin
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['user_TCAFEAdmin'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['user_TCAFEAdmin'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				if ($process = $procObj->user_TCAFEAdmin($content, $this->conf, $this)) {
+				if ($process = $procObj->user_TCAFEAdmin($this->table, $content, $this->conf, $this)) {
 					break;
 				}
 			}
 		}
 		if (!$process) {
-
-			$this->setTable(false);
-			if (!$this->loadTable()) {
-				tx_icstcafeadmin_debug::error('Table can not be loaded from TCA.');
-				return $this->pi_wrapInBaseClass($this->pi_getLL('data_not_available', 'Invalid table ' . $this->table, true));
-			}
-
 			$this->init();
-
 			$content = $this->renderContent();
 		}
 		return $this->pi_wrapInBaseClass($content);
@@ -438,7 +436,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 					$label = $this->piVars[$field . 'Label'];
 					$label = $label? $label: $this->fieldLabels[$field];
 					$label = $label? $label: $GLOBALS['TSFE']->sL($GLOBALS['TCA'][$this->table]['columns'][$field]['label']);
-					$localFields[$field] = $label;
+					$localLabels[$field] = $label;
 				}
 			}
 			$this->fields = $localFields;
