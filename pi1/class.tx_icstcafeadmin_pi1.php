@@ -304,6 +304,10 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 
 		$this->initFields();
 
+		// Gets page number
+		if (!$this->conf['view.']['page'])
+			$this->conf['view.']['page'] = 1;
+
 		// Gets PIDs link to single, edit or new
 		$PIDitemDisplay = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'singleID', 'miscellaneous');
 		$this->conf['view.']['PIDitemDisplay'] = $PIDitemDisplay? $PIDitemDisplay: $this->conf['view.']['PIDitemDisplay'];
