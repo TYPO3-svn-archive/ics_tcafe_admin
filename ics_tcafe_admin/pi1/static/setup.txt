@@ -259,6 +259,8 @@ plugin.tx_icstcafeadmin_pi1 {
 				parameter.data = tsfe:id
 				additionalParams = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}&tx_icstcafeadmin_pi1[mode]=DELETE
 				additionalParams.insertData = 1
+				ATagParams = onclick="return confirm('Etes-vous sûr de vouloir supprimer l enregistrement {field:label} (uid {field:id})')"
+				ATagParams.insertData = 1
 			}
 		}
 		hide {

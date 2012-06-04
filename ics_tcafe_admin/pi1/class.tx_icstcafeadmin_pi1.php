@@ -27,30 +27,30 @@
  *
  *
  *   69: class tx_icstcafeadmin_pi1 extends tslib_pibase
- *   98:     function main($content, $conf)
- *  147:     function user_TCAFEAdmin($content, $conf)
- *  180:     public function renderContent()
- *  268:     public function setTable($mergePiVars = true)
- *  281:     public function loadTable()
- *  300:     public function init()
- *  329:     protected function initTemplate()
- *  341:     protected function initCodes()
- *  352:     protected function initPidStorage()
- *  364:     protected function initFields()
- *  403:     protected function mergePiVars()
- *  450:     public function displayList()
- *  488:     public function displaySingle()
- *  507:     public function displayEdit()
- *  526:     public function displayNew()
- *  545:     public function displayValidatedForm()
- *  562:     public function displayErrorValidatedForm()
- *  577:     public function displayDelete($previousRow)
- *  590:     public function displayHide()
- *  609:     private function getRecords()
- *  641:     private function getSingleRecord()
- *  661:     function saveDB()
- *  738:     public function deleteRecord($table, $rowUid)
- *  766:     public function hideRecord($table, $rowUid)
+ *   99:     function main($content, $conf)
+ *  148:     function user_TCAFEAdmin($content, $conf)
+ *  179:     public function renderContent()
+ *  267:     public function setTable($mergePiVars = true)
+ *  280:     public function loadTable()
+ *  299:     public function init()
+ *  348:     protected function initTemplate()
+ *  360:     protected function initCodes()
+ *  371:     protected function initPidStorage()
+ *  383:     protected function initFields()
+ *  422:     protected function mergePiVars()
+ *  469:     public function displayList()
+ *  507:     public function displaySingle()
+ *  526:     public function displayEdit()
+ *  545:     public function displayNew()
+ *  564:     public function displayValidatedForm()
+ *  581:     public function displayErrorValidatedForm()
+ *  596:     public function displayDelete($previousRow)
+ *  609:     public function displayHide()
+ *  628:     private function getRecords()
+ *  670:     private function getSingleRecord()
+ *  690:     function saveDB()
+ *  767:     public function deleteRecord($table, $rowUid)
+ *  795:     public function hideRecord($table, $rowUid)
  *
  * TOTAL FUNCTIONS: 24
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -119,7 +119,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 				}
 			}
 		}
-		
+
 		$this->init();
 		$this->mergePiVars();
 
@@ -154,7 +154,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			tx_icstcafeadmin_debug::error('Table can not be loaded from TCA.');
 			return $this->pi_wrapInBaseClass($this->pi_getLL('data_not_available', 'Invalid table ' . $this->table, true));
 		}
-			
+
 		// Hook plugin
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['user_TCAFEAdmin'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['user_TCAFEAdmin'] as $class) {
@@ -313,7 +313,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$whereClause = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'whereClause', 'selectClause');
 		$whereClause = $whereClause? $whereClause: $this->conf['table.']['whereClause'];
 		$this->whereClause = ' ' . $whereClause;
-		
+
 		// Get page size
 		// $size = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'size', 'main');
 		// $this->conf['view.']['size'] = $size ? $size : $this->conf['view.']['size'];
@@ -638,7 +638,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$addWhere_storage = ' AND '.$this->table.'.pid IN(' . implode(',', $this->storage) . ')';
 
 		$whereClause = $this->table.'.deleted = 0' . $addWhere_storage . $this->whereClause;
-			
+
 		$rows = null;
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['getRecords'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['getRecords'] as $class) {
