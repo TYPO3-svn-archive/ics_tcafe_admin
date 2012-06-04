@@ -111,21 +111,8 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 			$subparts['###ROW###'] .= $this->cObj->substituteMarkerArray($itemContent, $markers, '###|###');
 		}
 
-		$data = array(
-			'id' => $row['uid'],
-			'newId' => 'New'.uniqid(),
-			'table' => $this->table,
-			'fields' => implode(',', $this->fields),
-			'hidden' => $row['hidden'],
-			'PIDitemDisplay' => $this->conf['view.']['PIDitemDisplay'],
-			'withDataItemDisplay' => $this->conf['view.']['withDataItemDisplay'],
-			'PIDeditItem' => $this->conf['view.']['PIDeditItem'],
-			'withDataEditItem' => $this->conf['view.']['withDataEditItem'],
-			'PIDnewItem' => $this->conf['view.']['PIDnewItem'],
-			'withDataNewItem' => $this->conf['view.']['withDataNewItem'],
-		);
 		$cObj = t3lib_div::makeInstance('tslib_cObj');
-		$cObj->start($data, 'TCAFE_Admin_actions');
+		$cObj->start($this->get_TCAFE_Admin_actions_data($row), 'TCAFE_Admin_actions');
 		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
@@ -209,21 +196,8 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 	private function renderRowActions(array $row, &$markers) {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_RESULTS_ROW_ACTIONS###');
 
-		$data = array(
-			'id' => $row['uid'],
-			'newId' => 'New'.uniqid(),
-			'table' => $this->table,
-			'fields' => implode(',', $this->fields),
-			'hidden' => $row['hidden'],
-			'PIDitemDisplay' => $this->conf['view.']['PIDitemDisplay'],
-			'withDataItemDisplay' => $this->conf['view.']['withDataItemDisplay'],
-			'PIDeditItem' => $this->conf['view.']['PIDeditItem'],
-			'withDataEditItem' => $this->conf['view.']['withDataEditItem'],
-			'PIDnewItem' => $this->conf['view.']['PIDnewItem'],
-			'withDataNewItem' => $this->conf['view.']['withDataNewItem'],
-		);
 		$cObj = t3lib_div::makeInstance('tslib_cObj');
-		$cObj->start($data, 'TCAFE_Admin_actions');
+		$cObj->start($this->get_TCAFE_Admin_actions_data($row), 'TCAFE_Admin_actions');
 		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 
 		$locMarkers = array(
@@ -237,6 +211,26 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		return $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');
 	}
 
+	private function get_TCAFE_Admin_actions_data($row) {
+		$GLOBALS['TSFE']->includeTCA();
+		t3lib_div::loadTCA($this->table);
+		$label = $GLOBALS['TCA'][$this->table]['ctrl']['label'];
+		return array(
+			'id' => $row['uid'],
+			'newId' => 'New'.uniqid(),
+			'table' => $this->table,
+			'fields' => implode(',', $this->fields),
+			'hidden' => $row['hidden'],
+			'PIDitemDisplay' => $this->conf['view.']['PIDitemDisplay'],
+			'withDataItemDisplay' => $this->conf['view.']['withDataItemDisplay'],
+			'PIDeditItem' => $this->conf['view.']['PIDeditItem'],
+			'withDataEditItem' => $this->conf['view.']['withDataEditItem'],
+			'PIDnewItem' => $this->conf['view.']['PIDnewItem'],
+			'withDataNewItem' => $this->conf['view.']['withDataNewItem'],
+			'label' => $row[$label],
+		);
+	}
+	
 	/**
 	 * Page browser
 	 *
