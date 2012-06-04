@@ -86,6 +86,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	private $groupBy = '';
 	private $limit = '';
 	private $orderBy = '';
+	private $whereClause = '';
 
 
 	/**
@@ -301,6 +302,22 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$this->initPidStorage();
 
 		$this->initFields();
+
+		// Get select clause
+		$groupBy = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'groupBy', 'selectClause');
+		$groupBy = $groupBy? $groupBy: $this->conf['table.']['groupBy'];
+		$this->groupBy = $groupBy;
+		$orderBy = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'orderBy', 'selectClause');
+		$orderBy = $orderBy? $orderBy: $this->conf['table.']['orderBy'];
+		$this->orderBy = $orderBy;
+		$whereClause = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'whereClause', 'selectClause');
+		$whereClause = $whereClause? $whereClause: $this->conf['table.']['whereClause'];
+		$this->whereClause = ' ' . $whereClause;
+		
+		// Get page size
+		// $size = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'size', 'main');
+		// $this->conf['view.']['size'] = $size ? $size : $this->conf['view.']['size'];
+		// $this->conf['view.']['size'] = $this->conf['view.']['size'] ? $this->conf['view.']['size'] : $this->defaultSize;
 
 		// Gets page number
 		if (!$this->conf['view.']['page'])
@@ -618,19 +635,29 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			// TODO: implements select on pid storage on displayNew and decomments this
 		// $addWhere_storage = '';
 		// if (!empty($this->storage) && ((count($this->storage)>1) || count($this->storage)==1 && $this->storage[0]>0))
-			$addWhere_storage = ' AND pid IN(' . implode(',', $this->storage) . ')';
+			$addWhere_storage = ' AND '.$this->table.'.pid IN(' . implode(',', $this->storage) . ')';
 
-		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-			implode(',', $requestFields),
-			$this->table,
-			'deleted = 0' . $addWhere_storage,
-			$this->groupBy,
-			$this->orderBy,
-			$this->limit,
-			'uid'
-		);
-
-		// TODO : insert here the hook to get rows with complex resquest
+		$whereClause = $this->table.'.deleted = 0' . $addWhere_storage . $this->whereClause;
+			
+		$rows = null;
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['getRecords'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['getRecords'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if ($process = $procObj->getRecords($this->table, $requestFields, $whereClause, $this->groupBy, $this->orderBy, $this->limit, $rows, $this->conf, $this))
+					break;
+			}
+		}
+		if (!$process) {
+			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+				implode(',', $requestFields),
+				$this->table,
+				$whereClause,
+				$this->groupBy,
+				$this->orderBy,
+				$this->limit,
+				'uid'
+			);
+		}
 
 		return $rows;
 	}

@@ -23,6 +23,10 @@
 			<label index="withNewData">New with table configuration</label>
 			<label index="returnUrl">Return url</label>
 			<label index="fieldlabel">Label for &quot;%s&quot;</label>
+			<label index="selectClause">Select clause</label>
+			<label index="orderBy">Order by clause</label>
+			<label index="groupBy">Group by clause</label>
+			<label index="whereClause">Where clause</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="general">Général</label>
@@ -41,6 +45,10 @@
 			<label index="withNewData">Nouveau avec configuration de la table</label>
 			<label index="returnUrl">Lien vers la page retour</label>
 			<label index="fieldlabel">Libellé de « %s »</label>
+			<label index="selectClause">Clause "select" SQL</label>
+			<label index="orderBy">Clause order by</label>
+			<label index="groupBy">Clause group by</label>
+			<label index="whereClause">Clause where</label>
 		</languageKey>
 	</data>
 </T3locallang>
