@@ -16,6 +16,10 @@ plugin.tx_icstcafeadmin_pi1 {
 		withDataEditItem = 1
 		PIDnewItem = {$config.tx_icstcafeadmin_pi1.new}
 		withDataNewItem = 1
+		# Number of page
+		page = 1
+		# Number of records
+		size =
 	}
 	
 	# Table configuration
@@ -26,6 +30,11 @@ plugin.tx_icstcafeadmin_pi1 {
 		fields =
 		# Fields labels list separated by coma. Labels match fields above.
 		fieldLabels =
+		
+		groupBy =
+		orderBy =
+		whereClause =
+		showHidden = 1
 	}
 	
 	#Select

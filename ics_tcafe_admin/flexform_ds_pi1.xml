@@ -98,6 +98,48 @@
 				</el>
 			</ROOT>
 		</table>
+		<selectClause>
+			<ROOT>
+				<TCEforms>
+					<sheetTitle>LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:selectClause</sheetTitle>
+				</TCEforms>
+				<el>
+					<whereClause>
+						<TCEforms>
+							<label>LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:whereClause</label>
+							<config>
+								<type>input</type>
+								<size>50</size>
+								<max>255</max>
+								<eval>trim</eval>
+							</config>
+						</TCEforms>
+					</whereClause>
+					<groupBy>
+						<TCEforms>
+							<label>LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:groupBy</label>
+							<config>
+								<type>input</type>
+								<size>50</size>
+								<max>255</max>
+								<eval>trim</eval>
+							</config>
+						</TCEforms>
+					</groupBy>
+					<orderBy>
+						<TCEforms>
+							<label>LLL:EXT:ics_tcafe_admin/locallang_flexform_pi1.xml:orderBy</label>
+							<config>
+								<type>input</type>
+								<size>50</size>
+								<max>255</max>
+								<eval>trim</eval>
+							</config>
+						</TCEforms>
+					</orderBy>
+				</el>
+			</ROOT>
+		</selectClause>
 		<miscellaneous>
 			<ROOT>
 				<TCEforms>
