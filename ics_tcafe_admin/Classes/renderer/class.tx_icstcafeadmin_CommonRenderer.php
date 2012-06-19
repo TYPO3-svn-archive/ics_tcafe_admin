@@ -28,17 +28,17 @@
  *
  *   57: class tx_icstcafeadmin_CommonRenderer
  *   87:     function __construct($pi_base, $table, array $fields, array $fieldLabels, array $conf)
- *  106:     public function init()
- *  120:     protected function renderValue($field, $recordId, $value=null, $view='')
- *  159:     public function default_renderValue($field, $value=null, $view='')
- *  203:     protected function fetchInputFieldFormat($config)
- *  230:     public function handleFieldValue($recordId, $value=null, $config=null)
- *  258:     protected function  handleFieldValue_typeCheck($value=null, array $config)
- *  273:     protected function handleFieldValue_typeSelect($recordId, $value=null, array $config)
- *  339:     protected function getMMRecords($recordId, array $config)
- *  383:     protected function handleFieldValue_typeGroup($recordId, $value=null, array $config)
- *  430:     public function sL($str)
- *  442:     public function getLL($key, $alternativeLabel= '', $hsc=false)
+ *  109:     public function init()
+ *  123:     protected function renderValue($field, $recordId, $value=null, $view='')
+ *  170:     public function default_renderValue($field, $value=null, $view='')
+ *  214:     protected function fetchInputFieldFormat($config)
+ *  241:     public function handleFieldValue($recordId, $value=null, $config=null)
+ *  269:     protected function  handleFieldValue_typeCheck($value=null, array $config)
+ *  284:     protected function handleFieldValue_typeSelect($recordId, $value=null, array $config)
+ *  354:     protected function getMMRecords($recordId, array $config)
+ *  398:     protected function handleFieldValue_typeGroup($recordId, $value=null, array $config)
+ *  445:     public function sL($str)
+ *  457:     public function getLL($key, $alternativeLabel= '', $hsc=false)
  *
  * TOTAL FUNCTIONS: 12
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -97,6 +97,8 @@ class tx_icstcafeadmin_CommonRenderer {
 		$this->fields = $fields;
 		$this->fieldLabels = $fieldLabels;
 		$this->storage = $pi_base->storage;
+
+		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ics_tcafe_admin']);
 	}
 
 	/**
@@ -170,8 +172,8 @@ class tx_icstcafeadmin_CommonRenderer {
 		$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
 
 		// Render value on field Typoscript configuration
-		if ($this->conf['renderConf.'][$this->table][$field . '.'][$view . '.']) {
-			$value = $this->cObj->stdWrap($value, $this->conf['renderConf.'][$this->table][$field . '.'][$view . '.']);
+		if ($this->conf['renderConf.'][$this->table . '.'][$field . '.'][$view . '.']) {
+			$value = $this->cObj->stdWrap($value, $this->conf['renderConf.'][$this->table . '.'][$field . '.'][$view . '.']);
 		}
 		// Render value on TCA type Typoscript configuration
 		else {
@@ -297,28 +299,32 @@ class tx_icstcafeadmin_CommonRenderer {
 		}
 		// foreign_table
 		elseif ($config['foreign_table']) {
-			t3lib_div::loadTCA($config['foreign_table']);
-			if ($label = $GLOBALS['TCA'][$config['foreign_table']]['ctrl']['label']) {
-				// Get select fields
-				$fields = array('uid', $label);
-				// Get records
-				$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-					implode(',', $fields),
-					$config['foreign_table'],
-					'uid IN( ' . $value . ')',
-					'',
-					'',
-					'',
-					'uid'
-				);
-				// Fetch labels
-				if (is_array($rows) && !empty($rows)) {
-					$keys = t3lib_div::trimExplode(',', $value, true);
-					$labels = array();
-					foreach ($keys as $key) {
-						$labels[] = $rows[$key][$label];
+			if (!$value) {
+				$value = '';
+			} else {
+				t3lib_div::loadTCA($config['foreign_table']);
+				if ($label = $GLOBALS['TCA'][$config['foreign_table']]['ctrl']['label']) {
+					// Get select fields
+					$fields = array('uid', $label);
+					// Get records
+					$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+						implode(',', $fields),
+						$config['foreign_table'],
+						'uid IN( ' . $value . ')',
+						'',
+						'',
+						'',
+						'uid'
+					);
+					// Fetch labels
+					if (is_array($rows) && !empty($rows)) {
+						$keys = t3lib_div::trimExplode(',', $value, true);
+						$labels = array();
+						foreach ($keys as $key) {
+							$labels[] = $rows[$key][$label];
+						}
+						$value = implode(',', $labels);
 					}
-					$value = implode(',', $labels);
 				}
 			}
 		}
