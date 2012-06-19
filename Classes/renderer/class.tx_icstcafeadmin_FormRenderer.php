@@ -26,31 +26,32 @@
  *
  *
  *
- *   67: class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer
- *   89:     function __construct($pi_base, $table, array $fields, array $fieldLabels, $recordId=0, array $conf)
- *  112:     public function render()
- *  135:     private function renderPIDStorage()
- *  150:     private function renderFormFields()
- *  182:     private function renderEntries()
- *  206:     public function handleFormField($field)
- *  248:     public function handleFormField_typeInput($field, array $config, $template='')
- *  292:     private function getConformInput($field, array $config)
- *  333:     public function handleFormField_typeText($field, array $config, $template='')
- *  372:     public function handleFormField_typeCheck($field, array $config)
- *  414:     public function handleFormField_typeCheck_item($field, array $config, $col=null, $template='')
- *  449:     public function handleFormField_typeSelect($field, array $config)
- *  501:     public function handleFormField_typeSelect_single(array $items, $field, array $config, $template='')
- *  543:     public function handleFormField_typeSelect_multiple(array $items, $field, array $config, $template='')
- *  584:     public function handleFormField_typeGroup($field, array $config)
- *  617:     public function handleFormField_typeGroup_file($field, array $config, $template='')
- *  695:     public function getEntryValue($field)
- *  711:     public function getEntryValue_selectedOption($field, $item, array $config)
- *  746:     public function getSelectItemArray($field, array $config)
- *  781:     private function initItemArray(array $config)
- *  801:     private static function includeJSConformInput(array $files)
- *  820:     private static function includeLibDatepicker()
+ *   68: class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer
+ *   90:     function __construct($pi_base, $table, array $fields, array $fieldLabels, $recordId=0, array $conf)
+ *  113:     public function render()
+ *  136:     private function renderPIDStorage()
+ *  151:     private function renderFormFields()
+ *  183:     private function renderEntries()
+ *  207:     public function handleFormField($field)
+ *  249:     public function handleFormField_typeInput($field, array $config, $template='')
+ *  293:     private function getConformInput($field, array $config)
+ *  334:     public function handleFormField_typeText($field, array $config, $template='')
+ *  373:     public function handleFormField_typeCheck($field, array $config)
+ *  415:     public function handleFormField_typeCheck_item($field, array $config, $col=null, $template='')
+ *  450:     public function handleFormField_typeSelect($field, array $config)
+ *  502:     public function handleFormField_typeSelect_single(array $items, $field, array $config, $template='')
+ *  544:     public function handleFormField_typeSelect_multiple(array $items, $field, array $config, $template='')
+ *  588:     public function handleFormField_typeGroup($field, array $config)
+ *  621:     public function handleFormField_typeGroup_file($field, array $config, $template='')
+ *  699:     public function getEntryValue($field)
+ *  715:     public function getEntryValue_selectedOption($field, $item, array $config)
+ *  749:     public function getEntryValue_selectedArray($field)
+ *  785:     public function getSelectItemArray($field, array $config)
+ *  820:     private function initItemArray(array $config)
+ *  840:     private static function includeJSConformInput(array $files)
+ *  859:     private static function includeLibDatepicker()
  *
- * TOTAL FUNCTIONS: 22
+ * TOTAL FUNCTIONS: 23
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -546,6 +547,8 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 
 		$subparts = array();
 
+		$options = $this->getEntryValue_selectedArray($field);
+
 		$itemTemplate =  $this->cObj->getSubpart($template, '###GROUP_OPTIONS###');
 		$subparts['###GROUP_OPTIONS###']  = '';
 		foreach ($items as $item) {
@@ -553,7 +556,8 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 				$locMarkers = array(
 					'OPTION_ITEM_NAME' => $this->prefixId . '[' . $field . '][' . $item['value'] . ']',
 					'OPTION_ITEM_ID' => $field . '_' . $item['value'],
-					'OPTION_CHECKED' => in_array($item['value'], $this->getEntryValue($field))? ' checked="checked"': '',
+					// 'OPTION_CHECKED' => in_array($item['value'], $this->getEntryValue($field))? ' checked="checked"': '',
+					'OPTION_CHECKED' => in_array($item['value'], $options)? ' checked="checked"': '',
 					'OPTION_ITEM_LABEL' => $item['label'],
 				);
 				$subparts['###GROUP_OPTIONS###'] .= $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
@@ -734,6 +738,41 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (in_array($item, $options))
 			$selectedOption = 'selected="selected"';
 		return $selectedOption;
+	}
+
+	/**
+	 * Retrieves TCA type "select multiple" entry value
+	 *
+	 * @param	string		$field: The field name
+	 * @return	mixed		The array of selected value
+	 */
+	public function getEntryValue_selectedArray($field) {
+		if (!$field)
+			throw new Exception('Field is not set on getEntryValue_selectedArray.');
+
+		$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
+		$options = array();
+		if ($this->pi_base->piVars['valid']) {
+			if ($config['maxitems'] >1)
+				$options = array_keys($this->pi_base->piVars[$field]);
+			else
+				$options = array($this->pi_base->piVars[$field]);
+		}
+		else {	// $this->pi_base->piVars['cancel'] or any submit
+			if ($config['MM']) {
+				$result = $this->getMMRecords($this->row['uid'], $config);
+				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
+					$options[] = $row['ft_uid'];
+				}
+			}
+			elseif ($config['maxitems'] >1) {
+				$options = t3lib_div::trimExplode(',', $this->row[$field]);
+			}
+			else {
+				$options = array($this->row[$field]);
+			}
+		}
+		return $options;
 	}
 
 	/**
