@@ -49,8 +49,8 @@
  *  628:     private function getRecords()
  *  670:     private function getSingleRecord()
  *  690:     function saveDB()
- *  767:     public function deleteRecord($table, $rowUid)
- *  795:     public function hideRecord($table, $rowUid)
+ *  775:     public function deleteRecord($table, $rowUid)
+ *  803:     public function hideRecord($table, $rowUid)
  *
  * TOTAL FUNCTIONS: 24
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -688,6 +688,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 * @return	boolean		The result process
 	 */
 	function saveDB() {
+		$save = false;
 		$this->ctrlEntries = t3lib_div::makeInstance(
 			'tx_icstcafeadmin_controlForm',
 			$this,
@@ -711,7 +712,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 					implode(',', $fields),
 					true
 				);
-
+				$this->newUid = $GLOBALS['TYPO3_DB']->sql_insert_id();
 			} else {	// Update record
 				$result = $this->cObj->DBgetUpdate(
 					$this->table,
@@ -721,40 +722,47 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 					true
 				);
 			}
-
 			if ($select_MM = $dbTools->getSelect_MM()) {
 				foreach ($select_MM as $field=>$foreign_uids) {
 					$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
+					$uidLocal_field = 'uid_local';
+					$uidForeign_field = 'uid_foreign';
+					$localTable = $this->table;
+					$foreignTable = $config['foreign_table'];
+					$sorting = 'sorting';
+					if ($config['MM_opposite_field']) {
+						$uidLocal_field = 'uid_foreign';
+						$uidForeign_field = 'uid_local';
+						$localTable = $config['foreign_table'];
+						$foreignTable = $this->table;
+						$sorting = 'sorting_foreign';
+					}
+					// Delete relations
 					$GLOBALS['TYPO3_DB']->exec_DELETEquery(
 						$config['MM'],
-						'`uid_local` =' . $this->piVars['showUid']
+						'`'.$uidLocal_field.'` =' . $this->piVars['showUid']
 					);
-
-					foreach ($foreign_uids as $foreign) {
-						$dataArray = array(
-							'uid_local' => $this->piVars['showUid'],
-							'uid_foreign' => $foreign,
-						);
-						if ($config['MM_opposite_field']) {
-							$dataArray = array(
-								'uid_foreign' => $this->piVars['showUid'],
-								'uid_local' => $foreign,
-							);
-						}
-						$GLOBALS['TYPO3_DB']->exec_INSERTquery(
-							$config['MM'],
-							$dataArray
+					$MM_rows = array();
+					foreach ($foreign_uids as $index=>$uid) {
+						$MM_rows[] = array(
+							$uidLocal_field => $this->newUid? $this->newUid: $this->showUid,
+							$uidForeign_field => $uid,
+							'tablenames' => $this->table,
+							$sorting => $index,
 						);
 					}
-
+					if (!empty($MM_rows)) {
+						$GLOBALS['TYPO3_DB']->exec_INSERTmultipleRows (
+							$config['MM'],
+							array($uidLocal_field, $uidForeign_field, 'tablenames', $sorting),
+							$MM_rows
+						);
+					}
 				}
 			}
-
-			return true;
-
+			$save = true;
 		}
-
-		return false;
+		return $save;
 	}
 
 	/**

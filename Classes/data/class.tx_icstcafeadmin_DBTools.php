@@ -37,9 +37,9 @@
  *  344:     private function process_timesecToDB($value)
  *  371:     public function renderField_check($table, $field, $recordId=0, $value, $config)
  *  394:     public function renderField_select($table, $field, $recordId=0, $value, $config)
- *  441:     function renderField_group_parseFiles($table, $field, $recordId=0, array $value, $config, $uploadfolder=null, $basename=true)
- *  511:     public function getGroup_files()
- *  520:     public function getSelect_MM()
+ *  455:     function renderField_group_parseFiles($table, $field, $recordId=0, array $value, $config, $uploadfolder=null, $basename=true)
+ *  528:     public function getGroup_files()
+ *  537:     public function getSelect_MM()
  *
  * TOTAL FUNCTIONS: 13
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -393,7 +393,7 @@ class tx_icstcafeadmin_DBTools {
 	 */
 	public function renderField_select($table, $field, $recordId=0, $value, $config) {
 		if (!$value)
-			return null;
+			$value = null;
 		$process = false;
 		// Hook on renderField_select
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderField_select'])) {
@@ -406,8 +406,13 @@ class tx_icstcafeadmin_DBTools {
 		if(!$process) {
 			if ($config['maxitems'] <= 1 && $config['renderMode'] !== 'tree') {
 				if ($config['MM']) {
-					$this->select_MM[$field] = array($value);
-					$value = 1;
+					if ($value) {
+						$this->select_MM[$field] = array($value);
+						$value = 1;
+					}
+					else {
+						$this->select_MM[$field] = null;
+					}
 				}
 			// } elseif (!strcmp($config['renderMode'], 'checkbox')) {
 				// TODO : Implements Checkbox renderMode
@@ -418,11 +423,17 @@ class tx_icstcafeadmin_DBTools {
 			}
 			else {	// Multiple checkbox
 				if ($config['MM']) {
-					$this->select_MM[$field] = array_keys($value);
-					$value = count($value);
+					if ($value) {
+						$this->select_MM[$field] = array_keys($value);
+						$value = count($value);
+					}
+					else {
+						$this->select_MM[$field] = null;
+					}
 				}
 				else {
-					$value = implode(',', array_keys($value));
+					if ($value)
+						$value = implode(',', array_keys($value));
 				}
 			}
 		}
@@ -526,8 +537,6 @@ class tx_icstcafeadmin_DBTools {
 	public function getSelect_MM() {
 		return $this->select_MM;
 	}
-
-
 }
 
 

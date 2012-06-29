@@ -1,13 +1,17 @@
-2012-06-31 2012-06-19 Tsi YANG <tsi@in-cite.net>
-	* Fix: Bad value return by CommonRendere handleFiledValue_typeSelect.
+2012-06-29 Tsi YANG <tsi@in-cite.net>
+	* Refactor: Optimized loading MM relation
+	* Fix: Completed save MM relation
+
+2012-06-19 Tsi YANG <tsi@in-cite.net>
+	* Fix: Bad value return by CommonRenderer handleFiledValue_typeSelect.
 	* Refactor: Changed call function getEntryValue to genEntryValue_selectedArray.
 
-2012-06-31 2012-06-04 Tsi YANG <tsi@in-cite.net>
+2012-06-04 Tsi YANG <tsi@in-cite.net>
 	* Feature: Added confirm to delete record.
 	* Feature: Added sql clause defined parameters.
 	* Features: Added hook on getRecords.
 
-2012-06-31 2012-05-31 Tsi YANG <tsi@in-cite.net>
+2012-06-01 Tsi YANG <tsi@in-cite.net>
 	* Fix: Mistakes on init fields with piVars.
 	* Refactor: Reworked hook calls in main and user functions and added parameter.
 	* Comments: Updated manual.
@@ -17,21 +21,21 @@
 	* Comments: Added forgotten comment on DBTools function.
 	* Fix: Forgotten page number init.
 
-2012-05-15 2012-05-31 Tsi YANG <tsi@in-cite.net>
+2012-05-31 Tsi YANG <tsi@in-cite.net>
 	* Comments: Updated mannual.
 	* Refactor: Reworked init function and render content.
 	* Feature: Added user function. Alternative of main.
 	* Feature: Added Typoscript configuration for pid storage.
 
-2012-05-15 2012-05-28 Tsi YANG <tsi@in-cite.net>
+2012-05-28 Tsi YANG <tsi@in-cite.net>
 	* Feature: Added link to single, edit or new page with typoscript configuration and flex configuration.
 	* Feature: Added configuration to generate TCA ctrl label link to single.
 
-2012-05-15 2012-05-25 Tsi YANG <tsi@in-cite.net>
+2012-05-25 Tsi YANG <tsi@in-cite.net>
 	* Feature: Added hook in plugin main.
 	* Fix: Wrong assign of DBTools new file.
 
-2012-05-15 2012-05-24 Tsi YANG <tsi@in-cite.net>
+2012-05-24 Tsi YANG <tsi@in-cite.net>
 	* Fix: Proccessed on MM relation.
 	* Feature: Added debug on contorlForm.
 	* Feature: Added conf debug.
@@ -39,7 +43,7 @@
 	* Feature: Added hook on fucntion deleteRecord.
 	* Feature: Added parameter "basename" to DBTools renderField_group_parseFiles function.
 	
-2012-05-15 2012-05-22 Tsi YANG <tsi@in-cite.net>
+2012-05-22 Tsi YANG <tsi@in-cite.net>
 	* Fix: Checked wrong condition.
 	* Feature: Added form renderer param.
 	* Refactor: Modified hook on extra eval name form "controlEntry" to "extra_evalEntry".
@@ -49,54 +53,54 @@
 	* Refator: Renamed property.
 	* Fix: Implementation and call to DBTools construct.
 
-2012-05-15 2012-05-15 Tsi YANG <tsi@in-cite.net>
+2012-05-15 Tsi YANG <tsi@in-cite.net>
 	* Bug Fix: Control is not properly return.
 	* Refactor: Make clear typoscript configuration renderConf for table name.
 	* Fix : Typoscript configuration.
 	* Feature: Added param to tx_icstcafeadmin_DBTools function renderField_group_parseFiles.
 
-2012-05-04 2012-05-15 Tsi YANG <tsi@in-cite.net>
+2012-05-04 Tsi YANG <tsi@in-cite.net>
 	* Fix: Mistakes on handle on hook.
 	* Documentation: Updated manual.
 	* Refactor: Reworked hook return.
 	* Refactor: Call to renderer and hook.
 
-2012-05-03 2012-05-15 Tsi YANG <tsi@in-cite.net>
+2012-05-03 Tsi YANG <tsi@in-cite.net>
 	* Refactor: Visibility of renderer properties.
 	* Refactor: Reworked call to hook.
 	* Documentation: Added manual.
 
-2012-04-26 2012-05-15 Tsi YANG <tsi@in-cite.net>
+2012-04-26 Tsi YANG <tsi@in-cite.net>
 	* Feature: Added list actions.
 	* Feature: Implemented actions.
 	* Feature: Added link to record single pid.
 	* Fix: Mistakes on displaying illustrations.
 
-2012-04-20 2012-05-15 Tsi YANG <tsi@in-cite.net>
+2012-04-20 Tsi YANG <tsi@in-cite.net>
 	* Feature: Added process value to DB.
 	* Feature: Added control entries.
 
-2012-04-19 2012-05-15 Tsi YANG <tsi@in-cite.net>
+2012-04-19 Tsi YANG <tsi@in-cite.net>
 	* Feature: Added JS conform entries
 	* Refactor: Visibility on function
 	* Feature: Added hook.
 	* Feature: Added files render to form view.
 	
-2012-04-17 2012-05-15 Tsi YANG <tsi@in-cite.net>
+2012-04-17 Tsi YANG <tsi@in-cite.net>
 	* Fix: Mistakes on function declaration.
 	* Feature: Added partial form fields. TCA fields type select. With simple items and foreign table items.
 
-2012-04-16 2012-05-15 Tsi YANG <tsi@in-cite.net>
+2012-04-16 Tsi YANG <tsi@in-cite.net>
 	* Feature: Added partial form fields. TCA fields type input and type text.
 	* Feature: Added partial form fields. TCA fields type check with only one column.
 
-2012-04-12 2012-05-15 Tsi YANG <tsi@in-cite.net>
+2012-04-12 Tsi YANG <tsi@in-cite.net>
 	* Feature: Added field name to template list.
 	* Feature: Implemented render single view.
 	* Fix: Mistakes when retrieving template flexform configuration.
 	* Feature: Added possibility to render field swith field name.
 
-2012-04-06 2012-05-15 Tsi YANG <tsi@in-cite.net>
+2012-04-06 Tsi YANG <tsi@in-cite.net>
 	* Fix: Taken off flexform field select line blank.
 	* Refactor: Replaced flexform field select name with label.
 	* Feature: Implemented render list for field type group on option
@@ -116,6 +120,6 @@
 	* Initial code to refactor
 	* Initial code with litle refactor
 
-2011-07-12 2012-05-15 Tsi YANG <tsi@in-cite.net>
+2012-04-05 Tsi YANG <tsi@in-cite.net>
 
 	* initial code generated with kickstarter
