@@ -45,11 +45,11 @@
  *  621:     public function handleFormField_typeGroup_file($field, array $config, $template='')
  *  699:     public function getEntryValue($field)
  *  715:     public function getEntryValue_selectedOption($field, $item, array $config)
- *  749:     public function getEntryValue_selectedArray($field)
- *  785:     public function getSelectItemArray($field, array $config)
- *  820:     private function initItemArray(array $config)
- *  840:     private static function includeJSConformInput(array $files)
- *  859:     private static function includeLibDatepicker()
+ *  750:     public function getEntryValue_selectedArray($field)
+ *  787:     public function getSelectItemArray($field, array $config)
+ *  822:     private function initItemArray(array $config)
+ *  842:     private static function includeJSConformInput(array $files)
+ *  861:     private static function includeLibDatepicker()
  *
  * TOTAL FUNCTIONS: 23
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -723,9 +723,10 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		}
 		else {	// $this->pi_base->piVars['cancel'] or any submit
 			if ($config['MM']) {
-				$result = $this->getMMRecords($this->row['uid'], $config);
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
-					$options[] = $row['ft_uid'];
+				$loadDBGroup = t3lib_div::makeInstance('FE_loadDBGroup');
+				$loadDBGroup->start('', $config['foreign_table'], $config['MM'], $this->row['uid'], $this->table, $config);
+				foreach($loadDBGroup->itemArray as $item) {
+					$options[] = $item['id'];
 				}
 			}
 			elseif ($config['maxitems'] >1) {
@@ -760,9 +761,10 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		}
 		else {	// $this->pi_base->piVars['cancel'] or any submit
 			if ($config['MM']) {
-				$result = $this->getMMRecords($this->row['uid'], $config);
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
-					$options[] = $row['ft_uid'];
+				$loadDBGroup = t3lib_div::makeInstance('FE_loadDBGroup');
+				$loadDBGroup->start('', $config['foreign_table'], $config['MM'], $this->row['uid'], $this->table, $config);
+				foreach($loadDBGroup->itemArray as $item) {
+					$options[] = $item['id'];
 				}
 			}
 			elseif ($config['maxitems'] >1) {

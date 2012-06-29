@@ -35,10 +35,10 @@
  *  241:     public function handleFieldValue($recordId, $value=null, $config=null)
  *  269:     protected function  handleFieldValue_typeCheck($value=null, array $config)
  *  284:     protected function handleFieldValue_typeSelect($recordId, $value=null, array $config)
- *  354:     protected function getMMRecords($recordId, array $config)
- *  398:     protected function handleFieldValue_typeGroup($recordId, $value=null, array $config)
- *  445:     public function sL($str)
- *  457:     public function getLL($key, $alternativeLabel= '', $hsc=false)
+ *  361:     protected function getMMLabels($recordId, array $config)
+ *  406:     protected function handleFieldValue_typeGroup($recordId, $value=null, array $config)
+ *  453:     public function sL($str)
+ *  465:     public function getLL($key, $alternativeLabel= '', $hsc=false)
  *
  * TOTAL FUNCTIONS: 12
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -287,14 +287,21 @@ class tx_icstcafeadmin_CommonRenderer {
 				$value = '';
 			}
 			else {
-				$result = $this->getMMRecords($recordId, $config);
-				// Fetch labels
-				$labels = array();
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
-					$labels[] = $row['ft_label'];
+				if ($GLOBALS['TCA'][$config['foreign_table']]['ctrl']['label'] != 'uid') {
+					$labels = $this->getMMLabels($recordId, $config);
+					if (!empty($labels))
+						$value = implode(',', $labels);
 				}
-				if (!empty($labels))
-					$value = implode(',', $labels);
+				else {
+					$loadDBGroup = t3lib_div::makeInstance('FE_loadDBGroup');
+					$loadDBGroup->start('', $config['foreign_table'], $config['MM'], $recordId, $this->table, $config);
+					$options = array();
+					foreach($loadDBGroup->itemArray as $item) {
+						$options[] = $item['id'];
+					}
+					if (!empty($options))
+						$value = implode(',', $options);
+				}
 			}
 		}
 		// foreign_table
@@ -349,42 +356,43 @@ class tx_icstcafeadmin_CommonRenderer {
 	 *
 	 * @param	int		$recordId: Record's id
 	 * @param	array		$config: Field's TCA configuration
-	 * @return	resource		pointer MySQL result pointer / DBAL object
+	 * @return	mixed		Labels array
 	 */
-	protected function getMMRecords($recordId, array $config) {
+	protected function getMMLabels($recordId, array $config) {
 		t3lib_div::loadTCA($config['foreign_table']);
 
 		// Get select fields
-		$label = $GLOBALS['TCA'][$config['foreign_table']]['ctrl']['label'];
 		$fields = array('`'.$config['foreign_table'].'`.`uid` as ft_uid');
-		if ($label != 'uid')
-			$fields[] = '`'.$config['foreign_table'].'`.`'.$label.'` as ft_label';
-
-		$addWhere_tablenames = ' AND (`'.$config['MM'].'`.`tablenames` = \'' . $this->table . '\' || `'.$config['MM'].'`.`tablenames` = \'\')';
-
-		// Get records
+		$label = $GLOBALS['TCA'][$config['foreign_table']]['ctrl']['label'];
+		$fields[] = '`'.$config['foreign_table'].'`.`'.$label.'` as ft_label';
+		$uidLocal_field = 'uid_local';
+		$uidForeign_field = 'uid_foreign';
+		$localTable = $this->table;
+		$foreignTable = $config['foreign_table'];
+		$sorting = '`'.$config['MM'].'`.`sorting`';
 		if ($config['MM_opposite_field']) {
-			$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
-				implode(',', $fields),
-				$config['foreign_table'],
-				$config['MM'],
-				$this->table,
-				' AND `'.$config['MM'].'`.`uid_foreign` = ' . $recordId . $addWhere_tablenames,
-				'',
-				'`'.$config['MM'].'`.`sorting_foreign`'
-			);
-		} else {
-			$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
-				implode(',', $fields),
-				$this->table,
-				$config['MM'],
-				$config['foreign_table'],
-				' AND `'.$config['MM'].'`.`uid_local` = ' . $recordId . $addWhere_tablenames,
-				'',
-				'`'.$config['MM'].'`.`sorting`'
-			);
+			$uidLocal_field = 'uid_foreign';
+			$uidForeign_field = 'uid_local';
+			$localTable = $config['foreign_table'];
+			$foreignTable = $this->table;
+			$sorting = '`'.$config['MM'].'`.`sorting_foreign`';
 		}
-		return $result;
+		$addWhere_tablenames = ' AND (`'.$config['MM'].'`.`tablenames` = \'' . $this->table . '\' || `'.$config['MM'].'`.`tablenames` = \'\')';
+		// Get records
+		$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query(
+			implode(',', $fields),
+			$localTable,
+			$config['MM'],
+			$foreignTable,
+			' AND `'.$config['MM'].'`.`'.$uidLocal_field.'` = ' . $recordId . $addWhere_tablenames,
+			'',
+			$sorting
+		);
+		$labels = array();
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
+			$labels[] = $row['ft_label'];
+		}
+		return $labels;
 	}
 
 	/**
