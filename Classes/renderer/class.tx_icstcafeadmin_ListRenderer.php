@@ -26,16 +26,17 @@
  *
  *
  *
- *   52: class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer
- *   62:     public function render(array $rows)
- *   73:     private function renderListEmpty()
- *   87:     private function renderList(array $rows)
- *  141:     private function renderHeaderTitles(&$markers)
- *  161:     private function renderRowFields(array $row, &$markers)
- *  201:     private function renderRowActions(array $row, &$markers)
- *  231:     private function getListGetPageBrowser()
+ *   53: class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer
+ *   63:     public function render(array $rows)
+ *   74:     private function renderListEmpty()
+ *   88:     private function renderList(array $rows)
+ *  136:     private function renderHeaderTitles(&$markers)
+ *  156:     private function renderRowFields(array $row, &$markers)
+ *  197:     private function renderRowActions(array $row, &$markers)
+ *  221:     private function get_TCAFE_Admin_actions_data($row)
+ *  255:     private function getListGetPageBrowser()
  *
- * TOTAL FUNCTIONS: 7
+ * TOTAL FUNCTIONS: 8
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -211,11 +212,17 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		return $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');
 	}
 
+	/**
+	 * Retrieves data array for TCAFE actions
+	 *
+	 * @param	array		$row: The record row
+	 * @return	mixed		Tha data array
+	 */
 	private function get_TCAFE_Admin_actions_data($row) {
 		$GLOBALS['TSFE']->includeTCA();
 		t3lib_div::loadTCA($this->table);
 		$label = $GLOBALS['TCA'][$this->table]['ctrl']['label'];
-		return array(
+		$data = array(
 			'id' => $row['uid'],
 			'newId' => 'New'.uniqid(),
 			'table' => $this->table,
@@ -229,8 +236,17 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'withDataNewItem' => $this->conf['view.']['withDataNewItem'],
 			'label' => $row[$label],
 		);
+		// Hook to retrieves more data
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['get_TCAFE_Admin_actions_data'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['get_TCAFE_Admin_actions_data'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if ($procObj->get_TCAFE_Admin_actions_data($data, $this->table, $row, $this->conf, $this))
+					break;
+			}
+		}
+		return $data;
 	}
-	
+
 	/**
 	 * Page browser
 	 *
