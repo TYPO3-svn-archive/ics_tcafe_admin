@@ -1,3 +1,6 @@
+2012-07-06 Tsi YANG <tsi@in-cite.net>
+	Feature: Added hook on get_TCAFE_Admin_actions_data
+
 2012-06-29 Tsi YANG <tsi@in-cite.net>
 	* Refactor: Optimized loading MM relation
 	* Fix: Completed save MM relation
