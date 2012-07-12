@@ -704,6 +704,15 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$fields = array_diff($this->fields, array('uid'));
 			$dataArray = $dbTools->process_valuesToDB($this->table, ($this->showUid? $this->showUid: 0), $fields, $this->piVars);
 
+			// Hook to retrieves more data
+			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['saveDB_additionnalDataArray'])) {
+				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['saveDB_additionnalDataArray'] as $class) {
+					$procObj = & t3lib_div::getUserObj($class);
+					if ($procObj->saveDB_additionnalDataArray($dataArray, $this->table, ($this->newUid? $this->newUid: $this->showUid), $this->conf, $this))
+						break;
+				}
+			}			
+			
 			if ($this->newUid) { // Insert new record
 				$result = $this->cObj->DBgetInsert(
 					$this->table,

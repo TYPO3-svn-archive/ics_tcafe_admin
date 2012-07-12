@@ -26,21 +26,22 @@
  *
  *
  *
- *   57: class tx_icstcafeadmin_CommonRenderer
- *   87:     function __construct($pi_base, $table, array $fields, array $fieldLabels, array $conf)
- *  109:     public function init()
- *  123:     protected function renderValue($field, $recordId, $value=null, $view='')
- *  170:     public function default_renderValue($field, $value=null, $view='')
- *  214:     protected function fetchInputFieldFormat($config)
- *  241:     public function handleFieldValue($recordId, $value=null, $config=null)
- *  269:     protected function  handleFieldValue_typeCheck($value=null, array $config)
- *  284:     protected function handleFieldValue_typeSelect($recordId, $value=null, array $config)
- *  361:     protected function getMMLabels($recordId, array $config)
- *  406:     protected function handleFieldValue_typeGroup($recordId, $value=null, array $config)
- *  453:     public function sL($str)
- *  465:     public function getLL($key, $alternativeLabel= '', $hsc=false)
+ *   58: class tx_icstcafeadmin_CommonRenderer
+ *   88:     function __construct($pi_base, $table, array $fields, array $fieldLabels, array $conf)
+ *  110:     public function init()
+ *  124:     protected function renderValue($field, $recordId, $value=null, $view='')
+ *  171:     public function default_renderValue($field, $value=null, $view='')
+ *  215:     protected function fetchInputFieldFormat($config)
+ *  242:     public function handleFieldValue($recordId, $value=null, $config=null)
+ *  270:     protected function  handleFieldValue_typeCheck($value=null, array $config)
+ *  285:     protected function handleFieldValue_typeSelect($recordId, $value=null, array $config)
+ *  362:     protected function getMMLabels($recordId, array $config)
+ *  407:     protected function handleFieldValue_typeGroup($recordId, $value=null, array $config)
+ *  454:     public function sL($str)
+ *  466:     public function getLL($key, $alternativeLabel= '', $hsc=false)
+ *  476:     public function cObjDataActions($row)
  *
- * TOTAL FUNCTIONS: 12
+ * TOTAL FUNCTIONS: 13
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -358,7 +359,7 @@ class tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: Field's TCA configuration
 	 * @return	mixed		Labels array
 	 */
-	protected function getMMLabels($recordId, array $config) {
+	public function getMMLabels($recordId, array $config) {
 		t3lib_div::loadTCA($config['foreign_table']);
 
 		// Get select fields
@@ -466,7 +467,40 @@ class tx_icstcafeadmin_CommonRenderer {
 		return $this->pi_base->pi_getLL($key, $alternativeLabel, $hsc);
 	}
 
-
+	/**
+	 * Retrieves data array for TCAFE actions
+	 *
+	 * @param	array		$row: The record row
+	 * @return	mixed		Tha data array
+	 */
+	public function cObjDataActions($row) {
+		$GLOBALS['TSFE']->includeTCA();
+		t3lib_div::loadTCA($this->table);
+		$label = $GLOBALS['TCA'][$this->table]['ctrl']['label'];
+		$data = array(
+			'id' => $row['uid'],
+			'newId' => 'New'.uniqid(),
+			'table' => $this->table,
+			'fields' => implode(',', $this->fields),
+			'hidden' => $row['hidden'],
+			'PIDitemDisplay' => $this->conf['view.']['PIDitemDisplay'],
+			'withDataItemDisplay' => $this->conf['view.']['withDataItemDisplay'],
+			'PIDeditItem' => $this->conf['view.']['PIDeditItem'],
+			'withDataEditItem' => $this->conf['view.']['withDataEditItem'],
+			'PIDnewItem' => $this->conf['view.']['PIDnewItem'],
+			'withDataNewItem' => $this->conf['view.']['withDataNewItem'],
+			'label' => $row[$label],
+		);
+		// Hook to retrieves more data
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['actions_additionnalDataArray'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['actions_additionnalDataArray'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if ($procObj->actions_additionnalDataArray($data, $this->table, $row, $this->conf, $this))
+					break;
+			}
+		}
+		return $data;
+	}
 }
 
 

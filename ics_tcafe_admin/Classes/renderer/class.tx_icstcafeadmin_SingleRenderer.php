@@ -29,7 +29,7 @@
  *   48: class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer
  *   63:     function __construct($pi_base, $table, array $fields, array $fieldLabels, array $row, array $conf)
  *   73:     public function render()
- *   88:     private function renderFields()
+ *   92:     public function renderFields()
  *
  * TOTAL FUNCTIONS: 3
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -72,9 +72,13 @@ class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 */
 	public function render() {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_SINGLE###');
+		$locMarkers = array(
+			'FIELDS' => $this->renderFields(),
+		);
+		$template = $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');
+
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
-			'FIELDS' => $this->renderFields(),
 			'BACKLINK' => '',
 		);
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
@@ -87,38 +91,49 @@ class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 */
 	private function renderFields() {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_SINGLE_FIELDS###');
+		$content = '';
 		// Hook for render row fields
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderSingleFields'])) {
 			$markers = array();
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderSingleFields'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$content = $procObj->renderSingleFields($this->pi_base, $this->table, $this->fields, $this->fieldLabels, $this->row, $markers, $this->conf, $this);
-				if (is_string($content))
+				$process = $procObj->renderSingleFields($content, $this->pi_base, $this->table, $this->fields, $this->fieldLabels, $this->row, $markers, $this->conf, $this);
+				if ($process)
 					break;
 			}
 		}
-		if (!isset($content) || is_bool($content)) {
+		if (!$process) {
 			$genericFieldTemplate = $this->cObj->getSubpart($template, '###SUBPART_GENERIC###');
 			foreach ($this->fields as $field) {
 				$value = $this->renderValue($field, $this->row['uid'], $this->row[$field], self::$view);
 				$locMarkers = array(
 					'FIELDNAME' => $field,
 				);
+
 				if ($specificFieldTemplate = $this->cObj->getSubpart($template, '###ALT_SUBPART_' . strtoupper($field) . '###')) {
+					$fieldTemplate = $specificFieldTemplate;
 					$locMarkers[strtoupper($field) . '_LABEL'] = $this->fieldLabels[$field];
 					$locMarkers[strtoupper($field) . '_VALUE'] = $value;
-					$content .= $this->cObj->substituteMarkerArray($specificFieldTemplate, $locMarkers, '###|###');
 				}
 				else {
+					$fieldTemplate = $genericFieldTemplate;
 					$locMarkers['FIELDLABEL'] = $this->fieldLabels[$field];
 					$locMarkers['FIELDVALUE'] = $value;
-					$content .= $this->cObj->substituteMarkerArray($genericFieldTemplate, $locMarkers, '###|###');
 				}
+				$subpartArray = array();
+				// Hook on additionnal markers
+				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['single_additionnalMarkers'])) {
+					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['single_additionnalMarkers'] as $class) {
+						$procObj = & t3lib_div::getUserObj($class);
+						$process = $procObj->single_additionnalMarkers($fieldTemplate, $locMarkers, $subpartArray, $this->table, $field, $this->row, $this->conf, $this->pi_base, $this);
+					}
+				}
+				$fieldTemplate = $this->cObj->substituteSubpartArray($fieldTemplate, $subpartArray);
+				$content .= $this->cObj->substituteMarkerArray($fieldTemplate, $locMarkers, '###|###');
 			}
 		}
 		return $content;
 	}
-
 }
 
 
