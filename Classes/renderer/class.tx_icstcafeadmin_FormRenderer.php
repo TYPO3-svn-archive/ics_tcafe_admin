@@ -27,29 +27,29 @@
  *
  *
  *   68: class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer
- *   90:     function __construct($pi_base, $table, array $fields, array $fieldLabels, $recordId=0, array $conf)
- *  113:     public function render()
- *  136:     private function renderPIDStorage()
- *  151:     private function renderFormFields()
- *  183:     private function renderEntries()
- *  207:     public function handleFormField($field)
- *  249:     public function handleFormField_typeInput($field, array $config, $template='')
- *  293:     private function getConformInput($field, array $config)
- *  334:     public function handleFormField_typeText($field, array $config, $template='')
- *  373:     public function handleFormField_typeCheck($field, array $config)
- *  415:     public function handleFormField_typeCheck_item($field, array $config, $col=null, $template='')
- *  450:     public function handleFormField_typeSelect($field, array $config)
- *  502:     public function handleFormField_typeSelect_single(array $items, $field, array $config, $template='')
- *  544:     public function handleFormField_typeSelect_multiple(array $items, $field, array $config, $template='')
- *  588:     public function handleFormField_typeGroup($field, array $config)
- *  621:     public function handleFormField_typeGroup_file($field, array $config, $template='')
- *  699:     public function getEntryValue($field)
- *  715:     public function getEntryValue_selectedOption($field, $item, array $config)
- *  750:     public function getEntryValue_selectedArray($field)
- *  787:     public function getSelectItemArray($field, array $config)
- *  822:     private function initItemArray(array $config)
- *  842:     private static function includeJSConformInput(array $files)
- *  861:     private static function includeLibDatepicker()
+ *   89:     function __construct($pi_base, $table, array $fields, array $fieldLabels, $recordId=0, array $conf)
+ *  112:     public function render()
+ *  135:     private function renderPIDStorage()
+ *  150:     private function renderFormFields()
+ *  182:     private function renderEntries()
+ *  206:     public function handleFormField($field)
+ *  254:     public function handleFormField_typeInput($field, array $config, $template='')
+ *  289:     public function handleFormField_typeInput_date($field, array $config, $template='')
+ *  332:     private function getConformInput($field, array $config)
+ *  373:     public function handleFormField_typeText($field, array $config, $template='')
+ *  412:     public function handleFormField_typeCheck($field, array $config)
+ *  454:     public function handleFormField_typeCheck_item($field, array $config, $col=null, $template='')
+ *  489:     public function handleFormField_typeSelect($field, array $config)
+ *  541:     public function handleFormField_typeSelect_single(array $items, $field, array $config, $template='')
+ *  583:     public function handleFormField_typeSelect_multiple(array $items, $field, array $config, $template='')
+ *  627:     public function handleFormField_typeGroup($field, array $config)
+ *  660:     public function handleFormField_typeGroup_file($field, array $config, $template='')
+ *  738:     public function getEntryValue($field)
+ *  754:     public function getEntryValue_selectedOption($field, $item, array $config)
+ *  789:     public function getEntryValue_selectedArray($field)
+ *  826:     public function getSelectItemArray($field, array $config)
+ *  873:     private function initItemArray(array $config)
+ *  893:     private static function includeJSConformInput(array $files)
  *
  * TOTAL FUNCTIONS: 23
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -69,7 +69,6 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	private $row = null;
 	private static $view = 'viewForm';
 
-	private static $datepickerIncluded = false;
 	private static $conformInputIncluded = false;
 
 	var $maxInputWidth = 48; 		// The maximum abstract value for input fields
@@ -217,7 +216,13 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
 			switch ($config['type']) {
 				case 'input':
-					$content =  $this->handleFormField_typeInput($field, $config);
+					$format = $this->fetchInputFieldFormat($config);
+					if ($format == 'date' || $format == 'datetime') {
+						$content =  $this->handleFormField_typeInput_date($field, $config);
+					}
+					else {
+						$content =  $this->handleFormField_typeInput($field, $config);
+					}
 					break;
 				case 'text':
 					$content =  $this->handleFormField_typeText($field, $config);
@@ -269,20 +274,54 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'CONFORM' => $this->getConformInput($field, $config),
 			'CTRL_MESSAGE' => '',
 		);
-
-		// $format = $this->fetchInputFieldFormat($config);
-
-		// if ($format == 'date' || $format == 'datetime') {
-			// self::includeLibDatepicker();
-			// $template .= '<script>
-				// $(function() {
-				// $( "#' . $field . '" ).datepicker();
-				// });
-				// </script>';
-		// }
-
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
+
+
+	/**
+	 * Generates form element of the TCA type "input", eval "date" or "datetime". This will render an input form field of type text.
+	 *
+	 * @param	string		$field: The field name
+	 * @param	array		$config: TCA field conf
+	 * @param	string		$template: The template code
+	 * @return	string		HTML form field content
+	 */
+	public function handleFormField_typeInput_date($field, array $config, $template='') {
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeInput_date'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeInput_date'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if ($content = $procObj->handleFormField_typeInput_date($this->pi_base, $this->table, $field, $this->fieldLabels, $this->recordId, $this->conf, $this))
+					break;
+			}
+		}
+		if ($content)
+			return $content;
+
+		$size = t3lib_div::intInRange($config['size'], 5, $this->maxInputWidth, 30);
+		$size = $size? 'size="' . $size . '"': '';
+
+		$label = $this->fieldLabels[$field];
+		$evalList = t3lib_div::trimExplode(',', $config['eval'], true);
+		if (in_array('required', $evalList))
+			$label = $this->cObj->stdWrap($label, $this->conf['defaultConf.']['require.']);
+
+		if (!$template)
+			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_TEXT_DATE###');
+
+		$markers = array(
+			'PREFIXID' => $this->prefixId,
+			'ITEM_ID' => $field,
+			'FIELDLABEL' => $label,
+			'FIELDNAME' => $field,
+			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
+			'ITEM_VALUE' => $this->getEntryValue($field),
+			'SIZE' => $size,
+			'CONFORM' => $this->getConformInput($field, $config),
+			'CTRL_MESSAGE' => '',
+		);
+		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
+	}
+
 
 	/**
 	 * Conform input entry
@@ -290,7 +329,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	string		The	suitability control on entry
 	 */
-	private function getConformInput($field, array $config) {
+	public function getConformInput($field, array $config) {
 		self::includeJSConformInput(t3lib_div::trimExplode(',', $this->conf['conformInput.']['files']));
 
 		if ($this->conf['conformInput.']['field.'][$field . '.'])
@@ -785,6 +824,17 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @return	mixed		Array of items
 	 */
 	public function getSelectItemArray($field, array $config) {
+		// Hook on retrieves select items
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['getSelectItemArray'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['getSelectItemArray'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if ($items = $procObj->getSelectItemArray($this->pi_base, $this->table, $field, $this->fieldLabels, $this->recordId, $this->conf, $this))
+					break;
+			}
+		}
+		if (!empty($items))
+			return $items;
+
 		$items = array();
 		if ($config['foreign_table']) {
 			t3lib_div::loadTCA($config['foreign_table']);
@@ -798,7 +848,8 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 					$label
 				);
 				// Init items
-				$items[] = array('value'=>0, 'label'=>'');
+				// $items[] = array('value'=>0, 'label'=>'');
+				$items[] = array('value'=>0);
 				if (is_array($rows) && !empty($rows)) {
 					$items = array_merge($items, $rows);
 				}
@@ -819,7 +870,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	mixed		$items
 	 */
-	private function initItemArray(array $config)     {
+	public function initItemArray(array $config)     {
 		$items = array();
 		if (is_array($config['items']))   {
 			foreach ($config['items'] as $key=>$item) {
@@ -853,33 +904,6 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		self::$conformInputIncluded = true;
 	}
 
-	/**
-	 * Includes datepicker js lib
-	 *
-	 * @return	void
-	 */
-	private static function includeLibDatepicker() {
-		if (self::$datepickerIncluded)
-			return;
-
-		$extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ics_tcafe_admin']);
-		$jquery_ui_css = $extConf['datepicker.']['jquery_ui_css'];
-		$jquery_ui = $extConf['datepicker.']['jquery_ui'];
-		$jquery = $extConf['datepicker.']['jquery'];
-
-		if (!$jquery_ui_css || !$jquery_ui || !$jquery)
-			return;
-
-		$tags = array(
-			'	<link rel="stylesheet" type="text/css" href="' . htmlspecialchars($jquery_ui_css) . '" media="all" />' . PHP_EOL,
-			'	<script src="' . htmlspecialchars($jquery_ui) . '" type="text/javascript"></script>' . PHP_EOL,
-			'	<script src="' . htmlspecialchars($jquery) . '" type="text/javascript"></script>' . PHP_EOL,
-		);
-
-		$GLOBALS['TSFE']->additionalHeaderData['datepicker'] = implode('', $tags);
-
-		self::$datepickerIncluded = true;
-	}
 }
 
 

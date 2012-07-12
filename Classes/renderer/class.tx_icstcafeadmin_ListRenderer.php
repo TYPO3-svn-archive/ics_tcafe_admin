@@ -26,17 +26,16 @@
  *
  *
  *
- *   53: class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer
- *   63:     public function render(array $rows)
- *   74:     private function renderListEmpty()
- *   88:     private function renderList(array $rows)
- *  136:     private function renderHeaderTitles(&$markers)
- *  156:     private function renderRowFields(array $row, &$markers)
- *  197:     private function renderRowActions(array $row, &$markers)
- *  221:     private function get_TCAFE_Admin_actions_data($row)
- *  255:     private function getListGetPageBrowser()
+ *   52: class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer
+ *   62:     public function render(array $rows)
+ *   73:     private function renderListEmpty()
+ *   87:     private function renderList(array $rows)
+ *  135:     private function renderHeaderTitles(&$markers)
+ *  155:     private function renderRowFields(array $row, &$markers)
+ *  196:     private function renderRowActions(array $row, &$markers)
+ *  219:     private function getListGetPageBrowser()
  *
- * TOTAL FUNCTIONS: 8
+ * TOTAL FUNCTIONS: 7
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -113,7 +112,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		}
 
 		$cObj = t3lib_div::makeInstance('tslib_cObj');
-		$cObj->start($this->get_TCAFE_Admin_actions_data($row), 'TCAFE_Admin_actions');
+		$cObj->start($this->cObjDataActions($row), 'TCAFE_Admin_actions');
 		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
@@ -198,7 +197,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_RESULTS_ROW_ACTIONS###');
 
 		$cObj = t3lib_div::makeInstance('tslib_cObj');
-		$cObj->start($this->get_TCAFE_Admin_actions_data($row), 'TCAFE_Admin_actions');
+		$cObj->start($this->cObjDataActions($row), 'TCAFE_Admin_actions');
 		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 
 		$locMarkers = array(
@@ -210,41 +209,6 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		);
 
 		return $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');
-	}
-
-	/**
-	 * Retrieves data array for TCAFE actions
-	 *
-	 * @param	array		$row: The record row
-	 * @return	mixed		Tha data array
-	 */
-	private function get_TCAFE_Admin_actions_data($row) {
-		$GLOBALS['TSFE']->includeTCA();
-		t3lib_div::loadTCA($this->table);
-		$label = $GLOBALS['TCA'][$this->table]['ctrl']['label'];
-		$data = array(
-			'id' => $row['uid'],
-			'newId' => 'New'.uniqid(),
-			'table' => $this->table,
-			'fields' => implode(',', $this->fields),
-			'hidden' => $row['hidden'],
-			'PIDitemDisplay' => $this->conf['view.']['PIDitemDisplay'],
-			'withDataItemDisplay' => $this->conf['view.']['withDataItemDisplay'],
-			'PIDeditItem' => $this->conf['view.']['PIDeditItem'],
-			'withDataEditItem' => $this->conf['view.']['withDataEditItem'],
-			'PIDnewItem' => $this->conf['view.']['PIDnewItem'],
-			'withDataNewItem' => $this->conf['view.']['withDataNewItem'],
-			'label' => $row[$label],
-		);
-		// Hook to retrieves more data
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['get_TCAFE_Admin_actions_data'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['get_TCAFE_Admin_actions_data'] as $class) {
-				$procObj = & t3lib_div::getUserObj($class);
-				if ($procObj->get_TCAFE_Admin_actions_data($data, $this->table, $row, $this->conf, $this))
-					break;
-			}
-		}
-		return $data;
 	}
 
 	/**
