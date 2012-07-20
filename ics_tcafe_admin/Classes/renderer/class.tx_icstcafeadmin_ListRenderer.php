@@ -72,8 +72,12 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 */
 	private function renderListEmpty() {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_RESULTS_LIST_EMPTY###');
+		$cObj = t3lib_div::makeInstance('tslib_cObj');
+		$cObj->start($this->cObjDataActions($row), 'TCAFE_Admin_actions');
+		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 		$markers = array(
 			'TEXT_LISTEMPTY' => $this->getLL('empty_list', 'Empty list', true),
+			'NEW' => $cObj->stdWrap('', $this->conf['optionList.']['new.']),
 		);
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###', false, true);
 	}
@@ -119,7 +123,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'TABLENAME' => $this->table,
 			'PAGEBROWSE' => $this->getListGetPageBrowser(),
 			'CAPTION' => $this->getLL('caption_list', 'List rows', true),
-			'NEW' => $cObj->stdWrap('', $this->conf['listActions.']['new.']),
+			'NEW' => $cObj->stdWrap('', $this->conf['optionList.']['new.']),
 		);
 
 		$template = $this->cObj->substituteSubpartArray($template, $subparts);
@@ -201,11 +205,11 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 
 		$locMarkers = array(
-			'EDIT' => $cObj->stdWrap('', $this->conf['listActions.']['edit.']),
-			'SINGLE' => $cObj->stdWrap('', $this->conf['listActions.']['single.']),
-			'NEW' => $cObj->stdWrap('', $this->conf['listActions.']['new.']),
-			'DELETE' => $cObj->stdWrap('', $this->conf['listActions.']['delete.']),
-			'HIDE' => $cObj->stdWrap('', $this->conf['listActions.']['hide.']),
+			'EDIT' => $cObj->stdWrap('', $this->conf['optionList.']['edit.']),
+			'SINGLE' => $cObj->stdWrap('', $this->conf['optionList.']['single.']),
+			'NEW' => $cObj->stdWrap('', $this->conf['optionList.']['new.']),
+			'DELETE' => $cObj->stdWrap('', $this->conf['optionList.']['delete.']),
+			'HIDE' => $cObj->stdWrap('', $this->conf['optionList.']['hide.']),
 		);
 
 		return $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');

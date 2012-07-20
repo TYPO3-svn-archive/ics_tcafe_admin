@@ -190,8 +190,13 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 				if ($this->piVars['valid']) {
 					if ($this->saveDB()) {
 						$content = $this->displayValidatedForm();
-						if ($this->conf['displayFormAfterSaveDB'])
+						if ($this->conf['view.']['displayFormAfterSaveDB']) {
 							$content .= $this->displayEdit();
+						}
+						elseif ($this->conf['view.']['displayListAfterSaveDB']) {
+							$this->codes[] = 'LIST';
+							$content .= $this->displayList();
+						}
 					}
 					else {
 						$content = $this->displayErrorValidatedForm();
@@ -210,8 +215,13 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 				if ($this->piVars['valid']) {
 					if ($this->saveDB()) {
 						$content = $this->displayValidatedForm();
-						if ($this->conf['displayFormAfterSaveDB'])
+						if ($this->conf['view.']['displayFormAfterSaveDB']) {
 							$content .= $this->displayNew();
+						}
+						elseif ($this->conf['view.']['displayListAfterSaveDB']) {
+							$this->codes[] = 'LIST';
+							$content .= $this->displayList();
+						}
 					}
 					else {
 						$content = $this->displayErrorValidatedForm();
@@ -230,6 +240,10 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 				$row = $this->getSingleRecord();
 				$this->deleteRecord($this->table, $this->showUid);
 				$content = $this->displayDelete($row);
+				if ($this->conf['view.']['displayListAfterDelete']) {
+					$this->codes[] = 'LIST';
+					$content .= $this->displayList();
+				}
 			} catch (Exception $e) {
 				tx_icstcafeadmin_debug::error('Delete data failed: ' . $e);
 			}
@@ -238,6 +252,10 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			try {
 				$this->hideRecord($this->table, $this->showUid);
 				$content = $this->displayHide();
+				if ($this->conf['view.']['displayListAfterHideShow']) {
+					$this->codes[] = 'LIST';
+					$content .= $this->displayList();
+				}
 			} catch (Exception $e) {
 				tx_icstcafeadmin_debug::error('Hide data failed: ' . $e);
 			}
@@ -338,6 +356,9 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$this->conf['view.']['PIDnewItem'] = $PIDnewItem? $PIDnewItem: $this->conf['view.']['PIDnewItem'];
 		$withDataNewItem = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'withNewData', 'miscellaneous');
 		$this->conf['view.']['withDataNewItem'] = $withDataNewItem? $withDataNewItem: $this->conf['view.']['withDataNewItem'];
+
+		$this->backPid = $this->conf['view.']['backPid'];
+		$this->backPid = $this->backPid? $this->backPid: $GLOBALS['TSFE']->id;
 	}
 
 	/**
@@ -459,6 +480,9 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$this->fields = $localFields;
 			$this->fieldLabels = $localLabels;
 		}
+		
+		if ($this->piVars['backPid'])
+			$this->backPid = $this->piVars['backPid'];
 	}
 
 	/**

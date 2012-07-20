@@ -122,7 +122,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'BTNCANCEL_NAME' => $this->prefixId . '[cancel]',
 			'BTNCANCEL_VALUE' => $this->getLL('cancel', 'Cancel', true),
 			'ONCLICK_BTNCANCEL' => '',
-			'BACKLINK' => '',
+			'BACKLINK' => $this->renderBackLink($this->row),
 		);
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}

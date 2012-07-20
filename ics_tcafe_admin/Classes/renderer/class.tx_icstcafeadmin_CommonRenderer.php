@@ -93,6 +93,7 @@ class tx_icstcafeadmin_CommonRenderer {
 		$this->cObj = $pi_base->cObj;
 
 		$this->templateCode = $pi_base->templateCode;
+		$this->backPid = $pi_base->backPid;
 
 		$this->table = $table;
 		$this->fields = $fields;
@@ -141,12 +142,11 @@ class tx_icstcafeadmin_CommonRenderer {
 		}
 		if (!$process) {
 			if ($field===$label && $view=='viewList') {
-				$data = array(
-					'id' => $recordId,
-					'title' => $this->handleFieldValue($recordId ,$value, $config),
-					'table' => $this->table,
-					'PIDitemDisplay' => $this->conf['view.']['PIDitemDisplay'],
-				);
+				$data = $this->cObjDataActions();
+				$data['id'] = $recordId;
+				$data['title'] = $this->handleFieldValue($recordId ,$value, $config);
+				$data['table'] = $this->table;
+				$data['PIDitemDisplay'] = $this->conf['view.']['PIDitemDisplay'];
 				$cObj = t3lib_div::makeInstance('tslib_cObj');
 				$cObj->start($data, $this->table);
 				$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
@@ -490,6 +490,11 @@ class tx_icstcafeadmin_CommonRenderer {
 			'PIDnewItem' => $this->conf['view.']['PIDnewItem'],
 			'withDataNewItem' => $this->conf['view.']['withDataNewItem'],
 			'label' => $row[$label],
+			'backPid' => $this->backPid,
+			'crit_mode' => $this->pi_base->piVars['mode'],
+			'crit_table' => $this->pi_base->piVars['table'],
+			'crit_showUid' => $this->pi_base->piVars['showUid'],
+			'crit_fields' => $this->pi_base->piVars['fields'],
 		);
 		// Hook to retrieves more data
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['actions_additionnalDataArray'])) {
@@ -500,6 +505,40 @@ class tx_icstcafeadmin_CommonRenderer {
 			}
 		}
 		return $data;
+	}
+	
+	/**
+	 * Render back link
+	 *
+	 * @param	array	$row: The record row
+	 * @return	string	The back link
+	 */
+	public function renderBackLink($row) {
+		$data = array(
+			'backPid' => $this->backPid,
+			'crit_mode' => $this->pi_base->piVars['mode'],
+			'crit_table' => $this->pi_base->piVars['table'],
+			'crit_showUid' => $this->pi_base->piVars['showUid'],
+			'crit_fields' => $this->pi_base->piVars['fields'],
+		);
+		if ($criteria = $this->pi_base->piVars['criteria']) {
+			$data['mode'] = $criteria['mode'];
+			$data['table'] = $criteria['table'];
+			$data['showUid'] = $criteria['showUid'];
+			$data['fields'] = $criteria['fields'];
+		}
+		
+		// Hook to retrieves more data
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['backlink_additionnalDataArray'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['backlink_additionnalDataArray'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				$procObj->backlink_additionnalDataArray($data, $this->table, $row, $this->conf, $this);
+			}
+		}
+		$cObj = t3lib_div::makeInstance('tslib_cObj');
+		$cObj->start($data, 'TCAFE_Admin_backlink');
+		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
+		return $cObj->stdWrap('', $this->conf['optionList.']['backlink.']);
 	}
 }
 

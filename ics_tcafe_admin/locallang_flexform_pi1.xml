@@ -21,7 +21,6 @@
 			<label index="withEditData">Edit with table configuration</label>
 			<label index="newID">ID of new record page</label>
 			<label index="withNewData">New with table configuration</label>
-			<label index="returnUrl">Return url</label>
 			<label index="fieldlabel">Label for &quot;%s&quot;</label>
 			<label index="selectClause">Select clause</label>
 			<label index="orderBy">Order by clause</label>
@@ -44,7 +43,6 @@
 			<label index="newID">Lien vers la page de création d'un enregistrement</label>
 			<label index="withNewData">Nouveau avec configuration de la table</label>
 			<label index="returnUrl">Lien vers la page retour</label>
-			<label index="fieldlabel">Libellé de « %s »</label>
 			<label index="selectClause">Clause "select" SQL</label>
 			<label index="orderBy">Clause order by</label>
 			<label index="groupBy">Clause group by</label>
