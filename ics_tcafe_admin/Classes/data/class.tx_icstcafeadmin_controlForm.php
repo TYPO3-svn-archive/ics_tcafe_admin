@@ -29,9 +29,9 @@
  *   49: class tx_icstcafeadmin_controlForm
  *   72:     function __construct($pi_base, $table, $recordId=0, array $fields, array $conf)
  *  103:     public function controlEntries()
- *  142:     public function controlEntry($field)
- *  308:     public function getNoCheckOnFields()
- *  317:     public function resetNoCheckOnFields()
+ *  149:     public function controlEntry($field)
+ *  315:     public function getNoCheckOnFields()
+ *  324:     public function resetNoCheckOnFields()
  *
  * TOTAL FUNCTIONS: 5
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -128,6 +128,13 @@ class tx_icstcafeadmin_controlForm{
 
 			if (!$control && $this->conf['controlEntries.']['breakControl']) {
 				break;
+			}
+		}
+		// Hook on extra_controlEntries
+		if ($control && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_controlEntries'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_controlEntries'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				$procObj->extra_controlEntries($control, $this->table, $this->row, $this->pi_base, $this->conf, $this);
 			}
 		}
 		return $control;

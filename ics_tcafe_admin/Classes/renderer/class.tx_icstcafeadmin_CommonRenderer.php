@@ -26,22 +26,23 @@
  *
  *
  *
- *   58: class tx_icstcafeadmin_CommonRenderer
- *   88:     function __construct($pi_base, $table, array $fields, array $fieldLabels, array $conf)
- *  110:     public function init()
- *  124:     protected function renderValue($field, $recordId, $value=null, $view='')
- *  171:     public function default_renderValue($field, $value=null, $view='')
- *  215:     protected function fetchInputFieldFormat($config)
- *  242:     public function handleFieldValue($recordId, $value=null, $config=null)
- *  270:     protected function  handleFieldValue_typeCheck($value=null, array $config)
- *  285:     protected function handleFieldValue_typeSelect($recordId, $value=null, array $config)
- *  362:     protected function getMMLabels($recordId, array $config)
- *  407:     protected function handleFieldValue_typeGroup($recordId, $value=null, array $config)
- *  454:     public function sL($str)
- *  466:     public function getLL($key, $alternativeLabel= '', $hsc=false)
- *  476:     public function cObjDataActions($row)
+ *   59: class tx_icstcafeadmin_CommonRenderer
+ *   89:     function __construct($pi_base, $table, array $fields, array $fieldLabels, array $conf)
+ *  112:     public function init()
+ *  126:     protected function renderValue($field, $recordId, $value=null, $view='')
+ *  172:     public function default_renderValue($field, $value=null, $view='')
+ *  216:     protected function fetchInputFieldFormat($config)
+ *  243:     public function handleFieldValue($recordId, $value=null, $config=null)
+ *  271:     protected function  handleFieldValue_typeCheck($value=null, array $config)
+ *  286:     protected function handleFieldValue_typeSelect($recordId, $value=null, array $config)
+ *  363:     public function getMMLabels($recordId, array $config)
+ *  408:     protected function handleFieldValue_typeGroup($recordId, $value=null, array $config)
+ *  455:     public function sL($str)
+ *  467:     public function getLL($key, $alternativeLabel= '', $hsc=false)
+ *  477:     public function cObjDataActions($row)
+ *  517:     public function renderBackLink($row)
  *
- * TOTAL FUNCTIONS: 13
+ * TOTAL FUNCTIONS: 14
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -506,12 +507,12 @@ class tx_icstcafeadmin_CommonRenderer {
 		}
 		return $data;
 	}
-	
+
 	/**
-	 * Render back link
+	 * [Describe function...]
 	 *
-	 * @param	array	$row: The record row
-	 * @return	string	The back link
+	 * @param	[type]		$row: ...
+	 * @return	[type]		...
 	 */
 	public function renderBackLink($row) {
 		$data = array(
@@ -527,7 +528,7 @@ class tx_icstcafeadmin_CommonRenderer {
 			$data['showUid'] = $criteria['showUid'];
 			$data['fields'] = $criteria['fields'];
 		}
-		
+
 		// Hook to retrieves more data
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['backlink_additionnalDataArray'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['backlink_additionnalDataArray'] as $class) {
