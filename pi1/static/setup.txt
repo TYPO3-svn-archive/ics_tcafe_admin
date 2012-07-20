@@ -20,8 +20,15 @@ plugin.tx_icstcafeadmin_pi1 {
 		page = 1
 		# Number of records
 		size =
+		# Displays form after action
+		displayFormAfterSaveDB = 0
+		displayListAfterSaveDB = 0
+		displayListAfterHideShow = 0
+		displayListAfterDelete = 0
+		# The pid to return when leaving single view
+		backPid = 
 	}
-	
+		
 	# Table configuration
 	table {
 		# Table's name
@@ -167,10 +174,20 @@ plugin.tx_icstcafeadmin_pi1 {
 			typolink {
 				parameter.data = tsfe:id
 				parameter.override.field = PIDitemDisplay
-				additionalParams = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}
+				additionalParams.cObject = COA
+				additionalParams.cObject {
+					10 = TEXT
+					10 {
+						value = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}
+					}
+					20 = TEXT
+					20 {
+						value = &tx_icstcafeadmin_pi1[backPid]={tsfe:id}
+					}
+					30 < plugin.tx_icstcafeadmin_pi1.optionList.criteria
+				}
 				additionalParams.insertData = 1
 			}
-			
 		}
 		require {
 			stdWrap.noTrimWrap = - || *|
@@ -183,8 +200,87 @@ plugin.tx_icstcafeadmin_pi1 {
 		# tablename.fieldname.theView.theConf
 	}
 	
-	# Render actions on list view
-	listActions {		
+	# Render option list
+	optionList {		
+		criteria = COA
+		criteria {
+			10 = TEXT
+			10 {
+				if.isTrue.field = crit_mode
+				value = &tx_icstcafeadmin_pi1[criteria][mode]={field:crit_mode}
+			}
+			20 = TEXT
+			20 {
+				if.isTrue.field = crit_table
+				value = &tx_icstcafeadmin_pi1[criteria][table]={field:crit_table}
+			}
+			30 = TEXT
+			30 {
+				if.isTrue.field = crit_showUid
+				value = &tx_icstcafeadmin_pi1[criteria][showUid]={field:crit_showUid}
+			}
+			40 = TEXT
+			40 {
+				if.isTrue.field = crit_fields
+				value = &tx_icstcafeadmin_pi1[criteria][fields]={field:crit_fields}
+			}
+		}
+		# The return Url
+		backlink {
+			cObject = TEXT
+			cObject {
+				data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:previous
+			}
+			typolink {
+				parameter.field = backPid
+				additionalParams.cObject = COA
+				additionalParams.cObject {
+					10 = TEXT
+					10 {
+						if.isTrue.field = mode
+						value = &tx_icstcafeadmin_pi1[mode]={field:mode}
+					}
+					20 = TEXT
+					20 {
+						if.isTrue.field = table
+						value = &tx_icstcafeadmin_pi1[table]={field:table}
+					}
+					30 = TEXT
+					30 {
+						if.isTrue.field = showUid
+						value = &tx_icstcafeadmin_pi1[showUid]={field:showUid}
+					}
+					40 = TEXT
+					40 {
+						if.isTrue.field = fields
+						value = &tx_icstcafeadmin_pi1[fields]={field:fields}
+					}
+				}
+				additionalParams.insertData = 1
+			}
+		}
+		# The link actions params
+		addTableparams = COA
+		addTableparams {
+			10 = TEXT
+			10 {
+				value = &tx_icstcafeadmin_pi1[table]={field:table}
+			}
+			20 = TEXT
+			20 {
+				if.isTrue.field = withDataEditItem
+				value = &tx_icstcafeadmin_pi1[fields]={field:fields}
+			}
+		}
+		addBackParams = COA
+		addBackParams {
+			10 = TEXT
+			10 {
+				value = &tx_icstcafeadmin_pi1[backPid]={tsfe:id}
+			}
+			20 < plugin.tx_icstcafeadmin_pi1.optionList.criteria
+		}
+		# Link to edit form		
 		edit {
 			cObject = TEXT
 			cObject {
@@ -196,17 +292,16 @@ plugin.tx_icstcafeadmin_pi1 {
 				additionalParams.cObject = COA
 				additionalParams.cObject {
 					10 = TEXT
-					10.value = &tx_icstcafeadmin_pi1[mode]=EDIT&tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}
-					20 = TEXT
-					20 {
-						if.isTrue.field = withDataEditItem
-						value = &tx_icstcafeadmin_pi1[fields]={field:fields}
+					10 {
+						value = &tx_icstcafeadmin_pi1[mode]=EDIT&tx_icstcafeadmin_pi1[showUid]={field:id}
 					}
+					20 < plugin.tx_icstcafeadmin_pi1.optionList.addTableparams
+					30 < plugin.tx_icstcafeadmin_pi1.optionList.addBackParams
 				}
 				additionalParams.insertData = 1
 			}
 		}
-		
+		# Link to single view
 		single {
 			cObject = TEXT
 			cObject {
@@ -218,16 +313,16 @@ plugin.tx_icstcafeadmin_pi1 {
 				additionalParams.cObject = COA
 				additionalParams.cObject {
 					10 = TEXT
-					10.value = &tx_icstcafeadmin_pi1[mode]=SINGLE&tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}
-					20 = TEXT
-					20 {
-						if.isTrue.field = withDataItemDisplay
-						value = &tx_icstcafeadmin_pi1[fields]={field:fields}
+					10 {
+						value = &tx_icstcafeadmin_pi1[mode]=SINGLE&tx_icstcafeadmin_pi1[showUid]={field:id}
 					}
+					20 < plugin.tx_icstcafeadmin_pi1.optionList.addTableparams
+					30 < plugin.tx_icstcafeadmin_pi1.optionList.addBackParams
 				}
 				additionalParams.insertData = 1
 			}
 		}
+		# Link to new form
 		new {
 			cObject = TEXT
 			cObject {
@@ -239,17 +334,16 @@ plugin.tx_icstcafeadmin_pi1 {
 				additionalParams.cObject = COA
 				additionalParams.cObject {
 					10 = TEXT
-					10.value = &tx_icstcafeadmin_pi1[mode]=NEW&tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[newUid]={field:newId}
-					20 = TEXT
-					20 {
-						if.isTrue.field = withDataNewItem
-						value = &tx_icstcafeadmin_pi1[fields]={field:fields}
+					10 {
+						value = &tx_icstcafeadmin_pi1[mode]=NEW&tx_icstcafeadmin_pi1[newUid]={field:newId}
 					}
+					20 < plugin.tx_icstcafeadmin_pi1.optionList.addTableparams
+					30 < plugin.tx_icstcafeadmin_pi1.optionList.addBackParams
 				}
-
 				additionalParams.insertData = 1
 			}
 		}
+		# Action delete
 		delete {
 			cObject = TEXT
 			cObject {
@@ -282,6 +376,7 @@ plugin.tx_icstcafeadmin_pi1 {
 				}
 			}
 		}
+		# Action hide/show
 		hide {
 			cObject = COA_INT
 			cObject {
@@ -299,10 +394,16 @@ plugin.tx_icstcafeadmin_pi1 {
 			}
 			typolink {
 				parameter.data = tsfe:id
-				additionalParams = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}&tx_icstcafeadmin_pi1[mode]=HIDE
+				additionalParams.cObject = COA
+				additionalParams.cObject {
+					10 = TEXT
+					10 {
+						value = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}&tx_icstcafeadmin_pi1[mode]=HIDE
+					}
+					40 < plugin.tx_icstcafeadmin_pi1.optionList.criteria
+				}
 				additionalParams.insertData = 1
 			}
-			
 		}
 	}
 	

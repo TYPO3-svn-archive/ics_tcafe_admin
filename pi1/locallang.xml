@@ -27,6 +27,8 @@
 			<label index="record_added">New record is added</label>
 			<label index="record_updated">New record is updated.</label>
 			<label index="error_validated_form">Form is properly filled.</label>
+			<label index="previous">Previous</label>
+			<label index="empty_list">Empty list</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="error_table">La table n'est pas configurée.</label>
@@ -51,6 +53,8 @@
 			<label index="record_added">L'enregistrement a été ajouté.</label>
 			<label index="record_updated">L'enregistrement a été mis à jour.</label>
 			<label index="error_validated_form">Le formulaire n'est pas correctement rempli.</label>
+			<label index="previous">Précédent</label>
+			<label index="empty_list">La liste est vide.</label>
 		</languageKey>
 	</data>
 </T3locallang>

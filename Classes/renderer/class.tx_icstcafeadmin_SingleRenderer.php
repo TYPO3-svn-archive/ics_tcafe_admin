@@ -79,7 +79,7 @@ class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
 
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
-			'BACKLINK' => '',
+			'BACKLINK' => $this->renderBackLink($this->row),
 		);
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
