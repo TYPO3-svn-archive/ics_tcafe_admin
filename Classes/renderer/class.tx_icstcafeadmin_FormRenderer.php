@@ -35,7 +35,7 @@
  *  206:     public function handleFormField($field)
  *  254:     public function handleFormField_typeInput($field, array $config, $template='')
  *  289:     public function handleFormField_typeInput_date($field, array $config, $template='')
- *  332:     private function getConformInput($field, array $config)
+ *  332:     public function getConformInput($field, array $config)
  *  373:     public function handleFormField_typeText($field, array $config, $template='')
  *  412:     public function handleFormField_typeCheck($field, array $config)
  *  454:     public function handleFormField_typeCheck_item($field, array $config, $col=null, $template='')
@@ -48,7 +48,7 @@
  *  754:     public function getEntryValue_selectedOption($field, $item, array $config)
  *  789:     public function getEntryValue_selectedArray($field)
  *  826:     public function getSelectItemArray($field, array $config)
- *  873:     private function initItemArray(array $config)
+ *  873:     public function initItemArray(array $config)
  *  893:     private static function includeJSConformInput(array $files)
  *
  * TOTAL FUNCTIONS: 23
