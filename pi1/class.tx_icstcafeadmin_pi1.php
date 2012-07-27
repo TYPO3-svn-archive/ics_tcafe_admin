@@ -409,9 +409,9 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$fields_confTS = t3lib_div::trimExplode(',', $this->conf['table.']['fields'], true);
 		$labels_confTS = t3lib_div::trimExplode(',', $this->conf['table.']['fieldLabels'], true);
 		$fieldLabels = array();
-		foreach ($labels_confTS as $key=>$label) {
-			if ($fields_confTS[$key])
-				$fieldLabels[$fields_confTS[$key]] = $label;
+		foreach ($labels_confTS as $index=>$label) {
+			if ($fields_confTS[$index])
+				$fieldLabels[$fields_confTS[$index]] = $label;
 		}
 
 		$columns = $GLOBALS['TCA'][$this->table]['columns'];
@@ -428,6 +428,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 				$this->fields[] = $field;
 				$label = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], $field . 'Label', 'table');
 				$label = $label? $label: $fieldLabels[$field];
+				$label = $label? $label: $this->pi_getLL($field, $field, true);
 				$label = $label? $label: $GLOBALS['TSFE']->sL($GLOBALS['TCA'][$this->table]['columns'][$field]['label']);
 				$label = $label? $label: $field;
 				$this->fieldLabels[$field] = $label;
