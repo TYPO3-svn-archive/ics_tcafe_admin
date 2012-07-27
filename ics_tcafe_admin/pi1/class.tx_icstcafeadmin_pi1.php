@@ -428,8 +428,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 				$this->fields[] = $field;
 				$label = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], $field . 'Label', 'table');
 				$label = $label? $label: $fieldLabels[$field];
-				$label = $label? $label: $this->pi_getLL($field, $field, true);
-				$label = $label? $label: $GLOBALS['TSFE']->sL($GLOBALS['TCA'][$this->table]['columns'][$field]['label']);
+				$label = $label? $label: $this->pi_getLL($field, $GLOBALS['TSFE']->sL($GLOBALS['TCA'][$this->table]['columns'][$field]['label']), true);
 				$label = $label? $label: $field;
 				$this->fieldLabels[$field] = $label;
 			}

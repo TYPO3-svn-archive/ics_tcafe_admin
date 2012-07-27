@@ -1,4 +1,5 @@
 2012-07-27 Tsi YANG <tsi@in-cite.net>
+	* Fix: Mistakes to retrieves fields labels.
 	* Feature: Added locallang labels.
 	* Comments: Updated mannual and added class documentation.
 	* Feature: Added hook formRenderer_additionnalMarkers.
