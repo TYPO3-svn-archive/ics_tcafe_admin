@@ -509,10 +509,10 @@ class tx_icstcafeadmin_CommonRenderer {
 	}
 
 	/**
-	 * [Describe function...]
+	 * Render back link
 	 *
-	 * @param	[type]		$row: ...
-	 * @return	[type]		...
+	 * @param	array		$row: the row
+	 * @return	string		The content
 	 */
 	public function renderBackLink($row) {
 		$data = array(

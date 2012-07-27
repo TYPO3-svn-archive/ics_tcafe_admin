@@ -29,6 +29,9 @@
 			<label index="error_validated_form">Form is properly filled.</label>
 			<label index="previous">Previous</label>
 			<label index="empty_list">Empty list</label>
+			<label index="caption_list">List Rows</label>
+			<label index="formFields_title">Fields entries</label>
+			<label index="hidden">Hidden</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="error_table">La table n'est pas configurée.</label>
@@ -55,6 +58,9 @@
 			<label index="error_validated_form">Le formulaire n'est pas correctement rempli.</label>
 			<label index="previous">Précédent</label>
 			<label index="empty_list">La liste est vide.</label>
+			<label index="caption_list">Liste des enregistrements</label>
+			<label index="formFields_title">Saisie des champs</label>
+			<label index="hidden">Cacher</label>
 		</languageKey>
 	</data>
 </T3locallang>
