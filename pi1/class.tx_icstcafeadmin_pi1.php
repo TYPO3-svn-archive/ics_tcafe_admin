@@ -74,7 +74,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	var $templateFile = 'typo3conf/ext/ics_tcafe_admin/res/template.html';
 	var $templateCode;
 	var $codes = null;
-	var $storage = array(0);
+	var $storage = array();
 
 	var $defaultPage = 1;
 	var $defaultSize = 20;
@@ -122,6 +122,9 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 
 		$this->init();
 		$this->mergePiVars();
+		
+		if (empty($this->storage))
+			return $this->pi_wrapInBaseClass($this->pi_getLL('require_pidStorage', 'The pid storage must not be empty.', true));
 
 		// Hook plugin after init
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['process_afterInit'])) {
@@ -166,6 +169,8 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		}
 		if (!$process) {
 			$this->init();
+			if (empty($this->storage))
+				return $this->pi_wrapInBaseClass($this->pi_getLL('require_pidStorage', 'The pid storage must not be empty.', true));
 			$content = $this->renderContent();
 		}
 		return $this->pi_wrapInBaseClass($content);
@@ -392,7 +397,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	protected function initPidStorage() {
 		if ($this->cObj->data['pages'])
 			$pids = t3lib_div::trimExplode(',', $this->cObj->data['pages'], true);
-		$pids = $pids? $pids: t3lib_div::intExplode(',', $this->conf['pidStorages'], true);
+		$pids = $pids? $pids: t3lib_div::trimExplode(',', $this->conf['pidStorages'], true);
 		$this->storage = $pids? $pids: $this->storage;
 	}
 
@@ -452,6 +457,9 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$this->codes = array_unique($this->codes );
 
 		$this->newUid = $this->piVars['newUid'];
+		if (count($this->codes==1) && in_array('NEW', $this->codes) & !$this->newUid) {
+			$this->newUid = 'New'.uniqid();
+		}
 
 		// Gets pid storage
 		if ($this->piVars['pidStorage'])
@@ -656,10 +664,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		if (!in_array('hidden', $requestFields))
 			$requestFields = array_merge(array('hidden'), $requestFields);
 
-			// TODO: implements select on pid storage on displayNew and decomments this
-		// $addWhere_storage = '';
-		// if (!empty($this->storage) && ((count($this->storage)>1) || count($this->storage)==1 && $this->storage[0]>0))
-			$addWhere_storage = ' AND '.$this->table.'.pid IN(' . implode(',', $this->storage) . ')';
+		$addWhere_storage = ' AND '.$this->table.'.pid IN(' . implode(',', $this->storage) . ')';
 
 		$whereClause = $this->table.'.deleted = 0' . $addWhere_storage . $this->whereClause;
 
