@@ -474,7 +474,7 @@ class tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$row: The record row
 	 * @return	mixed		Tha data array
 	 */
-	public function cObjDataActions($row) {
+	public function cObjDataActions($row=null) {
 		$GLOBALS['TSFE']->includeTCA();
 		t3lib_div::loadTCA($this->table);
 		$label = $GLOBALS['TCA'][$this->table]['ctrl']['label'];
