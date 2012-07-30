@@ -32,6 +32,7 @@
 			<label index="caption_list">List Rows</label>
 			<label index="formFields_title">Fields entries</label>
 			<label index="hidden">Hidden</label>
+			<label index="require_pidStorage">The pid storage must not be empty.</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="error_table">La table n'est pas configurée.</label>
@@ -60,7 +61,8 @@
 			<label index="empty_list">La liste est vide.</label>
 			<label index="caption_list">Liste des enregistrements</label>
 			<label index="formFields_title">Saisie des champs</label>
-			<label index="hidden">Cacher</label>
+			<label index="hidden">Caché</label>
+			<label index="require_pidStorage">Le pid de stockage n'est pas renseigné</label>
 		</languageKey>
 	</data>
 </T3locallang>

@@ -855,7 +855,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 				$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 					implode(',', $fields),
 					$config['foreign_table'],
-					'',
+					'1' . $this->cObj->enableFields($config['foreign_table']),
 					$label
 				);
 				// Init items
