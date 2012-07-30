@@ -1,4 +1,5 @@
 2012-07-30 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added backlink on validated form and hidden/show informations.
 	* Fix: Forgotten control select fields with minitems>0.
 	* Fix: Forgotten control on pid storage.
 	* Fix: Forgotten select on enable field to retrieves seltc item array.

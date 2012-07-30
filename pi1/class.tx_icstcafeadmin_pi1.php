@@ -602,6 +602,19 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$markers = array(
 			'VALIDATED_FORM_TEXT' => $text,
 		);
+		$criteria = $this->piVars['criteria'];
+		$data = array(
+			'backPid' => $this->backPid,
+			'mode' => $criteria['mode'],
+			'table' => $criteria['table'],
+			'showUid' => $criteria['showUid'],
+			'fields' => $criteria['fields'],
+		);
+		$cObj = t3lib_div::makeInstance('tslib_cObj');
+		$cObj->start($data, 'TCAFE_Admin_backlink');
+		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
+		$markers['BACKLINK'] =  $cObj->stdWrap('', $this->conf['optionList.']['backlink.']);
+		
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
 
@@ -649,6 +662,19 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$markers = array(
 			'HIDDEN_SHOWN_RECORD_TEXT' => $text,
 		);
+		$criteria = $this->piVars['criteria'];
+		$data = array(
+			'backPid' => $this->backPid,
+			'mode' => $criteria['mode'],
+			'table' => $criteria['table'],
+			'showUid' => $criteria['showUid'],
+			'fields' => $criteria['fields'],
+		);
+		$cObj = t3lib_div::makeInstance('tslib_cObj');
+		$cObj->start($data, 'TCAFE_Admin_backlink');
+		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
+		$markers['BACKLINK'] =  $cObj->stdWrap('', $this->conf['optionList.']['backlink.']);
+
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
 
