@@ -1,3 +1,6 @@
+2012-07-31 Tsi YANG <tsi@in-cite.net>
+	* Feature: Included datepicker.
+
 2012-07-30 Tsi YANG <tsi@in-cite.net>
 	* Feature: Added backlink on validated form and hidden/show informations.
 	* Fix: Forgotten control select fields with minitems>0.
