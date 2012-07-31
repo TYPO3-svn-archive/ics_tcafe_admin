@@ -482,5 +482,19 @@ plugin.tx_icstcafeadmin_pi1 {
 		# Add evals on field. These evals taking precedence on TCA field evals
 		#like tablename.fieldname.extraEval = list of eval separated by coma ","
 	}
+
 }
+
+page {
+	includeJS {
+		jqueryui = http://code.jquery.com/jquery-1.7.1.js
+		jqueryui.external = 1
+		jqueryui-custom = typo3conf/ext/ics_tcafe_admin/jquery-ui/jquery-ui-1.7.3.custom/js/jquery-ui-1.7.3.custom.min.js
+		datepicker = typo3conf/ext/ics_tcafe_admin/jquery-ui/datepicker-fr.js
+	}
+	includeCSS {
+		jqueryui-css = typo3conf/ext/ics_tcafe_admin/jquery-ui/jquery-ui-1.7.3.custom/css/ui-lightness/jquery-ui-1.7.3.custom.css	
+	}
+}
+
 
