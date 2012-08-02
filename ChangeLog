@@ -1,3 +1,6 @@
+2012-08-02 Tsi YANG <tsi@in-cite.net>
+	* Refactor: Removed htmlspecialchars parsing. Stand by reflection.
+
 2012-07-31 Tsi YANG <tsi@in-cite.net>
 	* Feature: Included datepicker.
 

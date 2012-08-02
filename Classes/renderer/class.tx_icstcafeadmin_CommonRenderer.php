@@ -170,7 +170,6 @@ class tx_icstcafeadmin_CommonRenderer {
 	 * @return	string		The value
 	 */
 	public function default_renderValue($field, $value=null, $view='') {
-		$value = htmlspecialchars($value);
 		$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
 
 		// Render value on field Typoscript configuration
@@ -201,6 +200,7 @@ class tx_icstcafeadmin_CommonRenderer {
 					}
 					break;
 				default:
+					// $value = htmlspecialchars($value);
 			}
 		}
 		return $value;
@@ -242,7 +242,8 @@ class tx_icstcafeadmin_CommonRenderer {
 	 */
 	public function handleFieldValue($recordId, $value=null, $config=null) {
 		if (!$config)
-			return htmlspecialchars($value);
+			// return htmlspecialchars($value);
+			return $value;
 
 		switch ($config['type']) {
 			// case 'input': Nothing to do
@@ -258,7 +259,8 @@ class tx_icstcafeadmin_CommonRenderer {
 				break;
 			default:
 		}
-		return htmlspecialchars($value);
+		// return htmlspecialchars($value);
+		return $value;
 	}
 
 	/**
