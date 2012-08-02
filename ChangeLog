@@ -1,4 +1,6 @@
 2012-08-02 Tsi YANG <tsi@in-cite.net>
+	* Fix: Renamed fields entries fieldset class.
+	* Feature: Added labels valid/cancel.
 	* Feature: Retrieved label_alt.
 	* Fix: Bad labels in locallang.
 	* Refactor: Removed htmlspecialchars parsing. Stand by reflection.

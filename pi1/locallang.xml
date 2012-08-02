@@ -33,6 +33,8 @@
 			<label index="formFields_title">Fields entries</label>
 			<label index="hidden">Hidden</label>
 			<label index="require_pidStorage">The pid storage must not be empty.</label>
+			<label index="valid">Valid</label>
+			<label index="cancel">Cancel</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="error_table">La table n'est pas configurée.</label>
@@ -63,6 +65,8 @@
 			<label index="formFields_title">Saisie des champs</label>
 			<label index="hidden">Caché</label>
 			<label index="require_pidStorage">Le pid de stockage n'est pas renseigné</label>
+			<label index="valid">Valider</label>
+			<label index="cancel">Annuler</label>
 		</languageKey>
 	</data>
 </T3locallang>
