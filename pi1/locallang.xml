@@ -21,9 +21,9 @@
 			<label index="action_delete">Delete</label>
 			<label index="action_hide">Hide</label>
 			<label index="action_show">Show</label>
-			<label index="deleted_record">Record's %s is deleted.</label>
-			<label index="hidden_record">Record's %s is hidden</label>
-			<label index="shown_record">Record's %s is visible</label>
+			<label index="deleted_record">Record's %2$s is deleted.</label>
+			<label index="hidden_record">Record's %2$s is hidden</label>
+			<label index="shown_record">Record's %2$s is visible</label>
 			<label index="record_added">New record is added</label>
 			<label index="record_updated">New record is updated.</label>
 			<label index="error_validated_form">Form is properly filled.</label>
@@ -51,9 +51,9 @@
 			<label index="action_delete">Supprimer</label>
 			<label index="action_hide">Cacher</label>
 			<label index="action_show">Montrer</label>
-			<label index="deleted_record">L'enregistrement %s est supprimé.</label>
-			<label index="hidden_record">L'enregistrement %s est caché.</label>
-			<label index="shown_record">L'enregistrement %s est visible.</label>
+			<label index="deleted_record">L'enregistrement %2$s est supprimé.</label>
+			<label index="hidden_record">L'enregistrement %2$s est caché.</label>
+			<label index="shown_record">L'enregistrement %2$s est visible.</label>
 			<label index="record_added">L'enregistrement a été ajouté.</label>
 			<label index="record_updated">L'enregistrement a été mis à jour.</label>
 			<label index="error_validated_form">Le formulaire n'est pas correctement rempli.</label>

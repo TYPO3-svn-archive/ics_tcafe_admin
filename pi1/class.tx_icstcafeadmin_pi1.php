@@ -242,7 +242,14 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		}
 		elseif ($this->showUid && in_array('DELETE', $this->codes)) {
 			try {
-				$row = $this->getSingleRecord();
+				$fields = array('uid', $GLOBALS['TCA'][$this->table]['ctrl']['label']);
+				if ($GLOBALS['TCA'][$this->table]['ctrl']['label_alt'])
+					$fields[] = $GLOBALS['TCA'][$this->table]['ctrl']['label_alt'];
+				$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
+					implode(',', $fields),
+					$this->table,
+					'uid=' . $this->showUid
+				);
 				$this->deleteRecord($this->table, $this->showUid);
 				$content = $this->displayDelete($row);
 				if ($this->conf['view.']['displayListAfterDelete']) {
@@ -640,9 +647,24 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 */
 	public function displayDelete($previousRow) {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_DELETED_RECORD###');
+		$label = $previousRow[$GLOBALS['TCA'][$this->table]['ctrl']['label']];
+		$label = $label? $label: $previousRow[$GLOBALS['TCA'][$this->table]['ctrl']['label_alt']];
 		$markers = array(
-			'DELETED_RECORD_TEXT' => sprintf($this->pi_getLL('deleted_record', 'Record\'s %2$s is deleted.', true), $this->showUid, $previousRow[$GLOBALS['TCA'][$this->table]['ctrl']['label']]),
+			'DELETED_RECORD_TEXT' => sprintf($this->pi_getLL('deleted_record', 'Record\'s %2$s is deleted.', true), $this->showUid, $label),
 		);
+		$criteria = $this->piVars['criteria'];
+		$data = array(
+			'backPid' => $this->backPid,
+			'mode' => $criteria['mode'],
+			'table' => $criteria['table'],
+			'showUid' => $criteria['showUid'],
+			'fields' => $criteria['fields'],
+		);
+		$cObj = t3lib_div::makeInstance('tslib_cObj');
+		$cObj->start($data, 'TCAFE_Admin_backlink');
+		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
+		$markers['BACKLINK'] =  $cObj->stdWrap('', $this->conf['optionList.']['backlink.']);
+		
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
 
@@ -653,11 +675,20 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 */
 	public function displayHide() {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_HIDDEN_SHOWN_RECORD###');
-		$row = $this->getSingleRecord();
+		$fields = array('uid', 'hidden', $GLOBALS['TCA'][$this->table]['ctrl']['label']);
+		if ($GLOBALS['TCA'][$this->table]['ctrl']['label_alt'])
+			$fields[] = $GLOBALS['TCA'][$this->table]['ctrl']['label_alt'];
+		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
+			implode(',', $fields),
+			$this->table,
+			'uid=' . $this->showUid
+		);
+		$label = $row[$GLOBALS['TCA'][$this->table]['ctrl']['label']];
+		$label = $label? $label: $row[$GLOBALS['TCA'][$this->table]['ctrl']['label_alt']];
 		if ($row['hidden'])
-			$text = sprintf($this->pi_getLL('hidden_record', 'Record\'s %2$s is hidden.', true), $this->showUid, $row[$GLOBALS['TCA'][$this->table]['ctrl']['label']]) ;
+			$text = sprintf($this->pi_getLL('hidden_record', 'Record\'s %2$s is hidden.', true), $this->showUid, $label) ;
 		else
-			$text = sprintf($this->pi_getLL('shown_record', 'Record\'s %2$s is visible.', true), $this->showUid, $row[$GLOBALS['TCA'][$this->table]['ctrl']['label']]);
+			$text = sprintf($this->pi_getLL('shown_record', 'Record\'s %2$s is visible.', true), $this->showUid, $label);
 
 		$markers = array(
 			'HIDDEN_SHOWN_RECORD_TEXT' => $text,
