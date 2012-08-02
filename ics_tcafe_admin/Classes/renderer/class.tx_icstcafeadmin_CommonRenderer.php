@@ -479,7 +479,18 @@ class tx_icstcafeadmin_CommonRenderer {
 	public function cObjDataActions($row=null) {
 		$GLOBALS['TSFE']->includeTCA();
 		t3lib_div::loadTCA($this->table);
-		$label = $GLOBALS['TCA'][$this->table]['ctrl']['label'];
+		$fields = $this->fields;
+		$fields[] = 'uid';
+		if ($GLOBALS['TCA'][$this->table]['ctrl']['label_alt'])
+			$fields[] = $GLOBALS['TCA'][$this->table]['ctrl']['label_alt'];
+		array_unique($fields);
+		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
+			implode(',', $fields),
+			$this->table,
+			'uid=' . $row['uid']
+		);
+		$label = $row[$GLOBALS['TCA'][$this->table]['ctrl']['label']];
+		$label = $label? $label: $row[$GLOBALS['TCA'][$this->table]['ctrl']['label_alt']];
 		$data = array(
 			'id' => $row['uid'],
 			'newId' => 'New'.uniqid(),
@@ -492,7 +503,7 @@ class tx_icstcafeadmin_CommonRenderer {
 			'withDataEditItem' => $this->conf['view.']['withDataEditItem'],
 			'PIDnewItem' => $this->conf['view.']['PIDnewItem'],
 			'withDataNewItem' => $this->conf['view.']['withDataNewItem'],
-			'label' => $row[$label],
+			'label' => $label,
 			'backPid' => $this->backPid,
 			'crit_mode' => $this->pi_base->piVars['mode'],
 			'crit_table' => $this->pi_base->piVars['table'],
