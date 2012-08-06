@@ -77,7 +77,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 		$markers = array(
 			'TEXT_LISTEMPTY' => $this->getLL('empty_list', 'Empty list', true),
-			'NEW' => $cObj->stdWrap('', $this->conf['optionList.']['new.']),
+			'NEW' => $cObj->stdWrap('', $this->conf['renderOptions.']['new.']),
 		);
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###', false, true);
 	}
@@ -123,7 +123,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'TABLENAME' => $this->table,
 			'PAGEBROWSE' => $this->getListGetPageBrowser(),
 			'CAPTION' => $this->getLL('caption_list', 'List rows', true),
-			'NEW' => $cObj->stdWrap('', $this->conf['optionList.']['new.']),
+			'NEW' => $cObj->stdWrap('', $this->conf['renderOptions.']['new.']),
 		);
 
 		$template = $this->cObj->substituteSubpartArray($template, $subparts);
@@ -205,11 +205,11 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
 
 		$locMarkers = array(
-			'EDIT' => $cObj->stdWrap('', $this->conf['optionList.']['edit.']),
-			'SINGLE' => $cObj->stdWrap('', $this->conf['optionList.']['single.']),
-			'NEW' => $cObj->stdWrap('', $this->conf['optionList.']['new.']),
-			'DELETE' => $cObj->stdWrap('', $this->conf['optionList.']['delete.']),
-			'HIDE' => $cObj->stdWrap('', $this->conf['optionList.']['hide.']),
+			'EDIT' => $cObj->stdWrap('', $this->conf['renderOptions.']['optionList.']['edit.']),
+			'SINGLE' => $cObj->stdWrap('', $this->conf['renderOptions.']['optionList.']['single.']),
+			'NEW' => $cObj->stdWrap('', $this->conf['renderOptions.']['optionList.']['new.']),
+			'DELETE' => $cObj->stdWrap('', $this->conf['renderOptions.']['optionList.']['delete.']),
+			'HIDE' => $cObj->stdWrap('', $this->conf['renderOptions.']['optionList.']['hide.']),
 		);
 
 		return $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');
