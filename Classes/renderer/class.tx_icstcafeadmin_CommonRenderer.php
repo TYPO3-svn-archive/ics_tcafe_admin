@@ -33,14 +33,14 @@
  *  172:     public function default_renderValue($field, $value=null, $view='')
  *  216:     protected function fetchInputFieldFormat($config)
  *  243:     public function handleFieldValue($recordId, $value=null, $config=null)
- *  271:     protected function  handleFieldValue_typeCheck($value=null, array $config)
- *  286:     protected function handleFieldValue_typeSelect($recordId, $value=null, array $config)
- *  363:     public function getMMLabels($recordId, array $config)
- *  408:     protected function handleFieldValue_typeGroup($recordId, $value=null, array $config)
- *  455:     public function sL($str)
- *  467:     public function getLL($key, $alternativeLabel= '', $hsc=false)
- *  477:     public function cObjDataActions($row)
- *  517:     public function renderBackLink($row)
+ *  273:     protected function  handleFieldValue_typeCheck($value=null, array $config)
+ *  288:     protected function handleFieldValue_typeSelect($recordId, $value=null, array $config)
+ *  365:     public function getMMLabels($recordId, array $config)
+ *  410:     protected function handleFieldValue_typeGroup($recordId, $value=null, array $config)
+ *  457:     public function sL($str)
+ *  469:     public function getLL($key, $alternativeLabel= '', $hsc=false)
+ *  479:     public function cObjDataActions($row=null)
+ *  532:     public function renderBackLink($row=null)
  *
  * TOTAL FUNCTIONS: 14
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -484,10 +484,12 @@ class tx_icstcafeadmin_CommonRenderer {
 		if ($GLOBALS['TCA'][$this->table]['ctrl']['label_alt'])
 			$fields[] = $GLOBALS['TCA'][$this->table]['ctrl']['label_alt'];
 		array_unique($fields);
+		$id = $this->pi_base->showUid? $this->pi_base->showUid: $this->pi_base->newUid;
+		$id = $id? $id: $row['uid'];
 		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
 			implode(',', $fields),
 			$this->table,
-			'uid=' . $row['uid']
+			'uid=' . $id
 		);
 		$label = $row[$GLOBALS['TCA'][$this->table]['ctrl']['label']];
 		$label = $label? $label: $row[$GLOBALS['TCA'][$this->table]['ctrl']['label_alt']];
@@ -527,7 +529,7 @@ class tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$row: the row
 	 * @return	string		The content
 	 */
-	public function renderBackLink($row) {
+	public function renderBackLink($row=null) {
 		$data = array(
 			'backPid' => $this->backPid,
 			'crit_mode' => $this->pi_base->piVars['mode'],
@@ -552,7 +554,7 @@ class tx_icstcafeadmin_CommonRenderer {
 		$cObj = t3lib_div::makeInstance('tslib_cObj');
 		$cObj->start($data, 'TCAFE_Admin_backlink');
 		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
-		return $cObj->stdWrap('', $this->conf['optionList.']['backlink.']);
+		return $cObj->stdWrap('', $this->conf['renderOptions.']['backlink.']);
 	}
 }
 

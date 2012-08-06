@@ -28,29 +28,29 @@
  *
  *   69: class tx_icstcafeadmin_pi1 extends tslib_pibase
  *   99:     function main($content, $conf)
- *  148:     function user_TCAFEAdmin($content, $conf)
- *  179:     public function renderContent()
- *  267:     public function setTable($mergePiVars = true)
- *  280:     public function loadTable()
- *  299:     public function init()
- *  348:     protected function initTemplate()
- *  360:     protected function initCodes()
- *  371:     protected function initPidStorage()
- *  383:     protected function initFields()
- *  422:     protected function mergePiVars()
- *  469:     public function displayList()
- *  507:     public function displaySingle()
- *  526:     public function displayEdit()
- *  545:     public function displayNew()
- *  564:     public function displayValidatedForm()
- *  581:     public function displayErrorValidatedForm()
- *  596:     public function displayDelete($previousRow)
- *  609:     public function displayHide()
- *  628:     private function getRecords()
- *  670:     private function getSingleRecord()
- *  690:     function saveDB()
- *  775:     public function deleteRecord($table, $rowUid)
- *  803:     public function hideRecord($table, $rowUid)
+ *  151:     function user_TCAFEAdmin($content, $conf)
+ *  184:     public function renderContent()
+ *  297:     public function setTable($mergePiVars = true)
+ *  310:     public function loadTable()
+ *  329:     public function init()
+ *  381:     protected function initTemplate()
+ *  393:     protected function initCodes()
+ *  404:     protected function initPidStorage()
+ *  416:     protected function initFields()
+ *  455:     protected function mergePiVars()
+ *  508:     public function displayList()
+ *  546:     public function displaySingle()
+ *  565:     public function displayEdit()
+ *  584:     public function displayNew()
+ *  603:     public function displayValidatedForm()
+ *  622:     public function displayErrorValidatedForm()
+ *  637:     public function displayDelete($previousRow)
+ *  665:     public function displayHide()
+ *  706:     private function getRecords()
+ *  745:     private function getSingleRecord()
+ *  765:     function saveDB()
+ *  859:     public function deleteRecord($table, $rowUid)
+ *  887:     public function hideRecord($table, $rowUid)
  *
  * TOTAL FUNCTIONS: 24
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -122,7 +122,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 
 		$this->init();
 		$this->mergePiVars();
-		
+
 		if (empty($this->storage))
 			return $this->pi_wrapInBaseClass($this->pi_getLL('require_pidStorage', 'The pid storage must not be empty.', true));
 
@@ -495,7 +495,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			$this->fields = $localFields;
 			$this->fieldLabels = $localLabels;
 		}
-		
+
 		if ($this->piVars['backPid'])
 			$this->backPid = $this->piVars['backPid'];
 	}
@@ -601,28 +601,17 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	 * @return	string		HTML content for new form
 	 */
 	public function displayValidatedForm() {
-		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_VALIDATED_FORM###');
-		if ($this->newUid)
-			$text = $this->pi_getLL('record_added', 'New record is added.', true);
-		else
-			$text = $this->pi_getLL('record_updated', 'New record is updated.', true);
-		$markers = array(
-			'VALIDATED_FORM_TEXT' => $text,
+		$renderer = t3lib_div::makeInstance(
+			'tx_icstcafeadmin_ValidatedFormRenderer',
+			$this,
+			$this->table,
+			$this->fields,
+			$this->fieldLabels,
+			$this->conf
 		);
-		$criteria = $this->piVars['criteria'];
-		$data = array(
-			'backPid' => $this->backPid,
-			'mode' => $criteria['mode'],
-			'table' => $criteria['table'],
-			'showUid' => $criteria['showUid'],
-			'fields' => $criteria['fields'],
-		);
-		$cObj = t3lib_div::makeInstance('tslib_cObj');
-		$cObj->start($data, 'TCAFE_Admin_backlink');
-		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
-		$markers['BACKLINK'] =  $cObj->stdWrap('', $this->conf['optionList.']['backlink.']);
-		
-		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
+		$renderer->init();
+		return $renderer->render();
+
 	}
 
 	/**
@@ -663,8 +652,8 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$cObj = t3lib_div::makeInstance('tslib_cObj');
 		$cObj->start($data, 'TCAFE_Admin_backlink');
 		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
-		$markers['BACKLINK'] =  $cObj->stdWrap('', $this->conf['optionList.']['backlink.']);
-		
+		$markers['BACKLINK'] =  $cObj->stdWrap('', $this->conf['renderOptions.']['backlink.']);
+
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
 
@@ -704,7 +693,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 		$cObj = t3lib_div::makeInstance('tslib_cObj');
 		$cObj->start($data, 'TCAFE_Admin_backlink');
 		$cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
-		$markers['BACKLINK'] =  $cObj->stdWrap('', $this->conf['optionList.']['backlink.']);
+		$markers['BACKLINK'] =  $cObj->stdWrap('', $this->conf['renderOptions.']['backlink.']);
 
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
@@ -797,8 +786,8 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 					if ($procObj->saveDB_additionnalDataArray($dataArray, $this->table, ($this->newUid? $this->newUid: $this->showUid), $this->conf, $this))
 						break;
 				}
-			}			
-			
+			}
+
 			if ($this->newUid) { // Insert new record
 				$result = $this->cObj->DBgetInsert(
 					$this->table,
