@@ -55,7 +55,7 @@
 				<thead>
 					<tr class="###PREFIXID###_header">
 						###HEADERTITLES###
-						<th>###HEADERACTIONS###</th>
+						<th class="th_actions">###HEADERACTIONS###</th>
 					</tr>
 				</thead>
 				<!-- ###HEADER### end -->
@@ -79,7 +79,7 @@
 
 
 <!-- ###TEMPLATE_RESULTS_HEADERTITLES### start-->
-	<th id="###HEADERID###">###FIELDLABEL###</th>
+	<th id="###HEADERID###" class="th_###FIELD###">###FIELDLABEL###</th>
 <!-- ###TEMPLATE_RESULTS_HEADERTITLES### end-->
 
 
@@ -140,6 +140,8 @@
 
 <!-- ###TEMPLATE_VALIDATED_FORM### start-->
 	<p>###VALIDATED_FORM_TEXT###</p>
+	<div class="###PREFIXID###_backlink">###BACKLINK###</div>
+	<div class="###PREFIXID###_action_single">###SINGLE###</div>
 <!-- ###TEMPLATE_VALIDATED_FORM### end-->
 
 
@@ -281,10 +283,12 @@
 
 <!-- ###TEMPLATE_DELETED_RECORD### start-->
 	<p>###DELETED_RECORD_TEXT###</p>
+	<div class="###PREFIXID###_backlink">###BACKLINK###</div>
 <!-- ###TEMPLATE_DELETED_RECORD### end-->
 
 
 
 <!-- ###TEMPLATE_HIDDEN_SHOWN_RECORD### start-->
 	<p>###HIDDEN_SHOWN_RECORD_TEXT###</p>
+	<div class="###PREFIXID###_backlink">###BACKLINK###</div>
 <!-- ###TEMPLATE_HIDDEN_SHOWN_RECORD### end-->
