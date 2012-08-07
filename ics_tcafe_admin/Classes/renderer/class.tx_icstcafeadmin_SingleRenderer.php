@@ -117,7 +117,7 @@ class tx_icstcafeadmin_SingleRenderer extends tx_icstcafeadmin_CommonRenderer {
 				}
 				else {
 					$fieldTemplate = $genericFieldTemplate;
-					$locMarkers['FIELDLABEL'] = $this->fieldLabels[$field];
+					$locMarkers['FIELDLABEL'] = $this->cObj->stdWrap($this->fieldLabels[$field], $this->conf['renderConf.'][$this->table.'.'][$field.'.'][self::$view.'.']['label.']);
 					$locMarkers['FIELDVALUE'] = $value;
 				}
 				$subpartArray = array();
