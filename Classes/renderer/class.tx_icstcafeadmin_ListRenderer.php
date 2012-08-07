@@ -142,7 +142,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 		foreach ($this->fields as $field) {
 			$locMarkers = array(
 				'HEADERID' => $this->headersId[$field],
-				'FIELDLABEL' => $this->fieldLabels[$field],
+				'FIELDLABEL' => $this->cObj->stdWrap($this->fieldLabels[$field], $this->conf['renderConf.'][$this->table.'.'][$field.'.'][self::$view.'.']['label.']),
 				'FIELD' => $field,
 			);
 			$headerTitlesContent .= $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');
@@ -182,7 +182,7 @@ class tx_icstcafeadmin_ListRenderer extends tx_icstcafeadmin_CommonRenderer {
 					$content .= $this->cObj->substituteMarkerArray($specificFieldTemplate, $locMarkers, '###|###');
 				}
 				else {
-					$locMarkers['FIELDLABEL'] = $this->fieldLabels[$field];
+					$locMarkers['FIELDLABEL'] = $this->cObj->stdWrap($this->fieldLabels[$field], $this->conf['renderConf.'][$this->table.'.'][$field.'.'][self::$view.'.']['label.']);
 					$locMarkers['FIELDVALUE'] = $value;
 					$content .= $this->cObj->substituteMarkerArray($genericFieldTemplate, $locMarkers, '###|###');
 				}

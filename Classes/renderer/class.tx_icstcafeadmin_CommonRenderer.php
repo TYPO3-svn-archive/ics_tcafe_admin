@@ -481,6 +481,7 @@ class tx_icstcafeadmin_CommonRenderer {
 		t3lib_div::loadTCA($this->table);
 		$fields = $this->fields;
 		$fields[] = 'uid';
+		// TODO : revoir cette partie de code: label, label_alt, label_alt_force
 		if ($GLOBALS['TCA'][$this->table]['ctrl']['label_alt'])
 			$fields[] = $GLOBALS['TCA'][$this->table]['ctrl']['label_alt'];
 		array_unique($fields);
