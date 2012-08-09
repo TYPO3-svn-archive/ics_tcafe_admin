@@ -622,7 +622,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 	public function displayErrorValidatedForm() {
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_ERROR_VALIDATED_FORM###');
 		$markers = array(
-			'ERROR_VVALIDATED_FORM_TEXT' => $this->pi_getLL('error_validated_form', 'Form is properly filled.', true),
+			'ERROR_VALIDATED_FORM_TEXT' => $this->pi_getLL('error_validated_form', 'Form is properly filled.', true),
 		);
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
