@@ -21,21 +21,4 @@ if (TYPO3_MODE == 'BE') {
 	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_icstcafeadmin_pi1_wizicon'] = t3lib_extMgm::extPath($_EXTKEY).'pi1/class.tx_icstcafeadmin_pi1_wizicon.php';
 }
 
-$TCA['tx_icstcafeadmin_testFields'] = array (
-    'ctrl' => array (
-        'title'     => 'LLL:EXT:ics_tcafe_admin/locallang_db.xml:tx_icstcafeadmin_testFields',        
-        'label'     => 'uid',    
-        'tstamp'    => 'tstamp',
-        'crdate'    => 'crdate',
-        'cruser_id' => 'cruser_id',
-        'default_sortby' => 'ORDER BY crdate',    
-        'delete' => 'deleted',    
-        'enablecolumns' => array (        
-            'disabled' => 'hidden',
-        ),
-        'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
-        'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_icstcafeadmin_testFields.gif',
-    ),
-);
-
 ?>
