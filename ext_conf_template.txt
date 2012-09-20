@@ -1,0 +1,10 @@
+debug {
+	# cat=Basic/debug/a; type=boolean; label=Debug renderer: Active debug on renderer
+	rendererDebug =
+	# cat=Basic/debug/b; type=boolean; label=Debug renderer: Active debug on form controller
+	formControllerDebug =
+	# cat=Basic/debug/b; type=boolean; label=Debug renderer: Active debug on DB tools
+	dbToolsDebug =
+	# cat=basic/rendererDebug/b; type=string; label=Debug tables: Table list to debug (separated by coma ",")
+	tables =
+}

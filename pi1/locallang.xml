@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for plugin &quot;tx_icsfetcaforms_pi1&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="error_table">The table is not setting up.</label>
+			<label index="error_fields">Fields are nnot setting up.</label>
+			<label index="page_edit">Edit</label>
+			<label index="page_single">Detail</label>
+			<label index="page_new">New</label>
+			<label index="uid">[UID]</label>
+			<label index="delete_file">Delete file</label>
+			<label index="maxsize_file">Max size</label>
+			<label index="actions">Actions</label>
+			<label index="action_edit">Edit</label>
+			<label index="action_single">Single</label>
+			<label index="action_new">New</label>
+			<label index="action_delete">Delete</label>
+			<label index="action_hide">Hide</label>
+			<label index="action_show">Show</label>
+			<label index="deleted_record">Record's %2$s is deleted.</label>
+			<label index="hidden_record">Record's %2$s is hidden</label>
+			<label index="shown_record">Record's %2$s is visible</label>
+			<label index="record_added">New record is added</label>
+			<label index="record_updated">New record is updated.</label>
+			<label index="error_validated_form">Form is properly filled.</label>
+			<label index="previous">Previous</label>
+			<label index="empty_list">Empty list</label>
+			<label index="caption_list">List Rows</label>
+			<label index="formFields_title">Fields entries</label>
+			<label index="hidden">Hidden</label>
+			<label index="require_pidStorage">The pid storage must not be empty.</label>
+			<label index="valid">Valid</label>
+			<label index="cancel">Cancel</label>
+		</languageKey>
+		<languageKey index="fr" type="array">
+			<label index="error_table">La table n'est pas configurée.</label>
+			<label index="error_fields">Les champs ne sont pas configurés.</label>
+			<label index="form_title">Formulaire d'édition de données.</label>
+			<label index="page_edit">Editer</label>
+			<label index="page_single">Voir</label>
+			<label index="page_new">Créer</label>
+			<label index="uid">[UID]</label>
+			<label index="delete_file">Supprimer</label>
+			<label index="maxsize_file">Taille max</label>
+			<label index="actions">Actions</label>
+			<label index="action_edit">Editer</label>
+			<label index="action_single">Détail</label>
+			<label index="action_new">Ajouter</label>
+			<label index="action_delete">Supprimer</label>
+			<label index="action_hide">Cacher</label>
+			<label index="action_show">Montrer</label>
+			<label index="deleted_record">L'enregistrement %2$s est supprimé.</label>
+			<label index="hidden_record">L'enregistrement %2$s est caché.</label>
+			<label index="shown_record">L'enregistrement %2$s est visible.</label>
+			<label index="record_added">L'enregistrement a été ajouté.</label>
+			<label index="record_updated">L'enregistrement a été mis à jour.</label>
+			<label index="error_validated_form">Le formulaire n'est pas correctement rempli.</label>
+			<label index="previous">Précédent</label>
+			<label index="empty_list">La liste est vide.</label>
+			<label index="caption_list">Liste des enregistrements</label>
+			<label index="formFields_title">Saisie des champs</label>
+			<label index="hidden">Caché</label>
+			<label index="require_pidStorage">Le pid de stockage n'est pas renseigné</label>
+			<label index="valid">Valider</label>
+			<label index="cancel">Annuler</label>
+		</languageKey>
+	</data>
+</T3locallang>

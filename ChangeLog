@@ -1,0 +1,182 @@
+2012-09-20 Tsi YANG <tsi@in-cite.net>
+	* Release: Release version 1.0.1
+
+2012-08-09 Tsi YANG <tsi@in-cite.net>
+	* Fix: Error validated form marker.
+	* Refactor: Removed uselessness file.
+	* Refactor: Removed test code.
+
+2012-08-07 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added configuration label on list view and single view.
+	* Feature: Added list header HTML class.
+
+2012-08-06 Tsi YANG <tsi@in-cite.net>
+	* Refactor: Moved displayValidatedForm codes to class tx_icstcafeadmin_ValidatedFormRenderer.
+	* Refactor: Reworked Typoscript options configurations.
+	* Fix: Rectication of datapicker encoding.
+
+2012-08-02 Tsi YANG <tsi@in-cite.net>
+	* Fix: Renamed fields entries fieldset class.
+	* Feature: Added labels valid/cancel.
+	* Feature: Retrieved label_alt.
+	* Fix: Bad labels in locallang.
+	* Refactor: Removed htmlspecialchars parsing. Stand by reflection.
+
+2012-07-31 Tsi YANG <tsi@in-cite.net>
+	* Feature: Included datepicker.
+
+2012-07-30 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added backlink on validated form and hidden/show informations.
+	* Fix: Forgotten control select fields with minitems>0.
+	* Fix: Forgotten control on pid storage.
+	* Fix: Forgotten select on enable field to retrieves seltc item array.
+
+2012-07-27 Tsi YANG <tsi@in-cite.net>
+	* Fix: Mistakes to retrieves fields labels.
+	* Feature: Added locallang labels.
+	* Comments: Updated mannual and added class documentation.
+	* Feature: Added hook formRenderer_additionnalMarkers.
+	* Refactor: Renamed configuration of require field label form require to requireEntryLabel.
+	* Feature: Deleted unusable configuration.
+
+2012-07-20 Tsi YANG <tsi@in-cite.net>
+	* Comments: Updated documentation.
+	* Refactor: Reorganized typoscript configuration on actions.
+	* Feature: Implemented backlink.
+
+2012-07-16 Tsi YANG <tsi@in-cite.net>
+	* Refactor: Modified Typoscript Configuration for delete action.
+
+2012-07-12 Tsi YANG <tsi@in-cite.net>
+	* Refactor: Renamed ListRenderer function get_TCAFE_Admin_actions to cObjDataActions and moved to CommonRenderer.
+	* Fix: SingleRenderer now replace PREFIXID marker.
+	* Feature: Added saveDB_additionnalDataArray hook and single_additionnalMarkers hook.
+
+2012-07-06 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added hook on get_TCAFE_Admin_actions_data
+
+2012-06-29 Tsi YANG <tsi@in-cite.net>
+	* Refactor: Optimized loading MM relation
+	* Fix: Completed save MM relation
+
+2012-06-19 Tsi YANG <tsi@in-cite.net>
+	* Fix: Bad value return by CommonRenderer handleFiledValue_typeSelect.
+	* Refactor: Changed call function getEntryValue to genEntryValue_selectedArray.
+
+2012-06-04 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added confirm to delete record.
+	* Feature: Added sql clause defined parameters.
+	* Features: Added hook on getRecords.
+
+2012-06-01 Tsi YANG <tsi@in-cite.net>
+	* Fix: Mistakes on init fields with piVars.
+	* Refactor: Reworked hook calls in main and user functions and added parameter.
+	* Comments: Updated manual.
+
+	* Tagged version 0.0.0
+	
+	* Comments: Added forgotten comment on DBTools function.
+	* Fix: Forgotten page number init.
+
+2012-05-31 Tsi YANG <tsi@in-cite.net>
+	* Comments: Updated mannual.
+	* Refactor: Reworked init function and render content.
+	* Feature: Added user function. Alternative of main.
+	* Feature: Added Typoscript configuration for pid storage.
+
+2012-05-28 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added link to single, edit or new page with typoscript configuration and flex configuration.
+	* Feature: Added configuration to generate TCA ctrl label link to single.
+
+2012-05-25 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added hook in plugin main.
+	* Fix: Wrong assign of DBTools new file.
+
+2012-05-24 Tsi YANG <tsi@in-cite.net>
+	* Fix: Proccessed on MM relation.
+	* Feature: Added debug on contorlForm.
+	* Feature: Added conf debug.
+	* Refactor: Hook parameter row to recordId and where need record, get row by record Id.
+	* Feature: Added hook on fucntion deleteRecord.
+	* Feature: Added parameter "basename" to DBTools renderField_group_parseFiles function.
+	
+2012-05-22 Tsi YANG <tsi@in-cite.net>
+	* Fix: Checked wrong condition.
+	* Feature: Added form renderer param.
+	* Refactor: Modified hook on extra eval name form "controlEntry" to "extra_evalEntry".
+	* Feature: Added hook on control entry "controlEntry".
+	* Comments: Completed function comments.
+		Updated manual.
+	* Refator: Renamed property.
+	* Fix: Implementation and call to DBTools construct.
+
+2012-05-15 Tsi YANG <tsi@in-cite.net>
+	* Bug Fix: Control is not properly return.
+	* Refactor: Make clear typoscript configuration renderConf for table name.
+	* Fix : Typoscript configuration.
+	* Feature: Added param to tx_icstcafeadmin_DBTools function renderField_group_parseFiles.
+
+2012-05-04 Tsi YANG <tsi@in-cite.net>
+	* Fix: Mistakes on handle on hook.
+	* Documentation: Updated manual.
+	* Refactor: Reworked hook return.
+	* Refactor: Call to renderer and hook.
+
+2012-05-03 Tsi YANG <tsi@in-cite.net>
+	* Refactor: Visibility of renderer properties.
+	* Refactor: Reworked call to hook.
+	* Documentation: Added manual.
+
+2012-04-26 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added list actions.
+	* Feature: Implemented actions.
+	* Feature: Added link to record single pid.
+	* Fix: Mistakes on displaying illustrations.
+
+2012-04-20 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added process value to DB.
+	* Feature: Added control entries.
+
+2012-04-19 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added JS conform entries
+	* Refactor: Visibility on function
+	* Feature: Added hook.
+	* Feature: Added files render to form view.
+	
+2012-04-17 Tsi YANG <tsi@in-cite.net>
+	* Fix: Mistakes on function declaration.
+	* Feature: Added partial form fields. TCA fields type select. With simple items and foreign table items.
+
+2012-04-16 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added partial form fields. TCA fields type input and type text.
+	* Feature: Added partial form fields. TCA fields type check with only one column.
+
+2012-04-12 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added field name to template list.
+	* Feature: Implemented render single view.
+	* Fix: Mistakes when retrieving template flexform configuration.
+	* Feature: Added possibility to render field swith field name.
+
+2012-04-06 Tsi YANG <tsi@in-cite.net>
+	* Fix: Taken off flexform field select line blank.
+	* Refactor: Replaced flexform field select name with label.
+	* Feature: Implemented render list for field type group on option
+		- file and wtih illustration
+		- MM
+	* Fix: Filter on pid
+	* Feature: Added possibility to view field uid
+	* Feature: Implemented render list for field type select with options: 
+		- Only items
+		- Foreign table
+		- MM relations
+	* Refactor: Reworked function renderValue. Added record's id.
+	* Retrieves last version on table testField
+
+2012-04-05 2012-05-15 Tsi YANG <tsi@in-cite.net>
+	
+	* Initial code to refactor
+	* Initial code with litle refactor
+
+2012-04-05 Tsi YANG <tsi@in-cite.net>
+
+	* initial code generated with kickstarter

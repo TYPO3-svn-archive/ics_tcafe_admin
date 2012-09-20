@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for extension 'ics_tcafe_admin'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="pi1_title">FE admin</label>
+			<label index="pi1_plus_wiz_description">TCA FE admin</label>
+		</languageKey>
+		<languageKey index="fr" type="array">
+			<label index="pi1_title">Administration FE</label>
+			<label index="pi1_plus_wiz_description">Administration FE du TCA</label>
+		</languageKey>
+	</data>
+</T3locallang>

@@ -1,0 +1,516 @@
+plugin.tx_icstcafeadmin_pi1 {
+	# Template file
+	template = {$config.tx_icstcafeadmin_pi1.template}
+	
+	pidStorages = 
+	
+	view {
+		# Mode to display : list, single, search
+		modes = {$config.tx_icstcafeadmin_pi1.modes}
+		# Size
+		size = {$config.tx_icstcafeadmin_pi1.size}
+		# PID to display item with table configuration
+		PIDitemDisplay = {$config.tx_icstcafeadmin_pi1.single}
+		withDataItemDisplay = 1
+		PIDeditItem = {$config.tx_icstcafeadmin_pi1.edit}
+		withDataEditItem = 1
+		PIDnewItem = {$config.tx_icstcafeadmin_pi1.new}
+		withDataNewItem = 1
+		# Number of page
+		page = 1
+		# Number of records
+		size =
+		# Displays form after action
+		displayFormAfterSaveDB = 0
+		displayListAfterSaveDB = 0
+		displayListAfterHideShow = 0
+		displayListAfterDelete = 0
+		# The pid to return when leaving single view
+		backPid = 
+	}
+		
+	# Table configuration
+	table {
+		# Table's name
+		tablename =
+		# Fields list separated by coma
+		fields =
+		# Fields labels list separated by coma. Labels match fields above.
+		fieldLabels =
+		
+		groupBy =
+		orderBy =
+		whereClause =
+		showHidden = 1
+	}
+	
+	#Select
+	select {
+		filter {
+		}
+		sorting {
+			name =
+			order =
+		}
+	}
+	
+	# Default rendering : render values
+	# Views : viewList, viewSingle, viewForm
+	defaultConf {
+		# Render date data type
+		date = TEXT
+		date {
+			setContentToCurrent = 1
+			if.isTrue.current = 1
+			stdWrap.strftime = %d-%m-%Y
+		}
+		# Render datetime data type
+		datetime = TEXT
+		datetime {
+			setContentToCurrent = 1
+			if.isTrue.current = 1
+			stdWrap.strftime = %d-%m-%Y %H:%M
+		}
+		# Render time data type
+		time = TEXT
+		time {
+			setContentToCurrent = 1
+			if.isTrue.current = 1
+			stdWrap.strftime = %H:%M
+		}
+		# Render timesec data type
+		timesec = TEXT
+		timesec {
+			setContentToCurrent = 1
+			if.isTrue.current = 1
+			stdWrap.strftime = %H:%M:%S
+		}
+		#year = TEXT
+		#year {
+		#	setContentToCurrent = 1
+		#	if.isTrue.current = 1
+		#	stdWrap.strftime = %Y
+		#}
+		# Render password data type
+		password.cObject = COA
+		password.cObject {
+			10 = TEXT
+			10.value = **********
+		}
+		# Render viewList text data
+		text {
+			viewList.cropHTML = 100 |...| 1
+		}
+		# Render viewList check data
+		check {
+			viewList = TEXT
+			viewList {
+				setContentToCurrent = 1
+				if.isTrue.current = 1
+				override = X
+			}
+		}
+		# Render select data
+		select =
+		# Render file field
+		file {
+			viewForm {
+				delete {
+					illustration {
+						cObject = IMAGE
+						cObject {
+							if.isTrue.field = illustration
+							file.import.field = illustration
+							file.height = 68
+						}
+					}
+					label {
+						cObject = TEXT
+						cObject {
+							value = Supprimer
+							append = TEXT
+							append {
+								if.isFalse.field = illustration
+								field = filename
+								noTrimWrap = | ||
+							}
+						}
+					}
+				}
+				informations {
+					cObject = COA
+					cObject {
+						10 = TEXT
+						10 {
+							field = maxsize
+							noTrimWrap = |Taille max: ||
+						}
+						15 = HTML
+						15 {
+							value = <br/>
+						}
+						20 = TEXT
+						20 {
+							if.isTrue.field = allowed
+							field = allowed
+							noTrimWrap = |Autorisé (|)|
+						}
+						30 = TEXT
+						30 {
+							if.isTrue.field = disallowed
+							field = disallowed
+							noTrimWrap = |Interdit (|)|
+						}
+						wrap = <span>|</span>
+					}
+				}
+			}
+		}
+		# Render illustration
+		illustration {
+			setContentToCurrent = 1
+			if.isTrue.current = 1
+			cObject = IMAGE
+			cObject {
+				file.import.current = 1
+				file.height = 68
+			}
+		}
+		# Render record title (TCA['ctrl']['label'])
+		label {
+			cObject = TEXT
+			cObject {
+				field = title
+			}
+			typolink {
+				parameter.data = tsfe:id
+				parameter.override.field = PIDitemDisplay
+				additionalParams.cObject = COA
+				additionalParams.cObject {
+					10 = TEXT
+					10 {
+						value = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}
+					}
+					20 = TEXT
+					20 {
+						value = &tx_icstcafeadmin_pi1[backPid]={tsfe:id}
+					}
+					30 < plugin.tx_icstcafeadmin_pi1.renderOptions.criteria
+				}
+				additionalParams.insertData = 1
+			}
+		}
+		# Render require entry label
+		requireEntryLabel {
+			stdWrap.noTrimWrap = - || *|
+		}
+	}
+		
+	# Field render configuration
+	renderConf {
+		# Put here render of a field like
+		# tablename.fieldname.theView.theConf
+		
+		# To configure a label
+		# tablename.fieldname.theView.label.theConf
+	}
+	
+	renderOptions {
+		# The return Url
+		backlink {
+			cObject = TEXT
+			cObject {
+				data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:previous
+			}
+			typolink {
+				parameter.field = backPid
+				additionalParams.cObject = COA
+				additionalParams.cObject {
+					10 = TEXT
+					10 {
+						if.isTrue.field = mode
+						value = &tx_icstcafeadmin_pi1[mode]={field:mode}
+					}
+					20 = TEXT
+					20 {
+						if.isTrue.field = table
+						value = &tx_icstcafeadmin_pi1[table]={field:table}
+					}
+					30 = TEXT
+					30 {
+						if.isTrue.field = showUid
+						value = &tx_icstcafeadmin_pi1[showUid]={field:showUid}
+					}
+					40 = TEXT
+					40 {
+						if.isTrue.field = fields
+						value = &tx_icstcafeadmin_pi1[fields]={field:fields}
+					}
+				}
+				additionalParams.insertData = 1
+			}
+		}
+		# Criteria
+		criteria = COA
+		criteria {
+			10 = TEXT
+			10 {
+				if.isTrue.field = crit_mode
+				value = &tx_icstcafeadmin_pi1[criteria][mode]={field:crit_mode}
+			}
+			20 = TEXT
+			20 {
+				if.isTrue.field = crit_table
+				value = &tx_icstcafeadmin_pi1[criteria][table]={field:crit_table}
+			}
+			30 = TEXT
+			30 {
+				if.isTrue.field = crit_showUid
+				value = &tx_icstcafeadmin_pi1[criteria][showUid]={field:crit_showUid}
+			}
+			40 = TEXT
+			40 {
+				if.isTrue.field = crit_fields
+				value = &tx_icstcafeadmin_pi1[criteria][fields]={field:crit_fields}
+			}
+		}
+		# The link actions params
+		addTableparams = COA
+		addTableparams {
+			10 = TEXT
+			10 {
+				value = &tx_icstcafeadmin_pi1[table]={field:table}
+			}
+			20 = TEXT
+			20 {
+				if.isTrue.field = withDataEditItem
+				value = &tx_icstcafeadmin_pi1[fields]={field:fields}
+			}
+		}
+		# The additionnal back params
+		addBackParams = COA
+		addBackParams {
+			10 = TEXT
+			10 {
+				value = &tx_icstcafeadmin_pi1[backPid]={tsfe:id}
+			}
+			20 < plugin.tx_icstcafeadmin_pi1.renderOptions.criteria
+		}
+		# Link to new form
+		new {
+			cObject = TEXT
+			cObject {
+				data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:action_new
+			}
+			typolink {
+				parameter.data = tsfe:id
+				parameter.override.field = PIDnewItem
+				additionalParams.cObject = COA
+				additionalParams.cObject {
+					10 = TEXT
+					10 {
+						value = &tx_icstcafeadmin_pi1[mode]=NEW&tx_icstcafeadmin_pi1[newUid]={field:newId}
+					}
+					20 < plugin.tx_icstcafeadmin_pi1.renderOptions.addTableparams
+					30 < plugin.tx_icstcafeadmin_pi1.renderOptions.addBackParams
+				}
+				additionalParams.insertData = 1
+			}
+		}
+		edit = 
+		single {
+			cObject = TEXT
+			cObject {
+				data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:action_single
+			}
+			typolink {
+				parameter.data = tsfe:id
+				parameter.override.field = PIDitemDisplay
+				additionalParams.cObject = COA
+				additionalParams.cObject {
+					10 = TEXT
+					10 {
+						value = &tx_icstcafeadmin_pi1[mode]=SINGLE&tx_icstcafeadmin_pi1[showUid]={field:id}
+					}
+				}
+				additionalParams.insertData = 1
+			}
+		}
+		# Render option list
+		optionList {
+			# Link to edit form		
+			edit {
+				cObject = TEXT
+				cObject {
+					data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:action_edit
+				}
+				typolink {
+					parameter.data = tsfe:id
+					parameter.override.field = PIDeditItem
+					additionalParams.cObject = COA
+					additionalParams.cObject {
+						10 = TEXT
+						10 {
+							value = &tx_icstcafeadmin_pi1[mode]=EDIT&tx_icstcafeadmin_pi1[showUid]={field:id}
+						}
+						20 < plugin.tx_icstcafeadmin_pi1.renderOptions.addTableparams
+						30 < plugin.tx_icstcafeadmin_pi1.renderOptions.addBackParams
+					}
+					additionalParams.insertData = 1
+				}
+			}
+			# Link to single view
+			single < plugin.tx_icstcafeadmin_pi1.renderOptions.single
+			single {
+				typolink {
+					additionalParams.cObject {
+						20 < plugin.tx_icstcafeadmin_pi1.renderOptions.addTableparams
+						30 < plugin.tx_icstcafeadmin_pi1.renderOptions.addBackParams
+					}
+				}
+			}
+			new < plugin.tx_icstcafeadmin_pi1.renderOptions.new
+			# Action delete
+			delete {
+				cObject = TEXT
+				cObject {
+					data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:action_delete
+					wrap = <a>|</a>
+				}
+				addParams {
+					href = javascript:;
+					onclick =
+					onclick.cObject = COA_INT
+					onclick.cObject {
+						10 = TEXT
+						10 {
+							value = if (confirm('Etes-vous sûr de vouloir supprimer l\' enregistrement {field:label} (uid {field:id})'))
+							insertData = 1
+						}
+						20 = TEXT
+						20 {
+							value = {
+						}
+						30 = TEXT
+						30 {
+							value = javascript:document.location.href='index.php?id={tsfe:id}&tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}&tx_icstcafeadmin_pi1[mode]=DELETE';
+							insertData = 1
+						}
+						40 = TEXT
+						40 {
+							value = }
+						}
+					}
+				}
+			}
+			# Action hide/show
+			hide {
+				cObject = COA_INT
+				cObject {
+					10 = TEXT
+					10 {
+						if.isTrue.field = hidden
+						data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:action_show
+					}
+					20 = TEXT
+					20 {
+						if.isTrue.field = hidden
+						if.negate = 1
+						data = LLL:EXT:ics_tcafe_admin/pi1/locallang.xml:action_hide
+					}
+				}
+				typolink {
+					parameter.data = tsfe:id
+					additionalParams.cObject = COA
+					additionalParams.cObject {
+						10 = TEXT
+						10 {
+							value = &tx_icstcafeadmin_pi1[table]={field:table}&tx_icstcafeadmin_pi1[showUid]={field:id}&tx_icstcafeadmin_pi1[mode]=HIDE
+						}
+						40 < plugin.tx_icstcafeadmin_pi1.renderOptions.criteria
+					}
+					additionalParams.insertData = 1
+				}
+			}
+		}
+	}
+	
+	# Javascript conform input
+	conformInput {
+		# Javascript files separated by coma ","
+		files = EXT:ics_tcafe_admin/res/conformInput.js
+		
+		# Conform on TCA type "input" eval
+		date.cObject = TEXT
+		date.cObject {
+			value = onKeyUp="conformDate(this);"
+		}
+		datetime.cObject = TEXT
+		datetime.cObject {
+			value = onKeyUp="conformDatetime(this);"'
+		}
+		time.cObject = TEXT
+		time.cObject {
+			value = onKeyUp="conformTime(this);"
+		}
+		timesec.cObject = TEXT
+		timesec.cObject {
+			value = onKeyUp="conformTimesec(this);"
+		}
+		year.cObject = TEXT
+		year.cObject {
+			value = onBlur="conformInt(this);"
+		}
+		int.cObject = TEXT
+		int.cObject {
+			value = onBlur="conformInt(this);"
+		}
+		float.cObject = TEXT
+		float.cObject {
+			value = onBlur="conformFloat(this);"
+		}
+		alphanum.cObject = TEXT
+		alphanum.cObject {
+			value = onBlur="conformAlphanum(this);"
+		}
+		upper.cObject = TEXT
+		upper.cObject {
+			value = onBlur="conformUpper(this);"
+		}
+		lower.cObject = TEXT
+		lower.cObject {
+			value = onBlur="conformLower(this);"
+		}
+		nospace.cObject = TEXT
+		nospace.cObject {
+			value = onBlur="conformNospace(this);"
+		}
+		
+		# Conform on field
+		# Priority on above conform
+		field =
+	}
+	
+	# Control entries configuration
+	controlEntries {
+		# Break control entries whether entry is not checked
+		breakControl =
+		# Add evals on field. These evals taking precedence on TCA field evals
+		#like tablename.fieldname.extraEval = list of eval separated by coma ","
+	}
+
+}
+
+page {
+	includeJS {
+		jqueryui = http://code.jquery.com/jquery-1.7.1.js
+		jqueryui.external = 1
+		jqueryui-custom = typo3conf/ext/ics_tcafe_admin/jquery-ui/jquery-ui-1.7.3.custom/js/jquery-ui-1.7.3.custom.min.js
+		datepicker = typo3conf/ext/ics_tcafe_admin/jquery-ui/datepicker-fr.js
+	}
+	includeCSS {
+		jqueryui-css = typo3conf/ext/ics_tcafe_admin/jquery-ui/jquery-ui-1.7.3.custom/css/ui-lightness/jquery-ui-1.7.3.custom.css	
+	}
+}
+
+

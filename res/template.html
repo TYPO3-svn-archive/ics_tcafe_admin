@@ -1,0 +1,294 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- $Id: template.html 47386 2011-05-06 16:17:12Z mygoddess $ -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Group files example template</title>
+</head>
+<body>
+
+<h1>Templates</h1>
+
+<h2>Results list templates</h2>
+<!--
+	PREFIXID : Plugin prefixId
+	RESULT_LIST : Subpart result list
+	TEXT_LISTEMPTY : The text for empty list
+	TABLENAME : Table tag tablename
+	UNIQID : Table tag id
+	CAPTION : Table tag caption
+	HEADER : Table tag subpart header
+	HEADERTITLES : Table tag subpart headers title
+	ROWS : Subpart rows
+	ROW : Subpart row
+	FIELDS : Subpart fields
+	ACTIONS : Subpart action
+	PAGEBROWSE : Page browse
+	HEADERID : Table headers/id tag id
+	FIELDLABEL : The field's label
+	FIELDVALUE : The field's value
+	SUBPART_GENERIC : Generic field subpart
+	ALT_SUBPART_XXXXXX : Specific field subpart where XXXXXX is the field name. It replaces SUBPART_GENERIC
+-->
+
+<!-- ###TEMPLATE_RESULTS_NOSEARCH### start-->
+	<div class="###PREFIXID###_results">
+		###RESULT_LIST###
+	</div>
+<!-- ###TEMPLATE_RESULTS_NOSEARCH### end-->
+
+
+
+<!-- ###TEMPLATE_RESULTS_LIST_EMPTY### start-->
+	<div class="###PREFIXID###_listEmpty">
+		###TEXT_LISTEMPTY###
+	</div>
+<!-- ###TEMPLATE_RESULTS_LIST_EMPTY### end-->
+
+
+
+<!-- ###TEMPLATE_RESULTS_LIST### start-->
+	<p class="action_new">###NEW###</p>
+	<div class="###PREFIXID###_list">
+		<table class="###PREFIXID###_table ###TABLENAME###" id="###UNIQID###">
+				<caption>###CAPTION###</caption>
+				<!-- ###HEADER### start -->
+				<thead>
+					<tr class="###PREFIXID###_header">
+						###HEADERTITLES###
+						<th class="th_actions">###HEADERACTIONS###</th>
+					</tr>
+				</thead>
+				<!-- ###HEADER### end -->
+				<!-- ###ROWS### start -->
+				<tbody>
+					<!-- ###ROW### start-->
+					<tr class="###PREFIXID###_row">
+						###FIELDS###
+						###ACTIONS###
+					</tr>
+					<!-- ###ROW### end-->
+				</tbody>
+				<!-- ###ROWS### end -->
+		</table>
+	</div>
+	<p class="action_new">###NEW###</p>
+	###PAGEBROWSE###
+<!-- ###TEMPLATE_RESULTS_LIST### end-->
+
+
+
+
+<!-- ###TEMPLATE_RESULTS_HEADERTITLES### start-->
+	<th id="###HEADERID###" class="th_###FIELD###">###FIELDLABEL###</th>
+<!-- ###TEMPLATE_RESULTS_HEADERTITLES### end-->
+
+
+
+<!-- ###TEMPLATE_RESULTS_ROW_FIELDS### start-->
+	<!-- ###SUBPART_GENERIC### start-->
+	<td headers="###HEADERID###" class="###PREFIXID###_value">###FIELDVALUE###</td>
+	<!-- ###SUBPART_GENERIC### end-->
+<!-- ###TEMPLATE_RESULTS_ROW_FIELDS### end-->
+
+
+
+<!-- ###TEMPLATE_RESULTS_ROW_ACTIONS### start-->
+	<td class="###PREFIXID###_actions">
+		<p>###SINGLE###</p>
+		<p>###EDIT###</p>
+		<p>###DELETE###</p>
+		<p>###HIDE###</p>
+	</td>
+<!-- ###TEMPLATE_RESULTS_ROW_ACTIONS### end-->
+
+
+<h2>Single template</h2>
+<!--
+	FIELDS : Subpart fields
+	BACKLINK : Link to previous
+	SUBPART_GENERIC : Generic field subpart
+	FIELDNAME : The field name
+	FIELDLABEL : The field's label
+	FIELDVALUE : The field's value
+	ALT_SUBPART_XXXXXX : Specific field subpart where XXXXXX is the field name. It replaces SUBPART_GENERIC
+-->
+
+<!-- ###TEMPLATE_SINGLE### start-->
+	<div class="###PREFIXID###_single">
+		###FIELDS###
+		<div class="###PREFIXID###_backlink">
+			###BACKLINK###
+		</div>
+	</div>
+<!-- ###TEMPLATE_SINGLE### end-->
+
+
+
+<!-- ###TEMPLATE_SINGLE_FIELDS### start-->
+	<!-- ###SUBPART_GENERIC### start-->
+	<p class="###PREFIXID###_data">
+		<span class="###PREFIXID###_label">###FIELDLABEL### :</span> 
+		<span class="###PREFIXID###_value">###FIELDVALUE###</span>
+	</p>
+	<!-- ###SUBPART_GENERIC### end-->
+<!-- ###TEMPLATE_SINGLE_FIELDS### end-->
+
+
+<h2>Edit / New form template</h2>
+<!--
+-->
+
+<!-- ###TEMPLATE_VALIDATED_FORM### start-->
+	<p>###VALIDATED_FORM_TEXT###</p>
+	<div class="###PREFIXID###_backlink">###BACKLINK###</div>
+	<div class="###PREFIXID###_action_single">###SINGLE###</div>
+<!-- ###TEMPLATE_VALIDATED_FORM### end-->
+
+
+<!-- ###TEMPLATE_ERROR_VALIDATED_FORM### start-->
+	<p>###ERROR_VALIDATED_FORM_TEXT###</p>
+<!-- ###TEMPLATE_ERROR_VALIDATED_FORM### end-->
+
+
+
+<!-- ###TEMPLATE_FORM### start-->
+	<form class="###PREFIXID###_form" name="form" method="post" action="###URL###"  enctype="multipart/form-data" >
+		###PIDSTORAGE###
+		###FIELDS###
+		<div class="###PREFIXID###_button">
+			<input type="submit" name="###BTNVALID_NAME###" value="###BTNVALID_VALUE###" ###ONCLICK_BTNVALID###/>
+			<input type="submit" name="###BTNCANCEL_NAME###" value="###BTNCANCEL_VALUE###" ###ONCLICK_BTNCANCEL###/>
+		</div>
+	</form>
+	<div class="###PREFIXID###_backlink">
+		###BACKLINK###
+	</div>
+<!-- ###TEMPLATE_FORM### end-->
+
+
+
+<!-- ###TEMPLATE_FORM_PIDSTORAGE### start-->
+	<fieldset class="###PREFIXID###_pidstorage" title="###FIELDSET_PIDSTORAGE###">
+		<legend>###PIDSTORAGE_TITLE###</legend>
+		<p>Not implemented yet.</p>
+	</fieldset>
+<!-- ###TEMPLATE_FORM_PIDSTORAGE### end-->
+
+
+
+<!-- ###TEMPLATE_FORM_FIELDS### start-->
+	<fieldset class="###PREFIXID###_entries" title="###FIELDSET_FIELDS###">
+		<legend>###FIELDS_TITLE###</legend>
+		###ENTRIES###
+	</fieldset>
+<!-- ###TEMPLATE_FORM_FIELDS### end-->
+
+
+
+<!-- ###TEMPLATE_FORM_TEXT### start-->
+	<div class="###PREFIXID###_text">
+		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL### :</label>
+		<input type="text" id="###ITEM_ID###" class="###PREFIXID###_value" name="###ITEM_NAME###" value="###ITEM_VALUE###" ###SIZE### ###CONFORM###/>
+		###CTRL_MESSAGE###
+	</div>
+<!-- ###TEMPLATE_FORM_TEXT### end-->
+
+
+<!-- ###TEMPLATE_FORM_TEXT_DATE### start-->
+	<div class="###PREFIXID###_date">
+		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL### :</label>
+		<input type="text" id="###ITEM_ID###" class="###PREFIXID###_value datepicker" name="###ITEM_NAME###" value="###ITEM_VALUE###" ###SIZE### ###CONFORM###/>
+		###CTRL_MESSAGE###
+	</div>
+<!-- ###TEMPLATE_FORM_TEXT_DATE### end-->
+
+
+<!-- ###TEMPLATE_FORM_TEXTAREA### start-->
+	<div class="###PREFIXID###_textarea">
+		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL### :</label>
+		<textarea id="###ITEM_ID###" class="###PREFIXID###_value" name="###ITEM_NAME###" ###COLS### ###ROWS### ###WRAP### ###ONCHANGE###/>###ITEM_VALUE###</textarea>
+		###CTRL_MESSAGE###
+	</div>
+<!-- ###TEMPLATE_FORM_TEXTAREA### end-->
+
+
+<!-- ###TEMPLATE_FORM_CHECK### start-->
+	<fieldset class="###PREFIXID###_checkboxes">
+		<legend class="###PREFIXID###_checkboxes-label">###ITEMFORMEL_CHECK_LABEL###</legend>
+		###CHECK_ITEMS###
+	</fieldset>
+<!-- ###TEMPLATE_FORM_CHECK### end-->
+
+
+<!-- ###TEMPLATE_FORM_CHECK_ITEM### start-->
+	<div class="###PREFIXID###_checkbox">
+		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL### :</label>
+		<input type="checkbox" id="###ITEM_ID###" class="###PREFIXID###_checkvalue" name="###ITEM_NAME###" ###CHECKED### ###ONCHANGE### ###DISABLED### />
+	</div>
+<!-- ###TEMPLATE_FORM_CHECK_ITEM### end-->
+
+
+<!-- ###TEMPLATE_FORM_SELECT_SINGLE### start-->
+	<div class="###PREFIXID###_select-single">
+		<label for="###ITEM_ID###" class="###PREFIXID###_label">###FIELDLABEL### :</label>
+		<select id ="###ITEM_ID###" name="###ITEM_NAME###">
+			<!-- ###GROUP_OPTIONS### start-->
+			<option value="###OPTION_ITEM_VALUE###" ###OPTION_SELECTED###>###OPTION_ITEM_LABEL###</option>
+			<!-- ###GROUP_OPTIONS### end-->
+		</select>
+	</div>
+<!-- ###TEMPLATE_FORM_SELECT_SINGLE### end-->
+
+
+<!-- ###TEMPLATE_FORM_SELECT_MULTIPLE### start-->
+	<fieldset class="###PREFIXID###_select-multiple">
+		<legend class="###PREFIXID###_select-multiple-label">###FIELDLABEL### :</legend>
+		<!-- ###GROUP_OPTIONS### start-->
+		<p class="###PREFIXID###_checkbox">
+			<input type="checkbox" id="###OPTION_ITEM_ID###" class="###PREFIXID###_checkvalue" name="###OPTION_ITEM_NAME###" ###OPTION_CHECKED### />
+			<label for="###OPTION_ITEM_ID###">###OPTION_ITEM_LABEL###</label>
+		</p>
+		<!-- ###GROUP_OPTIONS### end-->
+	</fieldset>
+<!-- ###TEMPLATE_FORM_SELECT_MULTIPLE### end-->
+
+
+<!-- ###TEMPLATE_FORM_FILE### start-->
+	<div class="###PREFIXID###_group-file">
+		<label for="###ITEM_ID###" class="###PREFIXID###_group-file-label">###FIELDLABEL### :</label>
+		<input type="hidden" name="###ITEM_NAME###" value="###ITEM_VALUE###" />
+		
+		<!-- ###SUPBART_ADDFILE### start-->
+		<input type="file" name="###ADDFILE_NAME###" />###GROUPFILE_INFORMATIONS###
+		<!-- ###SUPBART_ADDFILE### end-->
+		
+		<div class="###PREFIXID###_files">
+			<!-- ###SUBPART_FILE_DELETE### start-->
+			<div class="###PREFIXID###_filedelete">
+				###FILE_DEL_ILLUSTRATION###
+				<input id="###FILE_DEL_ID###" type="checkbox" class="###PREFIXID###_checkvalue" name="###FILE_DEL_NAME###" value="###FILE_DEL_VALUE###" />
+				<label for="###FILE_DEL_ID###">###FILE_DEL_LABEL###</label>
+			</div>
+			<!-- ###SUBPART_FILE_DELETE### end-->
+		</div>
+	</div>
+<!-- ###TEMPLATE_FORM_FILE### end-->
+
+
+
+
+
+
+
+
+<!-- ###TEMPLATE_DELETED_RECORD### start-->
+	<p>###DELETED_RECORD_TEXT###</p>
+	<div class="###PREFIXID###_backlink">###BACKLINK###</div>
+<!-- ###TEMPLATE_DELETED_RECORD### end-->
+
+
+
+<!-- ###TEMPLATE_HIDDEN_SHOWN_RECORD### start-->
+	<p>###HIDDEN_SHOWN_RECORD_TEXT###</p>
+	<div class="###PREFIXID###_backlink">###BACKLINK###</div>
+<!-- ###TEMPLATE_HIDDEN_SHOWN_RECORD### end-->
