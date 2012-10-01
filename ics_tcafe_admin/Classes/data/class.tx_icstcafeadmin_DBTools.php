@@ -139,6 +139,9 @@ class tx_icstcafeadmin_DBTools {
 			elseif($config['type']=='group' && $config['internal_type']=='file') {
 				$value = $this->renderField_group_parseFiles($table, $field, $recordId, $value, $config);
 			}
+			elseif ($config['type']=='text'){
+				$value = $this->renderField_text($table, $field, $recordId, $value, $config);
+			}
 		}
 		return $value;
 	}
@@ -356,6 +359,34 @@ class tx_icstcafeadmin_DBTools {
 			$value = mktime($h,$i,$s);
 		}
 		return intval($value);
+	}
+
+	/**
+	 * Process select value to DB
+	 *
+	 * @param	string		$table: The table name
+	 * @param	string		$field: The fieldname
+	 * @param	array		$recordId: The record id
+	 * @param	mixed		$value: The value to process
+	 * @param	array		$config: TCA field config
+	 * @return	int
+	 */
+	public function renderField_text($table, $field, $recordId=0, $value, $config) {
+		if (!$value)
+			$value = '';
+		$process = false;
+		// Hook on renderField_text
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderField_text'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderField_text'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if ($process = $procObj->renderField_text($this->pi_base, $table, $field, $value, $recordId, $this->conf, $this))
+					break;
+			}
+		}
+		if(!$process) {
+			$value = htmlspecialchars($value);
+		}
+		return $value;
 	}
 
 	/**

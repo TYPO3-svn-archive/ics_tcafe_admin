@@ -247,7 +247,10 @@ class tx_icstcafeadmin_CommonRenderer {
 
 		switch ($config['type']) {
 			// case 'input': Nothing to do
-			// case 'text': Nothing to do
+			case 'text': 
+				$value = htmlspecialchars($value);
+				$value = nl2br($value);
+				break;
 			case 'check':
 				$value = $this->handleFieldValue_typeCheck ($value, $config);
 				break;
