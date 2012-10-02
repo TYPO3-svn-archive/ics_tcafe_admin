@@ -242,15 +242,11 @@ class tx_icstcafeadmin_CommonRenderer {
 	 */
 	public function handleFieldValue($recordId, $value=null, $config=null) {
 		if (!$config)
-			// return htmlspecialchars($value);
 			return $value;
 
 		switch ($config['type']) {
 			// case 'input': Nothing to do
-			case 'text': 
-				$value = htmlspecialchars($value);
-				$value = nl2br($value);
-				break;
+			// case 'text': 
 			case 'check':
 				$value = $this->handleFieldValue_typeCheck ($value, $config);
 				break;
@@ -262,7 +258,6 @@ class tx_icstcafeadmin_CommonRenderer {
 				break;
 			default:
 		}
-		// return htmlspecialchars($value);
 		return $value;
 	}
 

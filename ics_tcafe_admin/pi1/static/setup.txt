@@ -100,6 +100,10 @@ plugin.tx_icstcafeadmin_pi1 {
 		# Render viewList text data
 		text {
 			viewList.cropHTML = 100 |...| 1
+			viewSingle {
+				htmlSpecialChars = 1
+				br = 1
+			}
 		}
 		# Render viewList check data
 		check {

@@ -26,22 +26,23 @@
  *
  *
  *
- *   59: class tx_icstcafeadmin_DBTools
- *   80:     function __construct($pi_base, $conf)
- *   97:     public function process_valuesToDB($table, $recordId=0, array $fields, array $values)
- *  114:     public function process_valueToDB($table, $recordId=0, $field, $value)
- *  156:     public function renderField_config_evals($table, $field, $recordId=0, $value, array $evals)
- *  239:     private function process_dateToDB($table, $field, $value)
- *  280:     private function process_datetimeToDB($table, $field, $value)
- *  322:     private function process_timeToDB($value)
- *  344:     private function process_timesecToDB($value)
- *  371:     public function renderField_check($table, $field, $recordId=0, $value, $config)
- *  394:     public function renderField_select($table, $field, $recordId=0, $value, $config)
- *  455:     function renderField_group_parseFiles($table, $field, $recordId=0, array $value, $config, $uploadfolder=null, $basename=true)
- *  528:     public function getGroup_files()
- *  537:     public function getSelect_MM()
+ *   60: class tx_icstcafeadmin_DBTools
+ *   81:     function __construct($pi_base, $conf)
+ *   98:     public function process_valuesToDB($table, $recordId=0, array $fields, array $values)
+ *  115:     public function process_valueToDB($table, $recordId=0, $field, $value)
+ *  160:     public function renderField_config_evals($table, $field, $recordId=0, $value, array $evals)
+ *  243:     private function process_dateToDB($table, $field, $value)
+ *  284:     private function process_datetimeToDB($table, $field, $value)
+ *  326:     private function process_timeToDB($value)
+ *  348:     private function process_timesecToDB($value)
+ *  375:     public function renderField_text($table, $field, $recordId=0, $value, $config)
+ *  403:     public function renderField_check($table, $field, $recordId=0, $value, $config)
+ *  426:     public function renderField_select($table, $field, $recordId=0, $value, $config)
+ *  487:     function renderField_group_parseFiles($table, $field, $recordId=0, array $value, $config, $uploadfolder=null, $basename=true)
+ *  560:     public function getGroup_files()
+ *  569:     public function getSelect_MM()
  *
- * TOTAL FUNCTIONS: 13
+ * TOTAL FUNCTIONS: 14
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
