@@ -129,7 +129,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['formRenderer_additionnalMarkers'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['formRenderer_additionnalMarkers'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$process = $procObj->formRenderer_additionnalMarkers($template, $markers, $subpartArray, $this->table, $field, $this->row, $this->conf, $this->pi_base, $this);
+				$process = $procObj->formRenderer_additionnalMarkers($template, $markers, $subpartArray, $this->table, $this->row, $this->conf, $this->pi_base, $this);
 			}
 		}		
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
@@ -750,6 +750,16 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if ($this->pi_base->piVars['valid']) {
 			return $this->pi_base->piVars[$field];
 		}
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_getEntryValue'])) {
+			$entries = null;
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_getEntryValue'] as $class) {
+				$procObj = & t3lib_div::getUserObj($class);
+				if ($procObj->extra_getEntryValue($entries, $this->pi_base, $this->table, $field, $this->fieldLabels, $this->recordId, $this->conf, $this)) {
+					return $entries;
+				}
+			}
+		}
+
 		// $this->pi_base->piVars['cancel'] or any submit
 		return $this->renderValue($field, $this->row['uid'], $this->row[$field], self::$view);
 	}
@@ -772,18 +782,29 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 				$options = array($this->pi_base->piVars[$field]);
 		}
 		else {	// $this->pi_base->piVars['cancel'] or any submit
-			if ($config['MM']) {
-				$loadDBGroup = t3lib_div::makeInstance('FE_loadDBGroup');
-				$loadDBGroup->start('', $config['foreign_table'], $config['MM'], $this->row['uid'], $this->table, $config);
-				foreach($loadDBGroup->itemArray as $item) {
-					$options[] = $item['id'];
+			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_getEntryValue_SO'])) {
+				$options = null;
+				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_getEntryValue_SO'] as $class) {
+					$procObj = & t3lib_div::getUserObj($class);
+					if ($process = $procObj->extra_getEntryValue_SO($options, $this->pi_base, $this->table, $field, $this->fieldLabels, $this->recordId, $this->conf, $this)) {
+						break;
+					}
 				}
 			}
-			elseif ($config['maxitems'] >1) {
-				$options = t3lib_div::trimExplode(',', $this->row[$field]);
-			}
-			else {
-				$options = array($this->row[$field]);
+			if (!$process) {
+				if ($config['MM']) {
+					$loadDBGroup = t3lib_div::makeInstance('FE_loadDBGroup');
+					$loadDBGroup->start('', $config['foreign_table'], $config['MM'], $this->row['uid'], $this->table, $config);
+					foreach($loadDBGroup->itemArray as $item) {
+						$options[] = $item['id'];
+					}
+				}
+				elseif ($config['maxitems'] >1) {
+					$options = t3lib_div::trimExplode(',', $this->row[$field]);
+				}
+				else {
+					$options = array($this->row[$field]);
+				}
 			}
 		}
 		if (in_array($item, $options))

@@ -783,7 +783,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['saveDB_additionnalDataArray'])) {
 				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['saveDB_additionnalDataArray'] as $class) {
 					$procObj = & t3lib_div::getUserObj($class);
-					if ($procObj->saveDB_additionnalDataArray($dataArray, $this->table, ($this->newUid? $this->newUid: $this->showUid), $this->conf, $this))
+					if ($procObj->saveDB_additionnalDataArray($dataArray, $this->table, ($this->newUid? $this->newUid: $this->showUid), $fields, $this->conf, $this))
 						break;
 				}
 			}
@@ -822,10 +822,12 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 						$sorting = 'sorting_foreign';
 					}
 					// Delete relations
-					$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-						$config['MM'],
-						'`'.$uidLocal_field.'` =' . $this->piVars['showUid']
-					);
+					if ($showUid = intval($this->piVars['showUid'])) {
+						$GLOBALS['TYPO3_DB']->exec_DELETEquery(
+							$config['MM'],
+							'`'.$uidLocal_field.'` =' . $showUid
+						);
+					}
 					$MM_rows = array();
 					foreach ($foreign_uids as $index=>$uid) {
 						$MM_rows[] = array(

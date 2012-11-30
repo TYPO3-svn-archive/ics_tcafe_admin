@@ -1,3 +1,9 @@
+2012-11-29 Tsi YANG <tsi@in-cite.net>
+	* Feature: Added extra_getEntryValue and extra_getEntryValue_SO hook.
+	* Refactor: Deleted parameter field on call formRenderer_additionnalMarkers hook.
+	* Fix: Additional control in saveDB method.
+	* Refactor: Added fields param on saveDB_additionnalDataArray hook.
+
 2012-10-02 Tsi YANG <tsi@in-cite.net>
 	* Fix: Mistakes on text process.
 
