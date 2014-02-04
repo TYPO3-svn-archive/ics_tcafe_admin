@@ -1,3 +1,10 @@
+2014-02-04 Tsi YANG <tsi.yang@plan-net.fr>
+	* Feature: Implements multiple select with selector box.
+	* Feature: Implementation of form rendering with alternative subpart.
+	* Feature: Render data: consideration of the case where there are several boxes in one field.
+	* Fix: Error on field "tablename" in the row in MM table.
+	* Fix: Mistakes on retrieving items data in a select field.
+
 2012-11-29 Tsi YANG <tsi@in-cite.net>
 	* Feature: Added extra_getEntryValue and extra_getEntryValue_SO hook.
 	* Refactor: Deleted parameter field on call formRenderer_additionnalMarkers hook.

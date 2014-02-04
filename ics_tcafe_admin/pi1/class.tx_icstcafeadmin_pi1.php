@@ -814,18 +814,28 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 					$localTable = $this->table;
 					$foreignTable = $config['foreign_table'];
 					$sorting = 'sorting';
+					$table = '';
+					$allowed = t3lib_div::trimExplode(',', $config['allowed'], true);
+					if (is_array($allowed) && !empty($allowed)) {
+						$table = $this->table;
+					}
 					if ($config['MM_opposite_field']) {
 						$uidLocal_field = 'uid_foreign';
 						$uidForeign_field = 'uid_local';
 						$localTable = $config['foreign_table'];
 						$foreignTable = $this->table;
 						$sorting = 'sorting_foreign';
+						t3lib_div::loadTCA($config['foreign_table']);
+						$allowed = t3lib_div::trimExplode(',', $GLOBALS['TCA'][$config['foreign_table']]['columns'][$config['MM_opposite_field']]['config']['allowed'], true);
+						if (is_array($allowed) && !empty($allowed)) {
+							$table = $this->table;
+						}
 					}
 					// Delete relations
 					if ($showUid = intval($this->piVars['showUid'])) {
 						$GLOBALS['TYPO3_DB']->exec_DELETEquery(
 							$config['MM'],
-							'`'.$uidLocal_field.'` =' . $showUid
+							'`'.$uidLocal_field.'` =' .$showUid
 						);
 					}
 					$MM_rows = array();
@@ -833,7 +843,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 						$MM_rows[] = array(
 							$uidLocal_field => $this->newUid? $this->newUid: $this->showUid,
 							$uidForeign_field => $uid,
-							'tablenames' => $this->table,
+							'tablenames' => $table,
 							$sorting => $index,
 						);
 					}

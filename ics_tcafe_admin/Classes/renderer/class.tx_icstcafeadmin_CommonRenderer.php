@@ -188,6 +188,18 @@ class tx_icstcafeadmin_CommonRenderer {
 					$value = $this->cObj->stdWrap($value, $this->conf['defaultConf.']['text.'][$view . '.']);
 					break;
 				case 'check':
+					if ($config['items'] && ($view=='viewList' || $view=='viewSingle')) {
+						foreach ($config['items'] as $item) {
+							$itemValues[] = $GLOBALS['TSFE']->sL($item[0]);
+						}
+						foreach ($itemValues as $index=>$data) {
+							if ($value & pow(2, $index)) {
+								$labels[] = $data;
+							}
+						}
+						$value = implode(',', $labels);
+					}
+				
 					$value = $this->cObj->stdWrap($value, $this->conf['defaultConf.']['check.'][$view . '.']);
 					break;
 				case 'select':
@@ -344,10 +356,25 @@ class tx_icstcafeadmin_CommonRenderer {
 		else {
 			$keys = t3lib_div::trimExplode(',', $value, true);
 			$labels = array();
-			foreach ($keys as $key) {
-				$labels[] = $this->sL($config['items'][$key][0]);
+			if (empty($keys)) {
+				$value = $this->sL($config['items'][0][0]);
 			}
-			$value = implode(',', $labels);
+			else {
+				foreach ($keys as $key) {
+					if (is_numeric($key)) {
+						$label = $this->sL($config['items'][$key][0]);
+					}
+					else {
+						foreach ($config['items'] as $item) {
+							if ($item[1]==$key) {
+								$label = $this->sL($item[0]);
+							}
+						}
+					}
+					$labels[] = $label;
+				}
+				$value = implode(',', $labels);
+			}
 		}
 
 		return $value;
@@ -485,11 +512,13 @@ class tx_icstcafeadmin_CommonRenderer {
 		array_unique($fields);
 		$id = $this->pi_base->showUid? $this->pi_base->showUid: $this->pi_base->newUid;
 		$id = $id? $id: $row['uid'];
-		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
-			implode(',', $fields),
-			$this->table,
-			'uid=' . $id
-		);
+		if ($id) {
+			$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
+				implode(',', $fields),
+				$this->table,
+				'uid=' . $id
+			);
+		}
 		$label = $row[$GLOBALS['TCA'][$this->table]['ctrl']['label']];
 		$label = $label? $label: $row[$GLOBALS['TCA'][$this->table]['ctrl']['label_alt']];
 		$data = array(

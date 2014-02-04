@@ -405,10 +405,23 @@ class tx_icstcafeadmin_DBTools {
 			// TODO: Implements form section and implements this
 		}
 		else {
-			if ($value)
-				$value = 1;
-			else
-				$value = 0;
+			if ($config['items']) {
+				if (is_array($value)) {
+					$v_checked = $value;
+					$value = 0;
+					foreach ($v_checked as $check) {
+						$value = $value + intval($check);
+					}
+				}
+			}
+			else {
+				if ($value[0]) {
+					$value = 1;
+				}
+				else {
+					$value = 0;
+				}
+			}
 		}
 		return $value;
 	}
@@ -446,6 +459,9 @@ class tx_icstcafeadmin_DBTools {
 						$this->select_MM[$field] = null;
 					}
 				}
+				else {	// $config['items']
+					// nothing to do;
+				}
 			// } elseif (!strcmp($config['renderMode'], 'checkbox')) {
 				// TODO : Implements Checkbox renderMode
 			// } elseif (!strcmp($config['renderMode'], 'singlebox')) {
@@ -453,10 +469,17 @@ class tx_icstcafeadmin_DBTools {
 			// } elseif (!strcmp($config['renderMode'], 'tree')) { //
 				// TODO : Implements Tree renderMode
 			}
-			else {	// Multiple checkbox
+			else {	// Multiple checkbox or select multiple
 				if ($config['MM']) {
 					if ($value) {
-						$this->select_MM[$field] = array_keys($value);
+						$elem = array_slice($value, 0, 1);
+						if (is_numeric($elem[0])) {	// Case: select multiple
+							$this->select_MM[$field] = array_values($value);
+						}
+						else {	// Case: checkbox
+							$this->select_MM[$field] = array_keys($value);
+						}
+						
 						$value = count($value);
 					}
 					else {

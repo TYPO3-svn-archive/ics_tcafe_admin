@@ -129,7 +129,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['formRenderer_additionnalMarkers'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['formRenderer_additionnalMarkers'] as $class) {
 				$procObj = & t3lib_div::getUserObj($class);
-				$process = $procObj->formRenderer_additionnalMarkers($template, $markers, $subpartArray, $this->table, $this->row, $this->conf, $this->pi_base, $this);
+				$process = $procObj->formRenderer_additionnalMarkers($template, $markers, $subpartArray, $this->table, $field, $this->row, $this->conf, $this->pi_base, $this);
 			}
 		}		
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
@@ -174,8 +174,27 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 				'PREFIXID' => $this->prefixId,
 				'FIELDSET_FIELDS' => $this->getLL('formFields_fieldset', 'Fields entries', true),
 				'FIELDS_TITLE' => $this->getLL('formFields_title', 'Fields entries', true),
-				'ENTRIES' => $this->renderEntries(),
+				'ENTRIES' => '',
 			);
+			$entries = t3lib_div::trimExplode(',', $this->conf['renderForm.']['entries_group'], true);
+			if (is_array($entries) && !empty($entries)) {	// Process entries by group
+				foreach ($entries as $entry) {
+					$fields = t3lib_div::trimExplode(',', $this->conf['renderForm.']['entries_group.'][$entry.'.']['fields'], true);
+					// t3lib_div::debug(array($entry, $fields),'entry: fields');
+					$subTemplate = $this->cObj->getSubpart($template, '###SUBPART_ENTRIES_'.strtoupper($entry).'###');
+					$lMarkers['ENTRIES_'.strtoupper($entry)] = $this->renderEntries($subTemplate, $fields);
+					$lContent = $this->cObj->substituteMarkerArray($subTemplate, $lMarkers, '###|###');
+					$subparts['###SUBPART_ENTRIES_'.strtoupper($entry).'###'] = $this->cObj->substituteMarkerArray($lContent, $lMarkers, '###|###');
+					// Cleans fields subparts
+					foreach ($fields as $field) {
+						$subparts['###ALT_SUBPART_FORM_'.strtoupper($field).'###'] = '';
+					}
+				}
+				$template = $this->cObj->substituteSubpartArray($template, $subparts);
+			}
+			else {	// Process entries (basic method)
+				$markers['ENTRIES'] = $this->renderEntries($template);
+			}
 		}
 		$content = $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 		return $content;
@@ -185,9 +204,11 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	/**
 	 * Render entries
 	 *
+	 * @param	string		$template
+	 * @param	array		$fields: Array of fields to render
 	 * @return	string		HTML fields content
 	 */
-	private function renderEntries() {
+	private function renderEntries($template, $fields) {
 		$content = '';
 		// Hook on renderEntries
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['renderEntries'])) {
@@ -197,10 +218,17 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 					break;
 			}
 		}
-		if (!$content)
-			foreach ($this->fields as $field) {
-				$content .= $this->handleFormField($field);
+		if (!$content) {
+			if (!is_array($fields) || empty($fields)) {
+				$fields = $this->fields;
 			}
+			$template = $template? $template: $this->templateCode;
+			foreach ($fields as $field) {
+				// The specific template field
+				$subTemplate = $this->cObj->getSubpart($template, '###ALT_SUBPART_FORM_'.strtoupper($field).'###');
+				$content .= $this->handleFormField($field, $subTemplate);
+			}
+		}
 
 		return $content;
 	}
@@ -209,9 +237,10 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * Generates form field
 	 *
 	 * @param	string		$field: The field name
+	 * @param	string		$template
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField($field) {
+	public function handleFormField($field, $template) {
 		// Hook on handleFormField
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField'] as $class) {
@@ -221,32 +250,34 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			}
 		}
 		if (!$content) {
+			// The field config
 			$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
 			switch ($config['type']) {
 				case 'input':
 					$format = $this->fetchInputFieldFormat($config);
 					if ($format == 'date' || $format == 'datetime') {
-						$content =  $this->handleFormField_typeInput_date($field, $config);
+						$content =  $this->handleFormField_typeInput_date($field, $config, $template);
 					}
 					else {
-						$content =  $this->handleFormField_typeInput($field, $config);
+						$content =  $this->handleFormField_typeInput($field, $config, $template);
 					}
 					break;
 				case 'text':
-					$content =  $this->handleFormField_typeText($field, $config);
+					$content =  $this->handleFormField_typeText($field, $config, $template);
 					break;
 				case 'check':
-					$content = $this->handleFormField_typeCheck($field, $config);
+					$content = $this->handleFormField_typeCheck($field, $config, $template);
 					break;
 				case 'select':
-					$content = $this->handleFormField_typeSelect($field, $config);
+					$content = $this->handleFormField_typeSelect($field, $config, $template);
 					break;
 				case 'group':
-					$content = $this->handleFormField_typeGroup($field, $config);
+					$content = $this->handleFormField_typeGroup($field, $config, $template);
 					break;
 				default:
 					$content = '';
 			}
+			
 		}
 		return $content;
 	}
@@ -417,7 +448,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeCheck($field, array $config) {
+	public function handleFormField_typeCheck($field, array $config, $template='') {
 		// Hook to handle form field
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeCheck'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeCheck'] as $class) {
@@ -443,7 +474,33 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 				*/
 			}
 			else {
-				$content = $this->handleFormField_typeCheck_item($field, $config);
+				if ($config['items']) {
+					$template = $template? $template: $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECKBOXES###');
+					$subTemplate = $this->cObj->getSubpart($template, '###ALT_SUBPART_FORM_'.strtoupper($field).'_CHECK_ITEM###');
+					$selItems = $this->initItemArray($config);
+					for ($c = 0; $c < count($selItems); $c++) {
+						$p = $selItems[$c];
+						$itemContent .= $this->handleFormField_typeCheck_item($field, $config, $c, $subTemplate, $GLOBALS['TSFE']->sL($p[label]));
+					}
+					$locMarkers = array(
+						'PREFIXID' => $this->prefixId,
+						'ITEMFORMEL_CHECK_LABEL' => $this->fieldLabels[$field],
+						'CHECK_ITEMS' => $itemContent,
+					);
+					$template = $this->cObj->substituteSubpart($template, '###ALT_SUBPART_FORM_'.strtoupper($field).'_CHECK_ITEM###', $itemContent);
+					$content = $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');
+				}
+				else {
+					$template = $template? $template: $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK###');
+					$subTemplate = $this->cObj->getSubpart($template, '###ALT_SUBPART_FORM'.strtoupper($field).'_CHECK_ITEM###');
+					$itemContent = $this->handleFormField_typeCheck_item($field, $config, null, $subTemplate);
+					$locMarkers = array(
+						'PREFIXID' => $this->prefixId,
+						'CHECK_ITEMS' => $itemContent,
+					);
+					$template = $this->cObj->substituteSubpart($template, '###ALT_SUBPART_FORM'.strtoupper($field).'_CHECK_ITEM###', $itemContent);
+					$content = $this->cObj->substituteMarkerArray($template, $locMarkers, '###|###');
+				}
 			}
 		}
 		return $content;
@@ -459,10 +516,11 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	string		$template: The template code
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeCheck_item($field, array $config, $col=null, $template='') {
+	public function handleFormField_typeCheck_item($field, array $config, $col=null, $template='', $label='') {
 		if (!$template)
 			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_CHECK_ITEM###');
 
+		
 		$value = $this->getEntryValue($field);
 		if (is_null($col) && $value) {
 			$checked = 'checked="checked"';
@@ -473,13 +531,14 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		else {
 			$checked = '';
 		}
-		$label = $this->fieldLabels[$field];
+		$label = $label? $label: $this->fieldLabels[$field];
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
 			'ITEM_ID' => $field,
 			'FIELDLABEL' => $this->cObj->stdWrap($label, $this->conf['renderConf.'][$this->table.'.'][$field.'.'][self::$view.'.']['label.']),
 			'FIELDNAME' => $field,
-			'ITEM_NAME' => $this->prefixId . '[' . $field . ']',
+			'ITEM_NAME' => $this->prefixId . '[' . $field . '][]',
+			'ITEM_VALUE' => ($col? pow(2,$col): 1),
 			'CHECKED' => $checked,
 			'ONCHANGE' => '',
 			'DISABLED' => '',
@@ -495,7 +554,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeSelect($field, array $config) {
+	public function handleFormField_typeSelect($field, array $config, $template='') {
 		$items = $this->getSelectItemArray($field, $config);
 		// Hook to handle form field
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeSelect'])) {
@@ -590,9 +649,9 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @return	string		HTML form field content
 	 */
 	public function handleFormField_typeSelect_multiple(array $items, $field, array $config, $template='') {
-		if (!$template)
+		if (!$template) {
 			$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM_SELECT_MULTIPLE###');
-
+		}
 		$subparts = array();
 
 		$options = $this->getEntryValue_selectedArray($field);
@@ -603,11 +662,13 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			// if (($item['value']==0 && $item['label']!=='') || $item['value']>0) {
 			if ($item['value']>0) {
 				$locMarkers = array(
-					'OPTION_ITEM_NAME' => $this->prefixId . '[' . $field . '][' . $item['value'] . ']',
-					'OPTION_ITEM_ID' => $field . '_' . $item['value'],
-					// 'OPTION_CHECKED' => in_array($item['value'], $this->getEntryValue($field))? ' checked="checked"': '',
-					'OPTION_CHECKED' => in_array($item['value'], $options)? ' checked="checked"': '',
+					'OPTION_ITEM_VALUE' => $item['value'],
+					'OPTION_SELECTED' => in_array($item['value'], $options)? ' selected="selected"': '',
 					'OPTION_ITEM_LABEL' => $item['label'],
+					// Use for render checkboxes
+					'OPTION_ITEM_ID' => $field . '_' . $item['value'],
+					'OPTION_ITEM_NAME' => $this->prefixId . '[' . $field . '][' . $item['value'] . ']',
+					'OPTION_CHECKED' => in_array($item['value'], $options)? ' checked="checked"': '',
 				);
 				$subparts['###GROUP_OPTIONS###'] .= $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
 			}
@@ -618,8 +679,10 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			$label = $this->cObj->stdWrap($label, $this->conf['defaultConf.']['requireEntryLabel.']);
 		$markers = array(
 			'PREFIXID' => $this->prefixId,
+			'ITEM_ID' => $field,
 			'FIELDLABEL' => $this->cObj->stdWrap($label, $this->conf['renderConf.'][$this->table.'.'][$field.'.'][self::$view.'.']['label.']),
 			'FIELDNAME' => $field,
+			'ITEM_NAME' => $this->prefixId . '[' . $field . '][]',
 		);
 
 		$template = $this->cObj->substituteSubpartArray($template, $subparts);
@@ -634,7 +697,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 * @param	array		$config: TCA field conf
 	 * @return	string		HTML form field content
 	 */
-	public function handleFormField_typeGroup($field, array $config) {
+	public function handleFormField_typeGroup($field, array $config, $template='') {
 		// Hook to handle form field
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeGroup'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeGroup'] as $class) {
@@ -702,7 +765,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 				'FILE_DEL_ILLUSTRATION' => $cObj->stdWrap('', $lConf['illustration.']),
 				'FILE_DEL_ID' => $field . '_' . $uniqid,
 				'FILE_DEL_NAME' => $this->prefixId . '[' . $field . '][' . $uniqid . ']',
-				'FILE_DEL_VALUE' => htmlspecialchars($file),
+				'FILE_DEL_VALUE' => $cObj->stdWrap(htmlspecialchars($file), $this->conf['renderConf.'][$this->table.'.'][$field.'_del.'][self::$view.'.']),
 				'FILE_DEL_LABEL' => $cObj->stdWrap('', $lConf['label.']) ,
 			);
 			$subparts['###SUBPART_FILE_DELETE###'] .= $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
@@ -750,16 +813,6 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if ($this->pi_base->piVars['valid']) {
 			return $this->pi_base->piVars[$field];
 		}
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_getEntryValue'])) {
-			$entries = null;
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_getEntryValue'] as $class) {
-				$procObj = & t3lib_div::getUserObj($class);
-				if ($procObj->extra_getEntryValue($entries, $this->pi_base, $this->table, $field, $this->fieldLabels, $this->recordId, $this->conf, $this)) {
-					return $entries;
-				}
-			}
-		}
-
 		// $this->pi_base->piVars['cancel'] or any submit
 		return $this->renderValue($field, $this->row['uid'], $this->row[$field], self::$view);
 	}
@@ -782,29 +835,18 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 				$options = array($this->pi_base->piVars[$field]);
 		}
 		else {	// $this->pi_base->piVars['cancel'] or any submit
-			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_getEntryValue_SO'])) {
-				$options = null;
-				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['extra_getEntryValue_SO'] as $class) {
-					$procObj = & t3lib_div::getUserObj($class);
-					if ($process = $procObj->extra_getEntryValue_SO($options, $this->pi_base, $this->table, $field, $this->fieldLabels, $this->recordId, $this->conf, $this)) {
-						break;
-					}
+			if ($config['MM']) {
+				$loadDBGroup = t3lib_div::makeInstance('FE_loadDBGroup');
+				$loadDBGroup->start('', $config['foreign_table'], $config['MM'], $this->row['uid'], $this->table, $config);
+				foreach($loadDBGroup->itemArray as $item) {
+					$options[] = $item['id'];
 				}
 			}
-			if (!$process) {
-				if ($config['MM']) {
-					$loadDBGroup = t3lib_div::makeInstance('FE_loadDBGroup');
-					$loadDBGroup->start('', $config['foreign_table'], $config['MM'], $this->row['uid'], $this->table, $config);
-					foreach($loadDBGroup->itemArray as $item) {
-						$options[] = $item['id'];
-					}
-				}
-				elseif ($config['maxitems'] >1) {
-					$options = t3lib_div::trimExplode(',', $this->row[$field]);
-				}
-				else {
-					$options = array($this->row[$field]);
-				}
+			elseif ($config['maxitems'] >1) {
+				$options = t3lib_div::trimExplode(',', $this->row[$field]);
+			}
+			else {
+				$options = array($this->row[$field]);
 			}
 		}
 		if (in_array($item, $options))
@@ -906,7 +948,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($config['items']))   {
 			foreach ($config['items'] as $key=>$item) {
 				$items[] = array(
-					'value' => $key,
+					'value' => ($item[1]? $item[1]: $key),
 					'label' => $GLOBALS['TSFE']->sL($item[0])
 				);
 			}

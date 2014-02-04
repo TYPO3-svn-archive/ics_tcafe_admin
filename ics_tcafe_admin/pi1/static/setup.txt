@@ -439,6 +439,19 @@ plugin.tx_icstcafeadmin_pi1 {
 		}
 	}
 	
+	renderForm {
+		# Entries group name separated by "," like "NAME1, NAME2" (HTML GROUP to render)  
+		entries_group =
+		entries_group {
+			# NAME1 configuration
+			/*
+			NAME1 {
+				fields = # Liste of fields for entry group "NAME1", for marker ###ENTRIES_NAME1###
+			}
+			*/
+		}
+	}
+	
 	# Javascript conform input
 	conformInput {
 		# Javascript files separated by coma ","
