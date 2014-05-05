@@ -1,3 +1,6 @@
+2014-05-05 Tsi YANG <tsi.yang@plan-net.fr>
+	Fix: Fix render single select with specific template.
+	
 2014-02-04 Tsi YANG <tsi.yang@plan-net.fr>
 	* Feature: Implements multiple select with selector box.
 	* Feature: Implementation of form rendering with alternative subpart.

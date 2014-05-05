@@ -56,7 +56,7 @@
  *
  */
 
-
+require_once(t3lib_extMgm::extPath('rtehtmlarea').'pi2/class.tx_rtehtmlarea_pi2.php');
 /**
  * Class 'tx_icstcafeadmin_FormRenderer' for the 'ics_tcafe_admin' extension.
  * Render the form view
@@ -75,6 +75,35 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	var $maxTextareaCols	= 48;	// The maximum abstract value for textareas
 	var $maxTextareaRows	= 20;	// The maximum abstract value for textareas
 
+	//-- RTE data
+	var $RTEObj;
+	var $docLarge = 0;
+	var $RTEcounter = 0;
+	var $formName = 'form';
+	 // Initial JavaScript to be printed before the form
+	 // (should be in head, but cannot due to IE6 timing bug)
+	var $additionalJS_initial = '';
+	 // Additional JavaScript to be printed before the form
+	 // (works in Mozilla/Firefox when included in head, but not in IE6)
+	var $additionalJS_pre = array();
+	 // Additional JavaScript to be printed after the form
+	var $additionalJS_post = array();
+	 // Additional JavaScript to be executed on submit
+	var $additionalJS_submit = array();
+	var $PA = array(
+		 'itemFormElName' =>  '',
+		 'itemFormElValue' => '',
+		 );
+	var $specConf = array(
+		 'rte_transform' => array(
+				 'parameters' => array('mode' => 'ts_css')
+				 )
+		 );
+	var $thisConfig = array();
+	var $RTEtypeVal = 'text';
+	var $thePidValue;	
+	//-- End (RTE data)
+	
 	/**
 	 * Constructor
 	 *
@@ -103,13 +132,80 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 
 		parent::__construct($pi_base, $table, $fields, $fieldLabels, $conf);
 	}
-
+	/**
+	 *
+	 */
+	function initRTE(){
+		if(!$this->RTEObj)  $this->RTEObj = t3lib_div::makeInstance('tx_rtehtmlarea_pi2');
+		if($this->RTEObj->isAvailable()) {
+			$this->thePidValue = $GLOBALS['TSFE']->id;
+			$this->formName = $this->conf['renderForm.']['formName']? $this->conf['renderForm.']['formName']: 'form';
+			$pageTSConfig = $GLOBALS['TSFE']->getPagesTSconfig();
+			$RTEsetup = $pageTSConfig['RTE.'];
+			$this->thisConfig = $RTEsetup['default.'];
+			$this->thisConfig = $this->thisConfig['FE.'];	
+			$this->additionalJS_initial = '';
+			$this->additionalJS_pre = array();
+			$this->additionalJS_post = array();
+			$this->additionalJS_submit = array();
+		}
+	}
+	/**
+	 *
+	 */
+	function getRTEItem($field, $name, $label, $value){
+		$markers = array();
+		if($this->RTEObj->isAvailable()) {
+			$this->RTEcounter++;
+			$this->field = $field;
+			$this->PA['itemFormElName'] = $name;
+			$this->PA['itemFormElValue'] = $value;
+			$RTEItem = $this->RTEObj->drawRTE(
+				$this, 
+				$this->table, 
+				$this->field, 
+				$row=array(), 
+				$this->PA, 
+				$this->specConf, 
+				$this->thisConfig, 
+				$this->RTEtypeVal, 
+				'', 
+				$this->thePidValue
+			);
+			// Erreur: à la deuxieme génération de l'header data : ajout des balises <html> et <head>
+			if ($this->RTEcounter == 1) {
+				$this->additionalHeaderData_rte = $GLOBALS['TSFE']->additionalHeaderData['rtehtmlarea'];
+			} else {
+				$GLOBALS['TSFE']->additionalHeaderData['rtehtmlarea'] = $this->additionalHeaderData_rte;
+			}
+			$markers['FORM_RTE_ENTRY'] = $RTEItem;
+		}
+		// t3lib_div::debug($markers);
+		return $markers;
+	}
+	/**
+	 *
+	 */
+	function processRTE(&$markers){
+		if($this->RTEObj->isAvailable()) {
+			$markers['ADDITIONALJS_PRE'] = $this->additionalJS_initial.'<script type="text/javascript">'. implode(chr(10), $this->additionalJS_pre).'</script>';
+			$markers['ADDITIONALJS_POST'] = '<script type="text/javascript">'. implode(chr(10), $this->additionalJS_post).'</script>';
+			$markers['ADDITIONALJS_SUBMIT'] = 'onsubmit="'.implode(';', $this->additionalJS_submit).';"';
+		}
+		else {
+			$markers['ADDITIONALJS_PRE'] = '';
+			$markers['ADDITIONALJS_POST'] = '';
+			$markers['ADDITIONALJS_SUBMIT'] = '';
+		}
+	}
+	
 	/**
 	 * Render the form view
 	 *
 	 * @return	string		HTML list content
 	 */
 	public function render() {
+		$this->initRTE();
 		$template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_FORM###');
 		$markers = array(
 			'URL' => t3lib_div::getIndpEnv('TYPO3_REQUEST_URL'),
@@ -132,6 +228,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 				$process = $procObj->formRenderer_additionnalMarkers($template, $markers, $subpartArray, $this->table, $field, $this->row, $this->conf, $this->pi_base, $this);
 			}
 		}		
+		$this->processRTE($markers);
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
 
@@ -145,7 +242,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		//	si $this->row
 		//		Alors on renvoit rien
 		//	sinon
-		//		On propose la s�lection du pid storage pour le nouvel enregistrement
+		//		On propose la sélection du pid storage pour le nouvel enregistrement
 
 		return '';
 	}
@@ -226,6 +323,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			foreach ($fields as $field) {
 				// The specific template field
 				$subTemplate = $this->cObj->getSubpart($template, '###ALT_SUBPART_FORM_'.strtoupper($field).'###');
+				// t3lib_div::debug($subTemplate);
 				$content .= $this->handleFormField($field, $subTemplate);
 			}
 		}
@@ -279,6 +377,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			}
 			
 		}
+		// t3lib_div::debug($content);
 		return $content;
 	}
 
@@ -436,6 +535,11 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'ONCHANGE' => '',
 			'CTRL_MESSAGE' => '',
 		);
+		if($this->RTEObj->isAvailable() && isset($config['wizards']['RTE'])) {
+			$value = $this->pi_base->piVars[$field]? $this->pi_base->piVars[$field]: $this->row[$field];
+			$name = $this->prefixId . '[' . $field . ']';
+			$markers = array_merge($markers, $this->getRTEItem($field, $name, $label, $value));
+		}
 
 		return $this->cObj->substituteMarkerArray($template, $markers, '###|###');
 	}
@@ -566,7 +670,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		}
 		if (!$content) {
 			if ($config['maxitems'] <= 1 && $config['renderMode'] !== 'tree') {	// Single selector box
-				$content = $this->handleFormField_typeSelect_single($items, $field, $config);
+				$content = $this->handleFormField_typeSelect_single($items, $field, $config, $template);
 			} elseif (!strcmp($config['renderMode'], 'checkbox')) {
 				// TODO : Implements Checkbox renderMode
 				tx_icstcafeadmin_debug::notice('handleFormField_typeSelect with renderMode  is not implemented.');
@@ -665,11 +769,20 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 					'OPTION_ITEM_VALUE' => $item['value'],
 					'OPTION_SELECTED' => in_array($item['value'], $options)? ' selected="selected"': '',
 					'OPTION_ITEM_LABEL' => $item['label'],
-					// Use for render checkboxes
+					// Can be used for checkbox
 					'OPTION_ITEM_ID' => $field . '_' . $item['value'],
 					'OPTION_ITEM_NAME' => $this->prefixId . '[' . $field . '][' . $item['value'] . ']',
 					'OPTION_CHECKED' => in_array($item['value'], $options)? ' checked="checked"': '',
 				);
+				
+				// Hook to handle form field
+				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeSelect_multiple_addMarkers'])) {
+					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeSelect_multiple_addMarkers'] as $class) {
+						$procObj = & t3lib_div::getUserObj($class);
+						$procObj->handleFormField_typeSelect_multiple_addMarkers($item, $field, $options, $locMarkers, $this->conf, $this);
+					}
+				}
+				
 				$subparts['###GROUP_OPTIONS###'] .= $this->cObj->substituteMarkerArray($itemTemplate, $locMarkers, '###|###');
 			}
 		}
@@ -682,7 +795,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			'ITEM_ID' => $field,
 			'FIELDLABEL' => $this->cObj->stdWrap($label, $this->conf['renderConf.'][$this->table.'.'][$field.'.'][self::$view.'.']['label.']),
 			'FIELDNAME' => $field,
-			'ITEM_NAME' => $this->prefixId . '[' . $field . '][]',
+			'ITEM_NAME' => $this->prefixId . '[' . $field . '][]',		
 		);
 
 		$template = $this->cObj->substituteSubpartArray($template, $subparts);
@@ -948,6 +1061,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 		if (is_array($config['items']))   {
 			foreach ($config['items'] as $key=>$item) {
 				$items[] = array(
+					// 'value' => $key,
 					'value' => ($item[1]? $item[1]: $key),
 					'label' => $GLOBALS['TSFE']->sL($item[0])
 				);
