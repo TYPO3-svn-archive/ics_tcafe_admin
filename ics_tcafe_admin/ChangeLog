@@ -1,3 +1,6 @@
+2014-05-13 Tsi YANG <tsi.yang@plan-net.fr>
+	* Feature: Implements alt template in render form.
+	
 2014-05-05 Tsi YANG <tsi.yang@plan-net.fr>
 	Fix: Fix render single select with specific template.
 	

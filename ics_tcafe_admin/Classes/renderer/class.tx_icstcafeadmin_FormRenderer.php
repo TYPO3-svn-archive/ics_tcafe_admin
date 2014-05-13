@@ -291,6 +291,11 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			}
 			else {	// Process entries (basic method)
 				$markers['ENTRIES'] = $this->renderEntries($template);
+				$template = $this->cObj->substituteMarkerArray($template, $markers, '###|###');
+				foreach ($this->fields as $field) {
+					$subparts['###ALT_SUBPART_FORM_'.strtoupper($field).'###'] = '';
+				}
+				$template = $this->cObj->substituteSubpartArray($template, $subparts);
 			}
 		}
 		$content = $this->cObj->substituteMarkerArray($template, $markers, '###|###');
