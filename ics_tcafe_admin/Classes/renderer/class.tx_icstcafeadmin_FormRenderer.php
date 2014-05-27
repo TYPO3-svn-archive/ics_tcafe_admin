@@ -699,7 +699,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 					</div>';
 			}
 			else { // Multiple checkbox
-				$content = $this->handleFormField_typeSelect_multiple($items, $field, $config);
+				$content = $this->handleFormField_typeSelect_multiple($items, $field, $config, $template);
 			}
 		}
 		return $content;
