@@ -535,6 +535,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			'PREFIXID' => $this->prefixId,
 		);
 		$template = $this->cObj->substituteMarkerArray($template, $markers, '###|###');
+		
 		return $template;
 	}
 
@@ -783,7 +784,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['saveDB_additionnalDataArray'])) {
 				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['saveDB_additionnalDataArray'] as $class) {
 					$procObj = & t3lib_div::getUserObj($class);
-					if ($procObj->saveDB_additionnalDataArray($dataArray, $this->table, ($this->newUid? $this->newUid: $this->showUid), $fields, $this->conf, $this))
+					if ($procObj->saveDB_additionnalDataArray($dataArray, $this->table, ($this->newUid? $this->newUid: $this->showUid), $this->conf, $this))
 						break;
 				}
 			}
@@ -806,6 +807,7 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 					true
 				);
 			}
+			// t3lib_div::debug($dbTools->getSelect_MM(), 'select_MM');
 			if ($select_MM = $dbTools->getSelect_MM()) {
 				foreach ($select_MM as $field=>$foreign_uids) {
 					$config = $GLOBALS['TCA'][$this->table]['columns'][$field]['config'];
@@ -843,10 +845,12 @@ class tx_icstcafeadmin_pi1 extends tslib_pibase {
 						$MM_rows[] = array(
 							$uidLocal_field => $this->newUid? $this->newUid: $this->showUid,
 							$uidForeign_field => $uid,
+							// 'tablenames' => $this->table,
 							'tablenames' => $table,
 							$sorting => $index,
 						);
 					}
+					// t3lib_div::debug($MM_rows, 'MM_rows');
 					if (!empty($MM_rows)) {
 						$GLOBALS['TYPO3_DB']->exec_INSERTmultipleRows (
 							$config['MM'],

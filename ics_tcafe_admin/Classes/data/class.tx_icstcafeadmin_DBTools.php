@@ -47,7 +47,7 @@
  *
  */
 
-
+require_once(t3lib_extMgm::extPath('rtehtmlarea').'pi2/class.tx_rtehtmlarea_pi2.php');
 /**
  * Class 'tx_icstcafeadmin_DBTools' for the 'ics_tcafe_admin' extension.
  *
@@ -385,7 +385,35 @@ class tx_icstcafeadmin_DBTools {
 			}
 		}
 		if(!$process) {
-			$value = htmlspecialchars($value);
+			if (isset($config['wizards']['RTE'])) {
+				if(!$this->RTEObj)  $this->RTEObj = t3lib_div::makeInstance('tx_rtehtmlarea_pi2');
+				if($this->RTEObj->isAvailable()) {
+					$this->thePidValue = $GLOBALS['TSFE']->id;
+					$pageTSConfig = $GLOBALS['TSFE']->getPagesTSconfig();
+					$RTEsetup = $pageTSConfig['RTE.'];
+					$this->thisConfig = $RTEsetup['default.'];
+					$this->thisConfig = $this->thisConfig['FE.'];
+					$dataArray = array();
+					$value = $this->RTEObj->transformContent(
+						'db',
+						$value,
+						$table,
+						$field,
+						$dataArray,
+						$this->specConf,
+						$this->thisConfig,
+						'',
+						$this->thePidValue
+					);
+				}
+				else {
+					$value = htmlspecialchars($value);
+				}
+			}
+			else {
+				$value = htmlspecialchars($value);
+			}
+			
 		}
 		return $value;
 	}

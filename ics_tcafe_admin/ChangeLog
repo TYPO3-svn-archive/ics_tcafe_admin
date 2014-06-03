@@ -1,3 +1,6 @@
+2014-06-03 Tsi YANG <tsi.yang@plan-net.fr>
+	* Feature: Implements RTE.
+	
 2014-05-27 Tsi YANG <tsi.yang@plan-net.fr>
 	* Feature: Implements alt template in render form for multiple select.
 	

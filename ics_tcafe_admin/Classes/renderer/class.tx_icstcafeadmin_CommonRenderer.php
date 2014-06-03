@@ -185,7 +185,17 @@ class tx_icstcafeadmin_CommonRenderer {
 					}
 					break;
 				case 'text':
-					$value = $this->cObj->stdWrap($value, $this->conf['defaultConf.']['text.'][$view . '.']);
+					if (isset($config['wizards']['RTE'])) {
+						if ($this->conf['defaultConf.']['parseFunc_RTEText.'][$view . '.']) {
+							$this->cObj->parseFunc($value, $this->conf['defaultConf.']['parseFunc_RTEText.'][$view . '.']);
+						}
+						else {
+							$value = $this->pi_base->pi_RTEcssText($value);
+						}
+					}
+					else {
+						$value = $this->cObj->stdWrap($value, $this->conf['defaultConf.']['text.'][$view . '.']);
+					}
 					break;
 				case 'check':
 					if ($config['items'] && ($view=='viewList' || $view=='viewSingle')) {
@@ -282,7 +292,15 @@ class tx_icstcafeadmin_CommonRenderer {
 	 */
 	protected function  handleFieldValue_typeCheck($value=null, array $config) {
 		if (is_array($config['items'])) {
-			// TODO : insert here code to process type check with several values
+			// foreach ($config['items'] as $item) {
+				// $itemValues[] = $GLOBALS['TSFE']->sL($item[0]);
+			// }
+			// foreach ($itemValues as $index=>$data) {
+				// if ($value & pow(2, $index)) {
+					// $labels[] = $data;
+				// }
+			// }
+			// $value = implode(',', $labels);
 		}
 		return $value;
 	}
@@ -533,13 +551,14 @@ class tx_icstcafeadmin_CommonRenderer {
 			'withDataEditItem' => $this->conf['view.']['withDataEditItem'],
 			'PIDnewItem' => $this->conf['view.']['PIDnewItem'],
 			'withDataNewItem' => $this->conf['view.']['withDataNewItem'],
-			'label' => $label,
+			'label' => htmlspecialchars($label),
 			'backPid' => $this->backPid,
 			'crit_mode' => $this->pi_base->piVars['mode'],
 			'crit_table' => $this->pi_base->piVars['table'],
 			'crit_showUid' => $this->pi_base->piVars['showUid'],
 			'crit_fields' => $this->pi_base->piVars['fields'],
 		);
+		// t3lib_div::debug($data['label'], 'label');
 		// Hook to retrieves more data
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['actions_additionnalDataArray'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['actions_additionnalDataArray'] as $class) {
