@@ -180,7 +180,6 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			}
 			$markers['FORM_RTE_ENTRY'] = $RTEItem;
 		}
-		// t3lib_div::debug($markers);
 		return $markers;
 	}
 	/**
@@ -277,7 +276,6 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			if (is_array($entries) && !empty($entries)) {	// Process entries by group
 				foreach ($entries as $entry) {
 					$fields = t3lib_div::trimExplode(',', $this->conf['renderForm.']['entries_group.'][$entry.'.']['fields'], true);
-					// t3lib_div::debug(array($entry, $fields),'entry: fields');
 					$subTemplate = $this->cObj->getSubpart($template, '###SUBPART_ENTRIES_'.strtoupper($entry).'###');
 					$lMarkers['ENTRIES_'.strtoupper($entry)] = $this->renderEntries($subTemplate, $fields);
 					$lContent = $this->cObj->substituteMarkerArray($subTemplate, $lMarkers, '###|###');
@@ -286,6 +284,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 					foreach ($fields as $field) {
 						$subparts['###ALT_SUBPART_FORM_'.strtoupper($field).'###'] = '';
 					}
+					$template = $this->cObj->substituteSubpartArray($template, $subparts);
 				}
 				$template = $this->cObj->substituteSubpartArray($template, $subparts);
 			}
@@ -328,7 +327,6 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			foreach ($fields as $field) {
 				// The specific template field
 				$subTemplate = $this->cObj->getSubpart($template, '###ALT_SUBPART_FORM_'.strtoupper($field).'###');
-				// t3lib_div::debug($subTemplate);
 				$content .= $this->handleFormField($field, $subTemplate);
 			}
 		}
@@ -382,7 +380,6 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 			}
 			
 		}
-		// t3lib_div::debug($content);
 		return $content;
 	}
 
@@ -665,6 +662,7 @@ class tx_icstcafeadmin_FormRenderer extends tx_icstcafeadmin_CommonRenderer {
 	 */
 	public function handleFormField_typeSelect($field, array $config, $template='') {
 		$items = $this->getSelectItemArray($field, $config);
+		$this->conf['subTemplate'] = $template;
 		// Hook to handle form field
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeSelect'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['handleFormField_typeSelect'] as $class) {
